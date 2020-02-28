@@ -4,11 +4,14 @@
 \alias{StreamCell}
 \title{Class StreamCell (R6)}
 \value{
-The ojbect of class \code{StreamCell}
+The object of class \code{Cell}.
 }
 \description{
-Instantiate a \code{StreamCell} object.  \code{StreamCell}
-  inherits from class \code{Cell}.
+Instantiate a \code{StreamCell} object. Class \code{StreamCell}
+  inherits from class \code{Cell}. The following parameters will be
+  calculated on the fly from the remaining parameters if they are not
+  specified directly by the user: \code{channelArea, channelVelocity,
+  channelResidenceTime, qStorage, hydraulicLoad}.
 }
 \section{Super class}{
 \code{\link[SoilsToStreams:Cell]{SoilsToStreams::Cell}} -> \code{StreamCell}
@@ -30,20 +33,64 @@ Instantiate a \code{StreamCell} object.  \code{StreamCell}
 \if{html}{\out{<a id="method-new"></a>}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{StreamCell$new(..., waterVolume, soluteMass, soluteConcentration)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{StreamCell$new(
+  ...,
+  soluteConcentration,
+  discharge,
+  alpha,
+  aquiferVolume,
+  porosity,
+  channelWidth,
+  channelLength,
+  channelArea,
+  channelDepth,
+  channelVelocity,
+  channelResidenceTime,
+  qStorage,
+  hydraulicLoad,
+  tauMin,
+  tauMax
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{waterVolume}}{is the volume of water in the cell.}
+\item{\code{discharge}}{is the water discharge, Q, in user specified units.}
 
-\item{\code{soluteMass}}{is the mass of the solute in the cell.}
+\item{\code{alpha}}{is the exponent of the power law used to represent the shape of
+the residence time distribution of the hyporheic zone.}
 
-\item{\code{soluteConcentration}}{will be calculated from the
-\code{waterVolume} and \code{soluteMass}.  Therefore, it is the end user's
-responsibility to ensure that the units of volume and mass are consistent
-throughout their simulation.}
+\item{\code{aquiferVolume}}{is the volume of the stream aquifer/hyporheic zone.}
+
+\item{\code{porosity}}{is the porosity of the streambed and hyporheic zone.}
+
+\item{\code{channelWidth}}{is the width of the stream channel surface.}
+
+\item{\code{channelLength}}{is the length of the stream channel surface for the
+given reach represented by the \code{StreamCell} specified herein.}
+
+\item{\code{channelArea}}{is the area of the stream channel surface for the given
+\code{StreamCell}.}
+
+\item{\code{channelDepth}}{is the height of the water surface above the streambed.}
+
+\item{\code{channelVelocity}}{is the mean velocity of the water in the stream
+channel.}
+
+\item{\code{channelResidenceTime}}{is the mean residence time of the reach
+represented by the \code{StreamCell} specified herein.}
+
+\item{\code{qStorage}}{is the total hyporheic exchange rate, i.e., the rate at which
+water is downwelling into and - since this model assumes steady state -
+upwelling up from the hyporheic zone.}
+
+\item{\code{hydraulicLoad}}{is the hydraulic load for the reach represented by the
+\code{StreamCell} specified herein.}
+
+\item{\code{tauMin}}{is the minimum residence time for the hyporheic zone.}
+
+\item{\code{tauMax}}{is the maximum residence time for the hyporheic zone.}
 }
 \if{html}{\out{</div>}}
 }

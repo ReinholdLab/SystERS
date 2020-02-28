@@ -4,7 +4,7 @@
 \alias{Cell}
 \title{Class Cell (R6)}
 \value{
-The ojbect of class Cell
+The ojbect of class \code{Cell}.
 }
 \description{
 Instantiate a \code{Cell} object.
@@ -20,17 +20,13 @@ Instantiate a \code{Cell} object.
 \if{html}{\out{<a id="method-new"></a>}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Cell$new(cellIdx, inputBoundaryIdxVect, outputBoundaryIdxVect)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Cell$new(cellIdx)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{cellIdx}}{is the index or name of the cell}
-
-\item{\code{inputBoundaryIdxVect}}{is a vector containing the indicies of the upstream boundaries.}
-
-\item{\code{outputBoundaryIdxVect}}{is a vector}
+\item{\code{cellIdx}}{is the index for the cell.}
 }
 \if{html}{\out{</div>}}
 }

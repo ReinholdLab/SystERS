@@ -2,18 +2,16 @@
 % Please edit documentation in R/Class_Boundary.R
 \name{Boundary}
 \alias{Boundary}
-\title{Class Boundary (R6)}
-\value{
-The ojbect of class \code{Boundary}.
-}
+\title{Boundary}
 \description{
-Instantiate a \code{Boundary} object.
+Boundary superclass
 }
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{Boundary$new()}}
-\item \href{#method-waterVolume}{\code{Boundary$waterVolume()}}
+\item \href{#method-waterTransportPerTime}{\code{Boundary$waterTransportPerTime()}}
+\item \href{#method-soluteTransportPerTime}{\code{Boundary$soluteTransportPerTime()}}
 \item \href{#method-clone}{\code{Boundary$clone()}}
 }
 }
@@ -21,33 +19,47 @@ Instantiate a \code{Boundary} object.
 \if{html}{\out{<a id="method-new"></a>}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Boundary$new(
+\if{html}{\out{<div class="r">}}\preformatted{Boundary$new()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-waterTransportPerTime"></a>}}
+\subsection{Method \code{waterTransportPerTime()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Boundary$waterTransportPerTime(
   boundaryIdx,
-  inputCellIdx,
-  outputCellIdx,
-  proportionOfInputCellFlow
+  upstreamCell,
+  additionalWaterInputOrLoss = 0
 )}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{boundaryIdx}}{is the index for the boundary.}
-
-\item{\code{inputCellIdx}}{is the index for the upstream cell.}
-
-\item{\code{outputCellIdx}}{is the index for the downstream cell.}
+\item{\code{boundaryIdx}}{the name of the boundary.}
 }
 \if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-waterVolume"></a>}}
-\subsection{Method \code{waterVolume()}}{
+\if{html}{\out{<a id="method-soluteTransportPerTime"></a>}}
+\subsection{Method \code{soluteTransportPerTime()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Boundary$waterVolume(upstreamCell, downstreamCell, additionalInput = 0)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Boundary$soluteTransportPerTime(
+  boundaryIdx,
+  upstreamCell,
+  additionalSoluteInputOrLoss = 0
+)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{boundaryIdx}}{the name of the boundary.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}

@@ -2,13 +2,11 @@
 #'
 #' @description Instantiate a \code{Cell} object.
 #'
-#' @param cellIdx is the index or name of the cell
-#' @param inputBoundaryIdxVect is a vector containing the indicies of the upstream boundaries.
-#' @param outputBoundaryIdxVect is a vector
-#'
-#' @return The ojbect of class Cell
+#' @param cellIdx is the index for the cell.
 #'
 #' @export
+#'
+#' @return The ojbect of class \code{Cell}.
 #'
 
 Cell <-
@@ -16,53 +14,113 @@ Cell <-
     classname = "Cell",
     public =
       list(
-        cellIdx = NULL, # index in network
-        inputBoundaryIdxVect = NULL, # upstream boundaries (i.e., input links)
-        outputBoundaryIdxVect = NULL, # downstream boundaries (i.e., output links)
-
+        cellIdx = NULL,
         initialize =
-          function(cellIdx, inputBoundaryIdxVect, outputBoundaryIdxVect){
-
-            self$cellIdx <- cellIdx;
-            self$inputBoundaryIdxVect <- inputBoundaryIdxVect;
-            self$outputBoundaryIdxVect <- outputBoundaryIdxVect;
-
-
+          function(cellIdx){
+            self$cellIdx <- cellIdx
           }
       )
   )
 
 #' @title Class StreamCell (R6)
 #'
-#' @description Instantiate a \code{StreamCell} object.  \code{StreamCell}
-#'   inherits from class \code{Cell}.
+#' @description Instantiate a \code{StreamCell} object. Class \code{StreamCell}
+#'   inherits from class \code{Cell}. The following parameters will be
+#'   calculated on the fly from the remaining parameters if they are not
+#'   specified directly by the user: \code{channelArea, channelVelocity,
+#'   channelResidenceTime, qStorage, hydraulicLoad}.
 #'
-#' @param waterVolume is the volume of water in the cell.
-#' @param soluteMass is the mass of the solute in the cell.
-#' @param soluteConcentration will be calculated from the
-#'   \code{waterVolume} and \code{soluteMass}.  Therefore, it is the end user's
-#'   responsibility to ensure that the units of volume and mass are consistent
-#'   throughout their simulation.
-#'
-#' @return The ojbect of class \code{StreamCell}
+#' @param solute concentration is the concentration of the solute in user
+#'   specified units.
+#' @param discharge is the water discharge, Q, in user specified units.
+#' @param alpha is the exponent of the power law used to represent the shape of
+#'   the residence time distribution of the hyporheic zone.
+#' @param aquiferVolume is the volume of the stream aquifer/hyporheic zone.
+#' @param porosity is the porosity of the streambed and hyporheic zone.
+#' @param channelWidth is the width of the stream channel surface.
+#' @param channelLength is the length of the stream channel surface for the
+#'   given reach represented by the \code{StreamCell} specified herein.
+#' @param channelArea is the area of the stream channel surface for the given
+#'   \code{StreamCell}.
+#' @param channelDepth is the height of the water surface above the streambed.
+#' @param channelVelocity is the mean velocity of the water in the stream
+#'   channel.
+#' @param channelResidenceTime is the mean residence time of the reach
+#'   represented by the \code{StreamCell} specified herein.
+#' @param qStorage is the total hyporheic exchange rate, i.e., the rate at which
+#'   water is downwelling into and - since this model assumes steady state -
+#'   upwelling up from the hyporheic zone.
+#' @param hydraulicLoad is the hydraulic load for the reach represented by the
+#'   \code{StreamCell} specified herein.
+#' @param tauMin is the minimum residence time for the hyporheic zone.
+#' @param tauMax is the maximum residence time for the hyporheic zone.
 #'
 #' @export
-
+#'
+#' @return The object of class \code{Cell}.
+#'
 StreamCell <-
   R6::R6Class(
     classname = "StreamCell",
     inherit = Cell,
     public =
       list(
-        waterVolume = NULL,
-        soluteMass = NULL,
         soluteConcentration = NULL,
+        discharge = NULL,
+        alpha = NULL,
+        aquiferVolume = NULL,
+        porosity = NULL,
+        channelWidth = NULL,
+        channelLength = NULL,
+        channelArea = NULL,
+        channelDepth = NULL,
+        channelVelocity = NULL,
+        channelResidenceTime = NULL,
+        qStorage = NULL,
+        hydraulicLoad = NULL,
+        tauMin = NULL,
+        tauMax = NULL,
+
         initialize =
-          function(..., waterVolume, soluteMass, soluteConcentration){
-            super$initialize(...);
-            self$waterVolume <- waterVolume;
-            self$soluteMass <- soluteMass;
-            self$soluteConcentration <- (soluteMass / waterVolume);
+          function(...,
+                   soluteConcentration,
+                   discharge,
+                   alpha,
+                   aquiferVolume,
+                   porosity,
+                   channelWidth,
+                   channelLength,
+                   channelArea,
+                   channelDepth,
+                   channelVelocity,
+                   channelResidenceTime,
+                   qStorage,
+                   hydraulicLoad,
+                   tauMin,
+                   tauMax
+          ){
+
+            super$initialize(...)
+
+            self$soluteConcentration <- soluteConcentration
+            self$discharge <- discharge
+            self$alpha <- alpha
+            self$aquiferVolume <- aquiferVolume
+            self$porosity <- porosity
+            self$channelWidth <- channelWidth
+            self$channelLength <- channelLength
+            self$channelDepth <- channelDepth
+            self$channelArea <- ifelse(!is.null(channelArea), channelArea, channelWidth * channelLength)
+            self$channelVelocity <- ifelse(!is.null(channelVelocity), channelVelocity, discharge / (channelWidth * channelDepth))
+            self$channelResidenceTime <- ifelse(!is.null(channelResidenceTime), channelResidenceTime, channelLength / channelVelocity)
+            self$qStorage <- ifelse(!is.null(qStorage), qStorage, (aquiferVolume * porosity) / (channelArea) )
+            self$hydraulicLoad <- ifelse(!is.null(hydraulicLoad), hydraulicLoad, channelDepth / channelResidenceTime)
+            self$tauMin <- tauMin
+            self$tauMax <- tauMax
+
           }
       )
   )
+
+
+
