@@ -110,14 +110,14 @@ Boundary$set(
             boundaryIdx, ", .  A removalMethod must be provided.")
           )
 
-      } elseif(removalMethod == "RT-PL") {
+      } else if(removalMethod == "RT-PL") {
 
         self$fractionRemoved <- ResTmWtdFracRemovStrg$new(...)$fractionRemoved
         self$fractionRemaining <- ResTmWtdFracRemovStrg$new(...)$fractionRemaining
 
         stop("I need to write the code to do this.")
 
-      } elseif(removalMethod == "pcnt") {
+      } else if(removalMethod == "pcnt") {
 
         self$fractionRemoved <- PcntRemovStrg$new(...)$fractionRemoved
         self$fractionRemaining <- PcntRemovStrg$new(...)$fractionRemaining
