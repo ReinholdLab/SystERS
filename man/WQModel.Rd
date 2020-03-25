@@ -4,7 +4,8 @@
 \alias{WQModel}
 \title{Class WQModel (R6)}
 \value{
-The ojbect of class \code{WQModel}.
+The ojbect of class \code{WQModel}.  Boundaries and cells are stored
+  in lists called \code{bounds} and \code{cells}, respectively.
 }
 \description{
 Define the WQ model and the network topology of cells and
@@ -14,6 +15,7 @@ Define the WQ model and the network topology of cells and
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{WQModel$new()}}
+\item \href{#method-trade}{\code{WQModel$trade()}}
 \item \href{#method-clone}{\code{WQModel$clone()}}
 }
 }
@@ -22,7 +24,7 @@ Define the WQ model and the network topology of cells and
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{WQModel$new(boundsTable, cellsTable)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{WQModel$new(boundsTable, cellsTable, unitsTable)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -35,9 +37,22 @@ downstreamCellIdx, and the calculateOrder.}
 
 \item{\code{cellsTable}}{must contain the processDomain, cellIdx (as character) and
 all other neccessary values to have a cell representing a process domain.}
+
+\item{\code{unitsTable}}{is a reference table for the end user, containing the units
+of their input parameters.  At this time, the model doesn't do anything
+with this table.  It is only for reference.}
 }
 \if{html}{\out{</div>}}
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-trade"></a>}}
+\if{latex}{\out{\hypertarget{method-trade}{}}}
+\subsection{Method \code{trade()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{WQModel$trade(boundaryIdx, ...)}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}

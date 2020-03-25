@@ -5,7 +5,8 @@
 #'
 #' @export
 #'
-#' @return The ojbect of class \code{WQModel}.
+#' @return The ojbect of class \code{WQModel}.  Boundaries and cells are stored
+#'   in lists called \code{bounds} and \code{cells}, respectively.
 #'
 #' @param boundsTable At this point, \code{booundsTable} needs to be a table
 #'   specifying the currency, type of boundary (reaction or transport), the
@@ -13,6 +14,9 @@
 #'   downstreamCellIdx, and the calculateOrder.
 #' @param cellsTable must contain the processDomain, cellIdx (as character) and
 #'   all other neccessary values to have a cell representing a process domain.
+#' @param unitsTable is a reference table for the end user, containing the units
+#'   of their input parameters.  At this time, the model doesn't do anything
+#'   with this table.  It is only for reference.
 
 WQModel <-
   R6::R6Class(
@@ -22,13 +26,21 @@ WQModel <-
       list(
         boundsTable = NULL,
         cellsTable = NULL,
+        unitsTable = NULL,
         cells = NULL,
         bounds = NULL,
+        soluteRemovalMethod = NULL,
+        k = NULL,
 
         initialize =
-          function(boundsTable, cellsTable) {
+          function(boundsTable, cellsTable, unitsTable, soluteRemovalMethod, k) {
             self$boundsTable <- boundsTable
             self$cellsTable <- cellsTable
+
+            self$unitsTable <- unitsTable
+
+            self$soluteRemovalMethod <- soluteRemovalMethod
+            self$k <- k
 
             # generate the stream cells from the cellsTable
             self$cells <-
@@ -55,6 +67,7 @@ WQModel <-
                   )
                 }
               )
+            names(self$cells) <- cellsTable$cellIdx
 
             # Generate the boundaries from the boundsTable in the model
 
@@ -65,25 +78,64 @@ WQModel <-
 
             self$bounds <-
               plyr::llply(
-              1:nrow(boundsTable),
-              function(rowNum) {
-                Boundary$new(
-                  boundaryIdx = boundsTable$boundaryIdx[rowNum],
-                  currency = boundsTable$currency[rowNum],
-                  boundarySuperClass = boundsTable$boundarySuperClass[rowNum],
-                  upstreamCellIdx = boundsTable$upstreamCellIdx[rowNum],
-                  downstreamCellIdx = boundsTable$downstreamCellIdx[rowNum],
-                  calculateOrder = boundsTable$calculateOrder[rowNum]
-                )
-              }
-            )
+                1:nrow(boundsTable),
+                function(rowNum) {
+                  Boundary$new(
+                    boundaryIdx = boundsTable$boundaryIdx[rowNum],
+                    currency = boundsTable$currency[rowNum],
+                    boundarySuperClass = boundsTable$boundarySuperClass[rowNum],
+                    upstreamCellIdx = boundsTable$upstreamCellIdx[rowNum],
+                    downstreamCellIdx = boundsTable$downstreamCellIdx[rowNum],
+                    calculateOrder = boundsTable$calculateOrder[rowNum]
+                  )
+                }
+              )
+            names(self$bounds) <- boundsTable$boundaryIdx
 
 
           } # closes initialize function
       ) # closes public list
   ) # closes WQ model
 
+#' @method WQModel$trade
+#'
+#' @description Calculates all the trades for the model
+#'
+WQModel$set(
+  which = "public",
+  name = "trade",
+  value = function(...){
+    # empty vectors to populate
+    boundIdx <- NA
+    tradeVals <- NA
+    tradeCurrency <- NA
+
+    for(i in 1
+        # length(self$bounds)
+        ){
+
+      bound <- self$bounds[[i]]
+
+      tradeCurrency[i] <- bound$currency
+      boundIdx[i] <- bound$boundaryIdx
+
+      if(bound$currency == "H20" & bound$boundarySuperClass == "transport"){
+        tradeVals[i] <- WaterTransportPerTime$new(bound$boundaryIdx, bound$upstreamCellIdx)
+      }
+      if(bound$currency == "NO3" & bound$boundarySuperClass == "transport"){
+        tradeVals[i] <- SoluteTransportPerTime$new(bound$boundaryIdx, bound$upstreamCellIdx)
+      }
+      if(bound$currency == "NO3" & bound$boundarySuperClass == "reaction"){
+        tradeVals[i] <- CalcFractionalSoluteDynams$new(bound$boundaryIdx,
+                                                       bound$upstreamCellIdx,
+                                                       self$soluteRemovalMethod)
+      }
+    }
+    rm(bound)
+    return(data.frame(boundIdx, tradeCurrency, tradeVals))
+  }
+)
 
 
-## Need to add error checks to ensure that sublist names and structures are
-## appropriate and that the network structure is appropriate
+
+
