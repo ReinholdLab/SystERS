@@ -24,6 +24,7 @@ WQModel <-
 
     public =
       list(
+        modelName = NULL,
         boundsTable = NULL,
         cellsTable = NULL,
         unitsTable = NULL,
@@ -33,7 +34,8 @@ WQModel <-
         k = NULL,
 
         initialize =
-          function(boundsTable, cellsTable, unitsTable, soluteRemovalMethod, k) {
+          function(modelName, boundsTable, cellsTable, unitsTable, soluteRemovalMethod, k, ...) {
+            self$modelName <- modelName
             self$boundsTable <- boundsTable
             self$cellsTable <- cellsTable
 
@@ -110,7 +112,7 @@ WQModel$set(
     tradeVals <- NA
     tradeCurrency <- NA
 
-    for(i in 1
+    for(i in 1:4
         # length(self$bounds)
         ){
 
@@ -119,19 +121,28 @@ WQModel$set(
       tradeCurrency[i] <- bound$currency
       boundIdx[i] <- bound$boundaryIdx
 
-      if(bound$currency == "H20" & bound$boundarySuperClass == "transport"){
-        tradeVals[i] <- WaterTransportPerTime$new(bound$boundaryIdx, bound$upstreamCellIdx)
+      modelEnvName <- self$modelName
+
+      if(bound$currency == "H2O" & bound$boundarySuperClass == "transport"){
+        tradeVals[i] <-
+          WaterTransportPerTime$new(modelEnvName,
+                                    bound$boundaryIdx,
+                                    bound$upstreamCellIdx)$dischargeToTrade
       }
       if(bound$currency == "NO3" & bound$boundarySuperClass == "transport"){
-        tradeVals[i] <- SoluteTransportPerTime$new(bound$boundaryIdx, bound$upstreamCellIdx)
+        tradeVals[i] <-
+          SoluteTransportPerTime$new(modelEnvName,
+                                     bound$boundaryIdx,
+                                     bound$upstreamCellIdx)$soluteToTrade
       }
-      if(bound$currency == "NO3" & bound$boundarySuperClass == "reaction"){
-        tradeVals[i] <- CalcFractionalSoluteDynams$new(bound$boundaryIdx,
-                                                       bound$upstreamCellIdx,
-                                                       self$soluteRemovalMethod)
-      }
-    }
-    rm(bound)
+      # if(bound$currency == "NO3" & bound$boundarySuperClass == "reaction"){
+      #   tradeVals[i] <- CalcFractionalSoluteDynams$new(modelEnv,
+      #                                                  bound$boundaryIdx,
+      #                                                  bound$upstreamCellIdx,
+      #                                                  self$soluteRemovalMethod)
+      # }
+     }
+    # rm(bound)
     return(data.frame(boundIdx, tradeCurrency, tradeVals))
   }
 )

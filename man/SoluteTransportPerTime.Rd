@@ -22,13 +22,15 @@ Calculate load, i.e., the rate of solute mass moving from the
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{SoluteTransportPerTime$new(boundaryIdx, upstreamCell)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{SoluteTransportPerTime$new(modelEnvName, boundaryIdx, upstreamCellIdx)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{boundaryIdx}}{the name of the boundary.}
+
+\item{\code{upstreamCellIdx}}{the name of the upstream cell as a character.}
 }
 \if{html}{\out{</div>}}
 }

@@ -15,12 +15,27 @@ WaterTransportPerTime <-
     classname = "WaterTransportPerTime",
     public =
       list(
+        modelEnv = NULL,
+        modelEnvName = NULL,
         boundaryIdx= NULL,
         upstreamCellIdx = NULL,
+        dischargeToTrade = NULL,
         initialize =
-          function(boundaryIdx, upstreamCellIdx){
-            cellIdxInList <- which(names(WQModel$public_fields$cells) == upstreamCellIdx)
-            return(WQModel$public_fields$cells[[cellIdxInList]]$discharge)
+          function(modelEnvName, boundaryIdx, upstreamCellIdx){
+
+            self$modelEnvName <- modelEnvName
+            modelEnv <- get(self$modelEnvName, envir = .GlobalEnv)
+
+            self$modelEnv <- modelEnv
+            self$boundaryIdx <- boundaryIdx
+            self$upstreamCellIdx <- upstreamCellIdx
+
+            # index of the upstream cell in the list
+            usCellIdxInList <- which(names(modelEnv$cells) == upstreamCellIdx)
+
+            # discharge in the cell
+            self$dischargeToTrade <- modelEnv$cells[[usCellIdxInList]]$discharge
+
           }
       )
   )
@@ -40,19 +55,30 @@ SoluteTransportPerTime <-
     classname = "SoluteTransportPerTime",
     public =
       list(
+        modelEnv = NULL,
+        modelEnvName = NULL,
         boundaryIdx = NULL,
         upstreamCellIdx = NULL,
-        initialize = function(boundaryIdx, upstreamCellIdx){
+        soluteToTrade = NULL,
+        initialize = function(modelEnvName, boundaryIdx, upstreamCellIdx){
 
-          # get the location of the upstream cell in the cells list by its index
-          cellIdxInList <- which(names(WQModel$public_fields$cells) == upstreamCellIdx)
+          self$modelEnvName <- modelEnvName
+          modelEnv <- get(self$modelEnvName, envir = .GlobalEnv)
+
+          self$modelEnv <- modelEnv
+          self$boundaryIdx <- boundaryIdx
+          self$upstreamCellIdx <- upstreamCellIdx
+
+          # index of the upstream cell in the list
+          usCellIdxInList <- which(names(modelEnv$cells) == upstreamCellIdx)
 
           # get the discharge and solute concentration in the upstream cells
-          upstreamCellDischarge <- WQModel$public_fields$cells[[cellIdxInList]]$discharge
-          upstreamCellConcentration <- WQModel$public_fields$cells[[cellIdxInList]]$soluteConcentration
+          upstreamCellDischarge <- modelEnv$cells[[usCellIdxInList]]$discharge
+          upstreamCellConcentration <- modelEnv$cells[[usCellIdxInList]]$soluteConcentration
 
           # multiply discharge by concentration to get load
-          return( upstreamCellDischarge * upstreamCellConcentration )
+          self$soluteToTrade <- upstreamCellDischarge * upstreamCellConcentration
+
         }
       )
   )

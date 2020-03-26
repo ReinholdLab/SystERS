@@ -24,7 +24,15 @@ Define the WQ model and the network topology of cells and
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{WQModel$new(boundsTable, cellsTable, unitsTable)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{WQModel$new(
+  modelName,
+  boundsTable,
+  cellsTable,
+  unitsTable,
+  soluteRemovalMethod,
+  k,
+  ...
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -50,7 +58,7 @@ with this table.  It is only for reference.}
 \if{latex}{\out{\hypertarget{method-trade}{}}}
 \subsection{Method \code{trade()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{WQModel$trade(boundaryIdx, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{WQModel$trade(...)}\if{html}{\out{</div>}}
 }
 
 }
