@@ -5,8 +5,8 @@
 #' @param boundaryIdx the name of the boundary.
 #' @param currency the name of the currency handled by the boundary as a character e.g., \code{H20}
 #' @param boundarySuperClass the super class of the boundary, e.g., \code{transport} or \code{reaction}
-#' @param upstreamCellIdx  the name of the upstream cell as a character.
-#' @param downstreamCellIdx the name of the downstream cell as a character.
+#' @param upstreamCell  the upstream cell
+#' @param downstreamCell the downstream cell
 #'
 #' @export
 #'
@@ -18,16 +18,16 @@ Boundary <-
         boundaryIdx = NULL,
         currency = NULL,
         boundarySuperClass = NULL,
-        upstreamCellIdx = NULL,
-        downstreamCellIdx = NULL,
+        upstreamCell = NULL,
+        downstreamCell = NULL,
         calculateOrder = NULL,
         initialize =
-          function(boundaryIdx, currency, boundarySuperClass, upstreamCellIdx, downstreamCellIdx, calculateOrder){
+          function(boundaryIdx, currency, boundarySuperClass, upstreamCell, downstreamCell, calculateOrder){
             self$boundaryIdx <- boundaryIdx
             self$currency <- currency
             self$boundarySuperClass <- boundarySuperClass
-            self$upstreamCellIdx <- upstreamCellIdx
-            self$downstreamCellIdx <- downstreamCellIdx
+            self$upstreamCell <- upstreamCell
+            self$downstreamCell <- downstreamCell
             self$calculateOrder <- calculateOrder
           }
 

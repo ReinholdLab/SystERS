@@ -22,8 +22,8 @@ Boundary superclass
   boundaryIdx,
   currency,
   boundarySuperClass,
-  upstreamCellIdx,
-  downstreamCellIdx,
+  upstreamCell,
+  downstreamCell,
   calculateOrder
 )}\if{html}{\out{</div>}}
 }
@@ -37,9 +37,9 @@ Boundary superclass
 
 \item{\code{boundarySuperClass}}{the super class of the boundary, e.g., \code{transport} or \code{reaction}}
 
-\item{\code{upstreamCellIdx}}{the name of the upstream cell as a character.}
+\item{\code{upstreamCell}}{the upstream cell as a character.}
 
-\item{\code{downstreamCellIdx}}{the name of the downstream cell as a character.}
+\item{\code{downstreamCell}}{the downstream cell as a character.}
 }
 \if{html}{\out{</div>}}
 }

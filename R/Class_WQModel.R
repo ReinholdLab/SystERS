@@ -36,7 +36,6 @@ WQModel <-
         initialize =
           function(modelName, boundsTable, cellsTable, unitsTable, soluteRemovalMethod, k, ...) {
             self$modelName <- modelName
-            self$boundsTable <- boundsTable
             self$cellsTable <- cellsTable
 
             self$unitsTable <- unitsTable
@@ -71,25 +70,50 @@ WQModel <-
               )
             names(self$cells) <- cellsTable$cellIdx
 
+            print(sapply(self$cells, function(cell) cell$cellIdx))
+
             # Generate the boundaries from the boundsTable in the model
 
             # First, order the bounds table by the calculate order column. This
             # ordering makes it so that you can call the boundaries in the the
             # correct order simply by looping through the list of bounds.
             boundsTable <- boundsTable[order(boundsTable$calculateOrder), ]
+            self$boundsTable <- boundsTable
+
+            print(boundsTable)
+            print(paste("All boundaries unique:", length(boundsTable$boundaryIdx) == length(unique(boundsTable$boundaryIdx))))
+            print(
+              paste(
+                "Any d/s cell Idxs NOT listed as a cellIdx:", any(!(unique(boundsTable$downstreamCellIdx) %in% unique(sapply(self$cells, function(cell) cell$cellIdx))))
+              )
+            )
+            print(
+              paste(
+                "Any u/s cell Idxs NOT listed as a cellIdx:", any(!(unique(boundsTable$upstreamCellIdx) %in% unique(sapply(self$cells, function(cell) cell$cellIdx))))
+              )
+            )
 
             self$bounds <-
               plyr::llply(
                 1:nrow(boundsTable),
+                # 1:4,
                 function(rowNum) {
-                  Boundary$new(
-                    boundaryIdx = boundsTable$boundaryIdx[rowNum],
-                    currency = boundsTable$currency[rowNum],
-                    boundarySuperClass = boundsTable$boundarySuperClass[rowNum],
-                    upstreamCellIdx = boundsTable$upstreamCellIdx[rowNum],
-                    downstreamCellIdx = boundsTable$downstreamCellIdx[rowNum],
-                    calculateOrder = boundsTable$calculateOrder[rowNum]
-                  )
+
+                  usCellIdx <- self$cells[[ which(names(self$cells) ==  self$boundsTable$upstreamCellIdx[rowNum]) ]]$cellIdx
+                  dsCellIdx <- self$cells[[ which(names(self$cells) ==  self$boundsTable$downstreamCellIdx[rowNum]) ]]$cellIdx
+
+                  print(paste("bound:", boundsTable$boundaryIdx[rowNum] , ";   u/s cell:", usCellIdx, ";   d/s cell:", dsCellIdx, sep = " "))
+
+                    Boundary$new(
+                      boundaryIdx = boundsTable$boundaryIdx[rowNum],
+                      currency = boundsTable$currency[rowNum],
+                      boundarySuperClass = boundsTable$boundarySuperClass[rowNum],
+                      upstreamCell = self$cells[[ usCellIdx ]],
+                      downstreamCell = self$cells[[ dsCellIdx ]],
+                      calculateOrder = boundsTable$calculateOrder[rowNum]
+                    )
+                    print(paste("Boundary", boundsTable$boundaryIdx[rowNum], "successfully instantiated."))
+
                 }
               )
             names(self$bounds) <- boundsTable$boundaryIdx
@@ -135,14 +159,20 @@ WQModel$set(
                                      bound$boundaryIdx,
                                      bound$upstreamCellIdx)$soluteToTrade
       }
+
+
       # if(bound$currency == "NO3" & bound$boundarySuperClass == "reaction"){
       #   tradeVals[i] <- CalcFractionalSoluteDynams$new(modelEnv,
       #                                                  bound$boundaryIdx,
       #                                                  bound$upstreamCellIdx,
       #                                                  self$soluteRemovalMethod)
       # }
-     }
+
+    }
+
     # rm(bound)
+
+
     return(data.frame(boundIdx, tradeCurrency, tradeVals))
   }
 )
