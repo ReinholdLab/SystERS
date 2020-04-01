@@ -15,26 +15,17 @@ WaterTransportPerTime <-
     classname = "WaterTransportPerTime",
     public =
       list(
-        modelEnv = NULL,
-        modelEnvName = NULL,
-        boundaryIdx= NULL,
-        upstreamCellIdx = NULL,
+        boundary = NULL,
+        # modelEnv = NULL,
+        # modelEnvName = NULL,
+        # boundaryIdx= NULL,
+        # upstreamCellIdx = NULL,
         dischargeToTrade = NULL,
         initialize =
-          function(modelEnvName, boundaryIdx, upstreamCellIdx){
-
-            self$modelEnvName <- modelEnvName
-            modelEnv <- get(self$modelEnvName, envir = .GlobalEnv)
-
-            self$modelEnv <- modelEnv
-            self$boundaryIdx <- boundaryIdx
-            self$upstreamCellIdx <- upstreamCellIdx
-
-            # index of the upstream cell in the list
-            usCellIdxInList <- which(names(modelEnv$cells) == upstreamCellIdx)
+          function(boundary){
 
             # discharge in the cell
-            self$dischargeToTrade <- modelEnv$cells[[usCellIdxInList]]$discharge
+            self$dischargeToTrade <- boundary$upstreamCell$discharge
 
           }
       )
@@ -45,8 +36,7 @@ WaterTransportPerTime <-
 #' @description Calculate load, i.e., the rate of solute mass moving from the
 #'   upstream cell into the boundary (Mass/Time).
 #'
-#' @param boundaryIdx the name of the boundary.
-#' @param upstreamCellIdx  the name of the upstream cell as a character.
+#' @param boundary the boundary
 #'
 #' @return the load to pass onto the downstream cell
 #'
@@ -55,26 +45,13 @@ SoluteTransportPerTime <-
     classname = "SoluteTransportPerTime",
     public =
       list(
-        modelEnv = NULL,
-        modelEnvName = NULL,
-        boundaryIdx = NULL,
-        upstreamCellIdx = NULL,
+        boundary = NULL,
         soluteToTrade = NULL,
-        initialize = function(modelEnvName, boundaryIdx, upstreamCellIdx){
-
-          self$modelEnvName <- modelEnvName
-          modelEnv <- get(self$modelEnvName, envir = .GlobalEnv)
-
-          self$modelEnv <- modelEnv
-          self$boundaryIdx <- boundaryIdx
-          self$upstreamCellIdx <- upstreamCellIdx
-
-          # index of the upstream cell in the list
-          usCellIdxInList <- which(names(modelEnv$cells) == upstreamCellIdx)
+        initialize = function(boundary){
 
           # get the discharge and solute concentration in the upstream cells
-          upstreamCellDischarge <- modelEnv$cells[[usCellIdxInList]]$discharge
-          upstreamCellConcentration <- modelEnv$cells[[usCellIdxInList]]$soluteConcentration
+          upstreamCellDischarge <- boundary$upstreamCell$discharge
+          upstreamCellConcentration <- boundary$upstreamCell$soluteConcentration
 
           # multiply discharge by concentration to get load
           self$soluteToTrade <- upstreamCellDischarge * upstreamCellConcentration
@@ -101,13 +78,11 @@ CalcFractionalSoluteDynams <-
     classname = "CalcFractionalSoluteDynams",
     public =
       list(
-        boundaryIdx = NULL,
-        upstreamCellIdx = NULL,
+        boundary = NULL,
         removalMethod = NULL,
         initialize =
           function(
-            boundaryIdx,
-            upstreamCellIdx,
+            boundary,
             removalMethod,
             ...
           ){
@@ -122,19 +97,18 @@ CalcFractionalSoluteDynams <-
 
             } else if(removalMethod == "RT-PL") {
 
-              cellIdxInList <- which(names(WQModel$public_fields$cells) == upstreamCellIdx)
-              alpha <- WQModel$public_fields$cells[[cellIdxInList]]$alpha
-              k <- WQModel$public_fields$k
-              tauMin <- WQModel$public_fields$cells[[cellIdxInList]]$tauMin
-              tauMax <- WQModel$public_fields$cells[[cellIdxInList]]$tauMax
+              alpha <- boundary$upstreamCell$alpha
+              k <- boundary$upstreamCell$k
+              tauMin <- boundary$upstreamCell$tauMin
+              tauMax <- boundary$upstreamCell$tauMax
 
               self$fractionRemoved <- ResTmWtdFracRemovStrg$new(..., alpha = alpha, k = k, tauMin = tauMin, tauMax = tauMax)$fractionRemoved
               self$fractionRemaining <- ResTmWtdFracRemovStrg$new(..., alpha = alpha, k = k, tauMin = tauMin, tauMax = tauMax)$fractionRemaining
 
             } else if(removalMethod == "pcnt") {
 
-              self$fractionRemoved <- PcntRemovStrg$new(...)$fractionRemoved
-              self$fractionRemaining <- PcntRemovStrg$new(...)$fractionRemaining
+              self$fractionRemoved <- PcntRemovStrg$new(self$pcntToRemove)$fractionRemoved
+              self$fractionRemaining <- PcntRemovStrg$new(self$pcntToRemove)$fractionRemaining
 
             }
             return()
