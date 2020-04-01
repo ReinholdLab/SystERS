@@ -38,6 +38,14 @@ WQModel <-
             self$modelName <- modelName
             self$cellsTable <- cellsTable
 
+            # A series of error checks:
+            if( any( duplicated(self$cellsTable) ) ){
+              stop("At least one specification for a cell is duplicated in the cellsTable.")
+            }
+            if(length(cellsTable$cellIdx) != length(unique(cellsTable$cellIdx))) {
+              stop("A cell name was duplicated in the cellsTable.  All cell names must be unique.")
+            }
+
             self$unitsTable <- unitsTable
 
             self$soluteRemovalMethod <- soluteRemovalMethod
@@ -80,29 +88,30 @@ WQModel <-
             boundsTable <- boundsTable[order(boundsTable$calculateOrder), ]
             self$boundsTable <- boundsTable
 
-            print(boundsTable)
-            print(paste("All boundaries unique:", length(boundsTable$boundaryIdx) == length(unique(boundsTable$boundaryIdx))))
-            print(
-              paste(
-                "Any d/s cell Idxs NOT listed as a cellIdx:", any(!(unique(boundsTable$downstreamCellIdx) %in% unique(sapply(self$cells, function(cell) cell$cellIdx))))
-              )
-            )
-            print(
-              paste(
-                "Any u/s cell Idxs NOT listed as a cellIdx:", any(!(unique(boundsTable$upstreamCellIdx) %in% unique(sapply(self$cells, function(cell) cell$cellIdx))))
-              )
-            )
+            # A series of error checks:
+            if( any( duplicated(self$boundsTable) ) ){
+              stop("At least one specification for a boundary is duplicated.")
+            }
+            if(length(boundsTable$boundaryIdx) != length(unique(boundsTable$boundaryIdx))) {
+              stop("A boundary name was duplicated in the boundsTable.  All boundary names must be unique.")
+            }
+            if( any(!(unique(boundsTable$downstreamCellIdx) %in% unique(sapply(self$cells, function(cell) cell$cellIdx)))) ){
+              stop("In the boundsTable, a name of a downstream cell was provided that refers to a cell that has not been instantiated.")
+            }
+            if( any(!(unique(boundsTable$upstreamCellIdx) %in% unique(sapply(self$cells, function(cell) cell$cellIdx)))) ){
+              stop("In the boundsTable, a name of an upstream cell was provided that refers to a cell that has not been instantiated.")
+            }
+
 
             self$bounds <-
               plyr::llply(
                 1:nrow(boundsTable),
-                # 1:4,
                 function(rowNum) {
 
                   usCellIdx <- self$cells[[ which(names(self$cells) ==  self$boundsTable$upstreamCellIdx[rowNum]) ]]$cellIdx
                   dsCellIdx <- self$cells[[ which(names(self$cells) ==  self$boundsTable$downstreamCellIdx[rowNum]) ]]$cellIdx
 
-                  print(paste("bound:", boundsTable$boundaryIdx[rowNum] , ";   u/s cell:", usCellIdx, ";   d/s cell:", dsCellIdx, sep = " "))
+                  print(paste("bound:", boundsTable$boundaryIdx[rowNum] , ";   u/s cell:", usCellIdx, ";   d/s cell:", dsCellIdx, sep = ""))
 
                     Boundary$new(
                       boundaryIdx = boundsTable$boundaryIdx[rowNum],
@@ -136,8 +145,7 @@ WQModel$set(
     tradeVals <- NA
     tradeCurrency <- NA
 
-    for(i in 1:4
-        # length(self$bounds)
+    for(i in length(self$bounds)
         ){
 
       bound <- self$bounds[[i]]
@@ -173,7 +181,7 @@ WQModel$set(
     # rm(bound)
 
 
-    return(data.frame(boundIdx, tradeCurrency, tradeVals))
+    # return(data.frame(boundIdx, tradeCurrency, tradeVals))
   }
 )
 
