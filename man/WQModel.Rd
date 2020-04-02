@@ -31,6 +31,7 @@ Define the WQ model and the network topology of cells and
   unitsTable,
   soluteRemovalMethod,
   k,
+  pcntToRemove,
   ...
 )}\if{html}{\out{</div>}}
 }

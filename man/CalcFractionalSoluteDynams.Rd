@@ -14,6 +14,7 @@ Calculate the fraction of solute removed and remaining.
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{CalcFractionalSoluteDynams$new()}}
+\item \href{#method-fracRemovSimple}{\code{CalcFractionalSoluteDynams$fracRemovSimple()}}
 \item \href{#method-clone}{\code{CalcFractionalSoluteDynams$clone()}}
 }
 }
@@ -22,24 +23,26 @@ Calculate the fraction of solute removed and remaining.
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CalcFractionalSoluteDynams$new(
-  boundaryIdx,
-  upstreamCellIdx,
-  removalMethod,
-  ...
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{CalcFractionalSoluteDynams$new(boundary, removalMethod, ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{boundaryIdx}}{the name of the boundary.}
-
 \item{\code{removalMethod}}{the method by which solute is removed from the cell.
 Currently, only \code{RT-PL} and \code{pcnt} is supported.}
 }
 \if{html}{\out{</div>}}
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-fracRemovSimple"></a>}}
+\if{latex}{\out{\hypertarget{method-fracRemovSimple}{}}}
+\subsection{Method \code{fracRemovSimple()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{CalcFractionalSoluteDynams$fracRemovSimple(boundary)}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}

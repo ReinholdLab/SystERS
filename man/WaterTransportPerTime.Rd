@@ -21,18 +21,9 @@ Calculate the discharge of water (Volume/Time).
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{WaterTransportPerTime$new(modelEnvName, boundaryIdx, upstreamCellIdx)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{WaterTransportPerTime$new(boundary)}\if{html}{\out{</div>}}
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{boundaryIdx}}{the name of the boundary.}
-
-\item{\code{upstreamCellIdx}}{the name of the upstream cell as a character.}
-}
-\if{html}{\out{</div>}}
-}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}

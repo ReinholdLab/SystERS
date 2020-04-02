@@ -37,9 +37,9 @@ Boundary superclass
 
 \item{\code{boundarySuperClass}}{the super class of the boundary, e.g., \code{transport} or \code{reaction}}
 
-\item{\code{upstreamCell}}{the upstream cell as a character.}
+\item{\code{upstreamCell}}{the upstream cell}
 
-\item{\code{downstreamCell}}{the downstream cell as a character.}
+\item{\code{downstreamCell}}{the downstream cell}
 }
 \if{html}{\out{</div>}}
 }

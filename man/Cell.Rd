@@ -21,13 +21,16 @@ Instantiate a \code{Cell} object.
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Cell$new(cellIdx)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Cell$new(cellIdx, pcntToRemove = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{cellIdx}}{is the index for the cell.}
+\item{\code{cellIdx}}{is the index for the cell}
+
+\item{\code{pcntToRemove}}{is the percent of the solute to remove fom a cell by the
+reaction boundary IF the removal method is set to \code{pcnt}}
 }
 \if{html}{\out{</div>}}
 }
