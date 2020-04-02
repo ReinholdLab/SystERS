@@ -2,7 +2,9 @@
 #'
 #' @description Instantiate a \code{Cell} object.
 #'
-#' @param cellIdx is the index for the cell.
+#' @param cellIdx is the index for the cell
+#' @param pcntToRemove is the percent of the solute to remove fom a cell by the
+#'   reaction boundary IF the removal method is set to \code{pcnt}
 #'
 #' @export
 #'
@@ -15,9 +17,11 @@ Cell <-
     public =
       list(
         cellIdx = NULL,
+        pcntToRemove = NULL,
         initialize =
-          function(cellIdx){
+          function(cellIdx, pcntToRemove = NULL){
             self$cellIdx <- cellIdx
+            self$pcntToRemove <- pcntToRemove
           }
       )
   )

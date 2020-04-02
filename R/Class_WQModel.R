@@ -62,6 +62,7 @@ WQModel <-
                   StreamCell$new(
                     cellIdx = cellsTable$cellIdx[rowNum],
                     soluteConcentration = cellsTable$initConcNO3[rowNum],
+                    pcntToRemove = cellsTable$pcntToRemove[rowNum],
                     discharge = cellsTable$discharge[rowNum],
                     alpha = cellsTable$alpha[rowNum],
                     aquiferVolume = cellsTable$aquiferVolume[rowNum],
@@ -162,7 +163,7 @@ WQModel$set(
       # removal by the mass or concentration, which I haven't yet written the
       # code to do
       if(self$bounds[[i]]$currency == "NO3" & self$bounds[[i]]$boundarySuperClass == "reaction"){
-        tradeVals[i] <- CalcFractionalSoluteDynams$new(self$bounds[[i]], self$soluteRemovalMethod, self$pcntToRemove)
+        tradeVals[i] <- CalcFractionalSoluteDynams$new(self$bounds[[i]], self$soluteRemovalMethod)$fractionRemoved
       }
 
     }

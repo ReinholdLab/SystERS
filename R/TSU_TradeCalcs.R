@@ -80,6 +80,12 @@ CalcFractionalSoluteDynams <-
       list(
         boundary = NULL,
         removalMethod = NULL,
+        fractionRemoved = NULL,
+        fractionRemaining = NULL,
+        fractionRemovedStorage = NULL,
+        fractionRemainingStorage = NULL,
+        mustBeOne = NULL,
+        newAmount = NULL,
         initialize =
           function(
             boundary,
@@ -102,41 +108,46 @@ CalcFractionalSoluteDynams <-
               tauMin <- boundary$upstreamCell$tauMin
               tauMax <- boundary$upstreamCell$tauMax
 
-              self$fractionRemoved <- ResTmWtdFracRemovStrg$new(..., alpha = alpha, k = k, tauMin = tauMin, tauMax = tauMax)$fractionRemoved
-              self$fractionRemaining <- ResTmWtdFracRemovStrg$new(..., alpha = alpha, k = k, tauMin = tauMin, tauMax = tauMax)$fractionRemaining
+              self$fractionRemovedStorage <- ResTmWtdFracRemovStrg$new(alpha = boundary$upstreamCell$alpha, k = boundary$upstreamCell$k, tauMin = boundary$upstreamCell$tauMin, tauMax = boundary$upstreamCell$tauMax)$fractionRemoved
+              self$fractionRemainingStorage <- ResTmWtdFracRemovStrg$new(alpha = boundary$upstreamCell$alpha, k = boundary$upstreamCell$k, tauMin = boundary$upstreamCell$tauMin, tauMax = boundary$upstreamCell$tauMax)$fractionRemaining
 
             } else if(removalMethod == "pcnt") {
 
-              self$fractionRemoved <- PcntRemovStrg$new(self$pcntToRemove)$fractionRemoved
-              self$fractionRemaining <- PcntRemovStrg$new(self$pcntToRemove)$fractionRemaining
-
+              self$fractionRemovedStorage <- self$fracRemovSimple(boundary)
+              self$fractionRemainingStorage <- 1 - self$fractionRemoved
             }
-            return()
+            self$fractionRemoved <- 1 - exp(boundary$upstreamCell$qStorage * self$fractionRemovedStorage / boundary$upstreamCell$hydraulicLoad)
+            self$fractionRemaining <- exp(boundary$upstreamCell$qStorage * self$fractionRemovedStorage / boundary$upstreamCell$hydraulicLoad)
+
+            self$mustBeOne <- self$fractionRemoved + self$fractionRemaining
+
+            # Am I doing this right??? Do I need to incorporate the water in the
+            # HZ?... or is that accounted for by the steady state assumption of
+            # water entering storage equaling water leaving storage...
+            #
+            # concentration X channelVolume = amountSolute (mass or mols)
+            # amountSolute X exp(-vf/HL) = new amount
+            self$newAmount <- boundary$upstreamCell$soluteConcentration * boundary$upstreamCell$channelArea * boundary$upstreamCell$channelDepth * exp(boundary$upstreamCell$qStorage * self$fractionRemovedStorage / boundary$upstreamCell$hydraulicLoad)
           }
       )
   )
 
-#' @title PcntRemovStrg
+#' @title fracRemovSimple
 #'
-#' @description Calculates the fraction of a solute removed and remaining in the
-#'   storage zone using a very simple approach of removing a certain percentage
-#'   of the initial solute.
+#' @description Calculates the fraction of a solute removed e using a very
+#'   simple approach of removing a certain percentage of the initial solute.
 #'
-#' @param pcntToRemove is the percent (0-100) of the solute to remove from the storage zone
+#' @param pcntToRemove is the percent (0-100) of the solute to remove from the
+#'   cell
 #'
-PcntRemovStrg <-
-  R6::R6Class(
-    classname = "PcntRemovStrg",
-    public = list(
-      pcntToRemove = NULL,
-      initialize = function(pcntToRemove){
+CalcFractionalSoluteDynams$set(
+  which = "public",
+  name = "fracRemovSimple",
+  value = function(boundary){
+    return(boundary$upstreamCell$pcntToRemove / 100)
+  }
+)
 
-        self$fractionRemoved <- pcntToRemove/100
-        self$fractionRemaining <- 1 - self$fractionRemoved
-
-      }
-    )
-  )
 
 
 
