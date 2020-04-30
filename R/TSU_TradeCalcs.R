@@ -16,10 +16,6 @@ WaterTransportPerTime <-
     public =
       list(
         boundary = NULL,
-        # modelEnv = NULL,
-        # modelEnvName = NULL,
-        # boundaryIdx= NULL,
-        # upstreamCellIdx = NULL,
         dischargeToTrade = NULL,
         initialize =
           function(boundary){
@@ -64,13 +60,13 @@ SoluteTransportPerTime <-
 
 #' @title CalcFractionalSoluteDynams
 #'
-#' @description Calculate the fraction of solute removed and remaining.
+#' @description Calculate the mass of solute removed and remaining.
 #'
 #' @param boundaryIdx the name of the boundary.
 #' @param removalMethod the method by which solute is removed from the cell.
 #'   Currently, only \code{RT-PL} and \code{pcnt} is supported.
 #'
-#' @return the fraction of solute removed and remaining in the cell by the
+#' @return the mass of solute removed and remaining in the cell by the
 #'   boundary.
 #'
 CalcFractionalSoluteDynams <-
@@ -85,7 +81,10 @@ CalcFractionalSoluteDynams <-
         fractionRemovedStorage = NULL,
         fractionRemainingStorage = NULL,
         mustBeOne = NULL,
-        newAmount = NULL,
+        startingMass = NULL,
+        massToRemove = NULL,
+        massToRemain = NULL,
+        rxnVals = NULL,
         initialize =
           function(
             boundary,
@@ -98,7 +97,7 @@ CalcFractionalSoluteDynams <-
               stop(
                 paste0(
                   "The removalMethod is currently NULL for boundaryIdx = ",
-                  boundaryIdx, ", .  A removalMethod must be provided.")
+                  boundary$boundaryIdx, ", .  A removalMethod must be provided.")
               )
 
             } else if(removalMethod == "RT-PL") {
@@ -114,20 +113,80 @@ CalcFractionalSoluteDynams <-
             } else if(removalMethod == "pcnt") {
 
               self$fractionRemovedStorage <- self$fracRemovSimple(boundary)
-              self$fractionRemainingStorage <- 1 - self$fractionRemoved
+              self$fractionRemainingStorage <- 1 - self$fractionRemovedStorage
             }
-            self$fractionRemoved <- 1 - exp(boundary$upstreamCell$qStorage * self$fractionRemovedStorage / boundary$upstreamCell$hydraulicLoad)
-            self$fractionRemaining <- exp(boundary$upstreamCell$qStorage * self$fractionRemovedStorage / boundary$upstreamCell$hydraulicLoad)
+
+            if( sum(self$fractionRemovedStorage, self$fractionRemainingStorage) != 1 ) {
+              msgGeneral <- "The fraction of solute removed and remaining from storage do not sum to one."
+              msgDetail <- paste(
+                msgGeneral,
+                "\nBoundary:", boundary$boundaryIdx,
+                "\nFraction removed from storage:", self$fractionRemovedStorage,
+                "\nFraction remaining in storage:", self$fractionRemainingStorage
+              )
+              stop(
+                noquote( strsplit (msgDetail, "\n") [[1]])
+              )
+            }
+
+            self$fractionRemaining <- exp(-boundary$upstreamCell$qStorage * self$fractionRemovedStorage / boundary$upstreamCell$hydraulicLoad)
+            self$fractionRemoved <- 1 - self$fractionRemaining
 
             self$mustBeOne <- self$fractionRemoved + self$fractionRemaining
+
+            if( self$mustBeOne != 1 ) {
+              msgGeneral <- "The fraction of solute removed and remaining do not sum to one."
+              msgDetail <- paste(
+                msgGeneral,
+                "\nBoundary:", boundary$boundaryIdx,
+                "\nFraction removed from storage:", self$fractionRemovedStorage,
+                "\nFraction remaining in storage:", self$fractionRemainingStorage
+              )
+              tmp <- data.frame(
+                fracRemnStrg = self$fractionRemainingStorage,
+                fracRemovStrg = self$fractionRemovedStorage,
+                fracRemov = self$fractionRemoved,
+                fracRmn = self$fractionRemaining)
+              stop(
+                noquote( strsplit (msgDetail, "\n") [[1]]),
+                print( tmp )
+              )
+            }
+
 
             # Am I doing this right??? Do I need to incorporate the water in the
             # HZ?... or is that accounted for by the steady state assumption of
             # water entering storage equaling water leaving storage...
             #
             # concentration X channelVolume = amountSolute (mass or mols)
-            # amountSolute X exp(-vf/HL) = new amount
-            self$newAmount <- boundary$upstreamCell$soluteConcentration * boundary$upstreamCell$channelArea * boundary$upstreamCell$channelDepth * exp(boundary$upstreamCell$qStorage * self$fractionRemovedStorage / boundary$upstreamCell$hydraulicLoad)
+            # fractionRemaining = exp(-vf/HL)
+            # fractionRemoved = 1 - fractionRemaining (duh)
+            # amountSolute X exp(-vf/HL) = mass remaining
+
+            # have to multiply by 1000 because units of concentration are ug/L
+            # but cell volume is m3 --- will need to decide how we want to
+            # handle this in time as hardcoding it this way is clearly a bad
+            # idea...
+
+            self$startingMass <- boundary$upstreamCell$soluteConcentration * 1000 * boundary$upstreamCell$channelArea * boundary$upstreamCell$channelDepth
+
+            self$massToRemove <- self$startingMass * self$fractionRemoved
+            self$massToRemain <- self$startingMass * self$fractionRemaining
+
+            self$rxnVals <-
+              c(
+                boundary = boundary$boundaryIdx,
+                removalMethod = self$removalMethod ,
+                fracRemoved = self$fractionRemoved ,
+                fracRemaning = self$fractionRemaining ,
+                fracRemovedFromStrg = self$fractionRemovedStorage ,
+                fracRemainingInStrg = self$fractionRemainingStorage ,
+                mustBeOne = self$mustBeOne ,
+                startingMass = self$startingMass,
+                massToRemove = self$massToRemove ,
+                massToRemain = self$massToRemain
+              )
+
           }
       )
   )
@@ -147,9 +206,6 @@ CalcFractionalSoluteDynams$set(
     return(boundary$upstreamCell$pcntToRemove / 100)
   }
 )
-
-
-
 
 #' @title ResTmWtdFracRemovStrg
 #'
