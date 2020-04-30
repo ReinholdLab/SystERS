@@ -35,7 +35,7 @@ WQModel <-
         k = NULL,
 
         initialize =
-          function(modelName, boundsTable, cellsTable, unitsTable, soluteRemovalMethod, k, pcntToRemove, ...) {
+          function(modelName, boundsTable, cellsTable, unitsTable, soluteRemovalMethod, k, ...) {
             self$modelName <- modelName
             self$cellsTable <- cellsTable
 
@@ -50,7 +50,6 @@ WQModel <-
             self$unitsTable <- unitsTable
 
             self$soluteRemovalMethod <- soluteRemovalMethod
-            self$pcntToRemove <- pcntToRemove
 
             self$k <- k
 
@@ -146,6 +145,7 @@ WQModel$set(
     boundIdx <- NA
     tradeVals <- NA
     tradeCurrency <- NA
+    rxnVals <- NULL
 
     for(i in 1:length(self$bounds) ){
 
@@ -163,12 +163,23 @@ WQModel$set(
       # removal by the mass or concentration, which I haven't yet written the
       # code to do
       if(self$bounds[[i]]$currency == "NO3" & self$bounds[[i]]$boundarySuperClass == "reaction"){
-        tradeVals[i] <- CalcFractionalSoluteDynams$new(self$bounds[[i]], self$soluteRemovalMethod)$fractionRemoved
+        tradeVals[i] <- CalcFractionalSoluteDynams$new(self$bounds[[i]], self$soluteRemovalMethod)$massToRemove
+        if(is.null(rxnVals) ) {
+
+          newVals <- CalcFractionalSoluteDynams$new(self$bounds[[i]], self$soluteRemovalMethod)$rxnVals
+          rxnVals <- data.frame(matrix(nrow = 0, ncol = length(newVals)))
+          colnames(rxnVals) <- names(newVals)
+          rxnVals[1, ] <- newVals
+
+        } else {
+          rxnVals <- rbind(rxnVals, CalcFractionalSoluteDynams$new(self$bounds[[i]], self$soluteRemovalMethod)$rxnVals)
+          }
       }
 
     }
-
-    return(data.frame(boundIdx, tradeCurrency, tradeVals))
+    tradeDf <- data.frame(boundIdx, tradeCurrency, tradeVals)
+    rxnValDf <- rxnVals
+    return(list(tradeDf, rxnValDf))
   }
 )
 
