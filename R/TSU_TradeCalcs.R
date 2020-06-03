@@ -17,11 +17,18 @@ WaterTransportPerTime <-
       list(
         boundary = NULL,
         dischargeToTrade = NULL,
+        volumeToTrade = NULL,
+        timeInterval = NULL,
         initialize =
-          function(boundary){
+          function(boundary, timeInterval){
 
             # discharge in the cell
             self$dischargeToTrade <- boundary$upstreamCell$discharge
+
+            # volume of water to trade
+            self$volumeToTrade <- self$dischargeToTrade * timeInterval
+
+            return(list(discharge = self$dischargeToTrade, volume = self$volumeToTrade))
 
           }
       )
@@ -42,16 +49,22 @@ SoluteTransportPerTime <-
     public =
       list(
         boundary = NULL,
+        load = NULL,
         soluteToTrade = NULL,
-        initialize = function(boundary){
+        timeInterval = NULL,
+        initialize = function(boundary, timeInterval){
 
           # get the discharge and solute concentration in the upstream cells
           upstreamCellDischarge <- boundary$upstreamCell$discharge
           upstreamCellConcentration <- boundary$upstreamCell$soluteConcentration
 
           # multiply discharge by concentration to get load
-          self$soluteToTrade <- upstreamCellDischarge * upstreamCellConcentration
+          self$load <- upstreamCellDischarge * upstreamCellConcentration
 
+          # mass to of solute to trade
+          self$soluteToTrade <- self$load * timeInterval
+
+          return(list(load = self$load, massToTrade = self$soluteToTrade))
         }
       )
   )
@@ -89,6 +102,7 @@ CalcFractionalSoluteDynams <-
           function(
             boundary,
             removalMethod,
+            timeInterval,
             ...
           ){
 
@@ -102,13 +116,10 @@ CalcFractionalSoluteDynams <-
 
             } else if(removalMethod == "RT-PL") {
 
-              alpha <- boundary$upstreamCell$alpha
-              k <- boundary$upstreamCell$k
-              tauMin <- boundary$upstreamCell$tauMin
-              tauMax <- boundary$upstreamCell$tauMax
-
-              self$fractionRemovedStorage <- ResTmWtdFracRemovStrg$new(alpha = boundary$upstreamCell$alpha, k = boundary$upstreamCell$k, tauMin = boundary$upstreamCell$tauMin, tauMax = boundary$upstreamCell$tauMax)$fractionRemoved
-              self$fractionRemainingStorage <- ResTmWtdFracRemovStrg$new(alpha = boundary$upstreamCell$alpha, k = boundary$upstreamCell$k, tauMin = boundary$upstreamCell$tauMin, tauMax = boundary$upstreamCell$tauMax)$fractionRemaining
+              self$fractionRemovedStorage <- self$resTmWtdFracRemovStrg(boundary, remaining = FALSE)
+              print(self$fractionRemovedStorage)
+              self$fractionRemainingStorage <- self$resTmWtdFracRemovStrg(boundary, remaining = TRUE)
+              print(self$fractionRemainingStorage)
 
             } else if(removalMethod == "pcnt") {
 
@@ -116,7 +127,7 @@ CalcFractionalSoluteDynams <-
               self$fractionRemainingStorage <- 1 - self$fractionRemovedStorage
             }
 
-            if( sum(self$fractionRemovedStorage, self$fractionRemainingStorage) != 1 ) {
+            if( round(sum(self$fractionRemovedStorage, self$fractionRemainingStorage), 3) != 1 ) {
               msgGeneral <- "The fraction of solute removed and remaining from storage do not sum to one."
               msgDetail <- paste(
                 msgGeneral,
@@ -129,7 +140,7 @@ CalcFractionalSoluteDynams <-
               )
             }
 
-            self$fractionRemaining <- exp(-boundary$upstreamCell$qStorage * self$fractionRemovedStorage / boundary$upstreamCell$hydraulicLoad)
+            self$fractionRemaining <- exp(-boundary$upstreamCell$qStorage * self$fractionRemovedStorage * timeInterval / boundary$upstreamCell$channelDepth)
             self$fractionRemoved <- 1 - self$fractionRemaining
 
             self$mustBeOne <- self$fractionRemoved + self$fractionRemaining
@@ -174,9 +185,9 @@ CalcFractionalSoluteDynams <-
             self$massToRemain <- self$startingMass * self$fractionRemaining
 
             self$rxnVals <-
-              c(
+              data.frame(
                 boundary = boundary$boundaryIdx,
-                removalMethod = self$removalMethod ,
+                removalMethod = removalMethod ,
                 fracRemoved = self$fractionRemoved ,
                 fracRemaning = self$fractionRemaining ,
                 fracRemovedFromStrg = self$fractionRemovedStorage ,
@@ -186,6 +197,8 @@ CalcFractionalSoluteDynams <-
                 massToRemove = self$massToRemove ,
                 massToRemain = self$massToRemain
               )
+
+            print(self$rxnVals)
 
           }
       )
@@ -207,123 +220,63 @@ CalcFractionalSoluteDynams$set(
   }
 )
 
-#' @title ResTmWtdFracRemovStrg
+
+#' @title resTmWtdFracRemovStrg
 #'
 #' @description Calculates the fraction of a solute removed and
 #'   remaining in the storage zone using the residence-time weighted fractional
 #'   removal approach.
+CalcFractionalSoluteDynams$set(
+  which = "public",
+  name = "resTmWtdFracRemovStrg",
+  value = function(boundary,
+                   remaining){
 
-ResTmWtdFracRemovStrg <-
-  R6::R6Class(
-    classname = "ResTmWtdFracRemovStrg",
-    public = list(
-      # Declare attributes and methods
-      alpha = NULL,
-      k = NULL,
-      tauMin = NULL,
-      tauMax = NULL,
-      freqMin = NULL,
-      totalFreqIntegrate = NULL,
-      totalFreq = NULL,
-      shouldBeOne = NULL,
-      # Define the function called by the constructor $new
-      initialize = function(alpha, k, tauMin, tauMax, freqMin = tauMax^-alpha) {
+    # tau_0 = boundary$upstreamCell$tauMin
+    # tau_n = boundary$upstreamCell$tauMax
+    # a = boundary$upstreamCell$alpha
+    # k = boundary$upstreamCell$k
+    #
+    # print(paste(tau_0, tau_n, a, k, remaining))
 
-        # Populate attributes
-        self$alpha <- alpha;
-        self$k <- k;
-        self$tauMin <- tauMin;
-        self$tauMax <- tauMax;
-        self$freqMin <- freqMin;
+    # Calculate proportional uptake by the HZ. If remaining = TRUE, then the function
+    # calculates the fraction of the solute REMAINING; however if remaining = FALSE,
+    # then the function calculates the fraction of solute REMOVED
 
-        # Calculate the total area under the frequency distribution
-        self$totalFreqIntegrate <- integrate(
-          f = self$frequency,
-          lower = tauMin,
-          upper = tauMax
-        );
-        self$totalFreq <- self$totalFreqIntegrate$value;
 
-        # Set the quality check on the numerical integrations
-        self$shouldBeOne <-
-          self$integrateFractionRemoved(tauMin = tauMin, tauMax = tauMax)$value +
-          self$integrateFractionRemaining(tauMin = tauMin, tauMax = tauMax)$value;
+
+    prop.uptk.funct <-
+      function(
+        tau,
+        tau_0 ,
+        tau_n ,
+        a,
+        k,
+        remaining
+      ){
+        PL_PDF <- hydrogeom::powerLawPDF(tau, tau_0, tau_n, a)
+        minus.k.t <- (-1*k*tau) # if the -1  is removed, an "invalid argument to unary operator" error is thrown
+
+        if(remaining){
+          out <- PL_PDF * exp(minus.k.t)
+        }else{
+          out <- PL_PDF * (1-exp(minus.k.t))
+        }
+        return(out)
       }
-    )
-  );
 
-#' @method ResTmWtdFracRemovStrg$frequency
-#'
-#' @description Calculates the frequency for a given residence time
-#'
-ResTmWtdFracRemovStrg$set(
-  which = "public",
-  name = "frequency",
-  value = function(tau) {
-    return( tau^-self$alpha - self$freqMin );
-  }
-);
+    prop.uptk <-
+      integrate(
+        prop.uptk.funct,
+        lower = boundary$upstreamCell$tauMin,
+        upper = boundary$upstreamCell$tauMax,
+        tau_0 = boundary$upstreamCell$tauMin,
+        tau_n = boundary$upstreamCell$tauMax,
+        a = boundary$upstreamCell$alpha,
+        k = boundary$upstreamCell$k,
+        remaining = remaining
+      )$value
+    return(prop.uptk)
 
-#' @method ResTmWtdFracRemovStrg$density
-#'
-#' @description Calculates the density for a given residence time
-#'
-ResTmWtdFracRemovStrg$set(
-  which = "public",
-  name = "density",
-  value = function(tau) {
-    # The normalizing constant, K, is equal to 1/self$totalFreq with units of [1/T]
-    # Multiplying f(tau), i.e., self$frequency(tau) by K is the PDF with units of [1/T]
-    return( self$frequency(tau) / self$totalFreq );
-  }
-);
-
-#' @method ResTmWtdFracRemovStrg$fractionRemoved
-#'
-#' @description Calculates the fraction removed per time for a given residence time
-#'
-ResTmWtdFracRemovStrg$set(
-  which = "public",
-  name = "fractionRemoved",
-  value = function(tau) {
-    return ( self$density(tau) * (1 - exp(-self$k * tau)) );
-  }
-);
-
-#' @method ResTmWtdFracRemovStrg$integrateFractionRemoved
-#'
-#' @description  Integrates the fraction removed for a range of residence times
-#'
-
-ResTmWtdFracRemovStrg$set(
-  which = "public",
-  name = "integrateFractionRemoved",
-  value = function(lower = self$tauMin, upper = self$tauMax) {
-    return ( integrate(f = self$fractionRemoved, lower = lower, upper = upper) );
-  }
-);
-
-#' @method ResTmWtdFracRemovStrg$fractionRemaining
-#'
-#' @description Calculates the fraction remaining per time for a given residence time
-#'
-ResTmWtdFracRemovStrg$set(
-  which = "public",
-  name = "fractionRemaining",
-  value = function(tau) {
-    return ( self$density(tau) * exp(-self$k * tau) );
-  }
-);
-
-#' @method ResTmWtdFracRemovStrg$integrateFractionRemaining
-#'
-#' @description Integrates the fraction remaining for a range of residence times
-#'
-ResTmWtdFracRemovStrg$set(
-  which = "public",
-  name = "integrateFractionRemaining",
-  value = function(lower = self$tauMin, upper = self$tauMax) {
-    return ( integrate(f = self$fractionRemaining, lower = lower, upper = upper) );
   }
 )
-
