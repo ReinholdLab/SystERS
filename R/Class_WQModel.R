@@ -33,9 +33,13 @@ WQModel <-
         soluteRemovalMethod = NULL,
         pcntToRemove = NULL,
         k = NULL,
+        timeInterval = NULL,
 
         initialize =
-          function(modelName, boundsTable, cellsTable, unitsTable, soluteRemovalMethod, k, ...) {
+          function(modelName, boundsTable, cellsTable, unitsTable, soluteRemovalMethod, k, timeInterval, ...) {
+            # set duration of each time step
+            self$timeInterval = timeInterval
+
             self$modelName <- modelName
             self$cellsTable <- cellsTable
 
@@ -75,7 +79,8 @@ WQModel <-
                     qStorage = cellsTable$qStorage[rowNum],
                     hydraulicLoad = cellsTable$hydraulicLoad[rowNum],
                     tauMin = cellsTable$tauMin[rowNum],
-                    tauMax = cellsTable$tauMax[rowNum]
+                    tauMax = cellsTable$tauMax[rowNum],
+                    k = self$k
                   )
                 }
               )
@@ -146,38 +151,40 @@ WQModel$set(
     tradeVals <- NA
     tradeCurrency <- NA
     rxnVals <- NULL
+    valName <- NA
 
     for(i in 1:length(self$bounds) ){
 
       tradeCurrency[i] <- self$bounds[[i]]$currency
       boundIdx[i] <- self$bounds[[i]]$boundaryIdx
 
-
       if(self$bounds[[i]]$currency == "H2O" & self$bounds[[i]]$boundarySuperClass == "transport"){
-        tradeVals[i] <- WaterTransportPerTime$new(self$bounds[[i]])$dischargeToTrade
+        tradeVals[i] <- WaterTransportPerTime$new(self$bounds[[i]], self$timeInterval)$volumeToTrade
+        valName[i] <- "water volume"
       }
+
       if(self$bounds[[i]]$currency == "NO3" & self$bounds[[i]]$boundarySuperClass == "transport"){
-        tradeVals[i] <- SoluteTransportPerTime$new(self$bounds[[i]])$soluteToTrade
+        tradeVals[i] <- SoluteTransportPerTime$new(self$bounds[[i]], self$timeInterval)$soluteToTrade
+        valName[i] <- "solute mass"
       }
-      # This next bit is wrong because we need to multiply the fractional
-      # removal by the mass or concentration, which I haven't yet written the
-      # code to do
+
       if(self$bounds[[i]]$currency == "NO3" & self$bounds[[i]]$boundarySuperClass == "reaction"){
-        tradeVals[i] <- CalcFractionalSoluteDynams$new(self$bounds[[i]], self$soluteRemovalMethod)$massToRemove
+        tradeVals[i] <- CalcFractionalSoluteDynams$new(boundary = self$bounds[[i]], removalMethod = self$soluteRemovalMethod, timeInterval = self$timeInterval)$massToRemove
+        valName[i] <- "solute mass"
         if(is.null(rxnVals) ) {
 
-          newVals <- CalcFractionalSoluteDynams$new(self$bounds[[i]], self$soluteRemovalMethod)$rxnVals
+          newVals <- CalcFractionalSoluteDynams$new(boundary = self$bounds[[i]], removalMethod = self$soluteRemovalMethod, timeInterval = self$timeInterval)$rxnVals
           rxnVals <- data.frame(matrix(nrow = 0, ncol = length(newVals)))
           colnames(rxnVals) <- names(newVals)
           rxnVals[1, ] <- newVals
 
         } else {
-          rxnVals <- rbind(rxnVals, CalcFractionalSoluteDynams$new(self$bounds[[i]], self$soluteRemovalMethod)$rxnVals)
+          rxnVals <- rbind(rxnVals, CalcFractionalSoluteDynams$new(boundary = self$bounds[[i]], removalMethod = self$soluteRemovalMethod, timeInterval = self$timeInterval)$rxnVals)
           }
       }
 
     }
-    tradeDf <- data.frame(boundIdx, tradeCurrency, tradeVals)
+    tradeDf <- data.frame(boundIdx, tradeCurrency, tradeVals, valName)
     rxnValDf <- rxnVals
     return(list(tradeDf, rxnValDf))
   }
