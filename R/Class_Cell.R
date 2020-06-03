@@ -84,6 +84,7 @@ StreamCell <-
         hydraulicLoad = NULL,
         tauMin = NULL,
         tauMax = NULL,
+        k = NULL,
 
         initialize =
           function(...,
@@ -101,7 +102,8 @@ StreamCell <-
                    qStorage,
                    hydraulicLoad,
                    tauMin,
-                   tauMax
+                   tauMax,
+                   k
           ){
 
             super$initialize(...)
@@ -117,10 +119,11 @@ StreamCell <-
             self$channelArea <- ifelse(!is.null(channelArea), channelArea, channelWidth * channelLength)
             self$channelVelocity <- ifelse(!is.null(channelVelocity), channelVelocity, discharge / (channelWidth * channelDepth))
             self$channelResidenceTime <- ifelse(!is.null(channelResidenceTime), channelResidenceTime, channelLength / channelVelocity)
-            self$qStorage <- ifelse(!is.null(qStorage), qStorage, (aquiferVolume * porosity) / (channelArea) )
+            self$qStorage <- ifelse(!is.null(qStorage), qStorage, stop("qStorage must be provided for each cell") )
             self$hydraulicLoad <- ifelse(!is.null(hydraulicLoad), hydraulicLoad, channelDepth / channelResidenceTime)
             self$tauMin <- tauMin
             self$tauMax <- tauMax
+            self$k <- k
 
           }
       )
