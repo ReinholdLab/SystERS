@@ -105,8 +105,10 @@ CalcFractionalSoluteDynams <-
             timeInterval,
             ...
           ){
+            self$boundary <-boundary
+            self$removalMethod <- removalMethod
 
-            if( is.null(removalMethod) ) {
+            if( is.null(self$removalMethod) ) {
 
               stop(
                 paste0(
@@ -114,14 +116,14 @@ CalcFractionalSoluteDynams <-
                   boundary$boundaryIdx, ", .  A removalMethod must be provided.")
               )
 
-            } else if(removalMethod == "RT-PL") {
+            } else if(self$removalMethod == "RT-PL") {
 
               self$fractionRemovedStorage <- self$resTmWtdFracRemovStrg(boundary, remaining = FALSE)
               print(self$fractionRemovedStorage)
               self$fractionRemainingStorage <- self$resTmWtdFracRemovStrg(boundary, remaining = TRUE)
               print(self$fractionRemainingStorage)
 
-            } else if(removalMethod == "pcnt") {
+            } else if(self$removalMethod == "pcnt") {
 
               self$fractionRemovedStorage <- self$fracRemovSimple(boundary)
               self$fractionRemainingStorage <- 1 - self$fractionRemovedStorage
@@ -174,12 +176,7 @@ CalcFractionalSoluteDynams <-
             # fractionRemoved = 1 - fractionRemaining (duh)
             # amountSolute X exp(-vf/HL) = mass remaining
 
-            # have to multiply by 1000 because units of concentration are ug/L
-            # but cell volume is m3 --- will need to decide how we want to
-            # handle this in time as hardcoding it this way is clearly a bad
-            # idea...
-
-            self$startingMass <- boundary$upstreamCell$soluteConcentration * 1000 * boundary$upstreamCell$channelArea * boundary$upstreamCell$channelDepth
+            self$startingMass <- boundary$upstreamCell$soluteMass
 
             self$massToRemove <- self$startingMass * self$fractionRemoved
             self$massToRemain <- self$startingMass * self$fractionRemaining
@@ -187,7 +184,7 @@ CalcFractionalSoluteDynams <-
             self$rxnVals <-
               data.frame(
                 boundary = boundary$boundaryIdx,
-                removalMethod = removalMethod ,
+                removalMethod = self$removalMethod ,
                 fracRemoved = self$fractionRemoved ,
                 fracRemaning = self$fractionRemaining ,
                 fracRemovedFromStrg = self$fractionRemovedStorage ,

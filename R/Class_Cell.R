@@ -70,6 +70,7 @@ StreamCell <-
     public =
       list(
         soluteConcentration = NULL,
+        soluteMass = NULL,
         discharge = NULL,
         alpha = NULL,
         aquiferVolume = NULL,
@@ -85,6 +86,7 @@ StreamCell <-
         tauMin = NULL,
         tauMax = NULL,
         k = NULL,
+
 
         initialize =
           function(...,
@@ -124,6 +126,13 @@ StreamCell <-
             self$tauMin <- tauMin
             self$tauMax <- tauMax
             self$k <- k
+
+            # have to multiply by 1000 because units of concentration are ug/L
+            # but cell volume is m3 --- will need to decide how we want to
+            # handle this in time as hardcoding it this way is clearly a bad
+            # idea...
+
+            self$soluteMass <- self$soluteConcentration * 1000 * self$channelArea * self$channelDepth
 
           }
       )
