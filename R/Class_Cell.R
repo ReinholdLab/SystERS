@@ -86,7 +86,8 @@ StreamCell <-
         tauMin = NULL,
         tauMax = NULL,
         k = NULL,
-
+        channelVolume_L = NULL,
+        channelVolume_m3 = NULL,
 
         initialize =
           function(...,
@@ -127,11 +128,14 @@ StreamCell <-
             self$tauMax <- tauMax
             self$k <- k
 
+            self$channelVolume_m3 <- self$channelArea*self$channelDepth
+            self$channelVolume_L <- 1000 *  self$channelVolume_m3
+
             # have to multiply by 1000 because units of concentration are ug/L
             # but cell volume is m3 --- will need to decide how we want to
             # handle this in time as hardcoding it this way is clearly a bad
             # idea...anyhow, this gives units of ug NO3-N
-            self$soluteMass <- self$soluteConcentration * 1000 * self$channelArea * self$channelDepth
+            self$soluteMass <- self$soluteConcentration * self$channelVolume_L
 
           }
       )

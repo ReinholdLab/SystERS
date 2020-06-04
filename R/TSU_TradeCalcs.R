@@ -29,8 +29,8 @@ WaterTransportPerTime <-
             # volume of water to trade
             self$volumeToTrade <- self$dischargeToTrade * timeInterval #L
 
-            # volume of water to remain (the 1000 is to convert from m3 to L)
-            self$volumeToRemain <- boundary$upstreamCell$channelArea * boundary$upstreamCell$channelDepth * 1000 - self$volumeToTrade
+            # volume of water to remain
+            self$volumeToRemain <- boundary$upstreamCell$channelVolume_L - self$volumeToTrade
 
             if(self$volumeToRemain < 0) warning("You are about to remove more water volume from a cell than it currently holds.")
 
@@ -229,8 +229,8 @@ CalcFractionalSoluteDynams$set(
   which = "public",
   name = "updateMassAndConc",
   value = function(boundary, timeInterval){
-    self$boundary$upstreamCell$soluteMass <- self$massToRemain
-    self$boundary$upstreamCell$soluteConcentration <- ( self$massToRemain / (1000 * self$channelArea * self$channelDepth) )
+    self$boundary$upstreamCell$soluteMass <- self$massToRemain #ug
+    self$boundary$upstreamCell$soluteConcentration <- ( self$massToRemain / boundary$upstreamCell$channelVolume_L ) #ug L-1
   }
 )
 
