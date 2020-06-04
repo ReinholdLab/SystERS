@@ -160,26 +160,27 @@ WQModel$set(
 
       if(self$bounds[[i]]$currency == "H2O" & self$bounds[[i]]$boundarySuperClass == "transport"){
         tradeVals[i] <- WaterTransportPerTime$new(self$bounds[[i]], self$timeInterval)$volumeToTrade
-        valName[i] <- "water volume"
+        valName[i] <- "water volume to transport"
       }
 
       if(self$bounds[[i]]$currency == "NO3" & self$bounds[[i]]$boundarySuperClass == "transport"){
         tradeVals[i] <- SoluteTransportPerTime$new(self$bounds[[i]], self$timeInterval)$soluteToTrade
-        valName[i] <- "solute mass"
+        valName[i] <- "solute mass to transport"
       }
 
       if(self$bounds[[i]]$currency == "NO3" & self$bounds[[i]]$boundarySuperClass == "reaction"){
-        tradeVals[i] <- CalcFractionalSoluteDynams$new(boundary = self$bounds[[i]], removalMethod = self$soluteRemovalMethod, timeInterval = self$timeInterval)$massToRemove
-        valName[i] <- "solute mass"
+        newCalc <- CalcFractionalSoluteDynams$new(boundary = self$bounds[[i]], removalMethod = self$soluteRemovalMethod, timeInterval = self$timeInterval)
+        tradeVals[i] <- newCalc$massToRemove
+        valName[i] <- "solute mass to remove from u/s cell"
         if(is.null(rxnVals) ) {
 
-          newVals <- CalcFractionalSoluteDynams$new(boundary = self$bounds[[i]], removalMethod = self$soluteRemovalMethod, timeInterval = self$timeInterval)$rxnVals
+          newVals <- newCalc$rxnVals
           rxnVals <- data.frame(matrix(nrow = 0, ncol = length(newVals)))
           colnames(rxnVals) <- names(newVals)
           rxnVals[1, ] <- newVals
 
         } else {
-          rxnVals <- rbind(rxnVals, CalcFractionalSoluteDynams$new(boundary = self$bounds[[i]], removalMethod = self$soluteRemovalMethod, timeInterval = self$timeInterval)$rxnVals)
+          rxnVals <- rbind(rxnVals, newVals$rxnVals)
           }
       }
 

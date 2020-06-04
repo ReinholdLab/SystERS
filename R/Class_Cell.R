@@ -130,8 +130,7 @@ StreamCell <-
             # have to multiply by 1000 because units of concentration are ug/L
             # but cell volume is m3 --- will need to decide how we want to
             # handle this in time as hardcoding it this way is clearly a bad
-            # idea...
-
+            # idea...anyhow, this gives units of ug NO3-N
             self$soluteMass <- self$soluteConcentration * 1000 * self$channelArea * self$channelDepth
 
           }
