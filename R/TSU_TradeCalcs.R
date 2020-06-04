@@ -18,17 +18,23 @@ WaterTransportPerTime <-
         boundary = NULL,
         dischargeToTrade = NULL,
         volumeToTrade = NULL,
+        volumeToRemain = NULL,
         timeInterval = NULL,
         initialize =
           function(boundary, timeInterval){
 
             # discharge in the cell
-            self$dischargeToTrade <- boundary$upstreamCell$discharge
+            self$dischargeToTrade <- boundary$upstreamCell$discharge # L s-1
 
             # volume of water to trade
-            self$volumeToTrade <- self$dischargeToTrade * timeInterval
+            self$volumeToTrade <- self$dischargeToTrade * timeInterval #L
 
-            return(list(discharge = self$dischargeToTrade, volume = self$volumeToTrade))
+            # volume of water to remain (the 1000 is to convert from m3 to L)
+            self$volumeToRemain <- boundary$upstreamCell$channelArea * boundary$upstreamCell$channelDepth * 1000 - self$volumeToTrade
+
+            if(self$volumeToRemain < 0) warning("You are about to remove more water volume from a cell than it currently holds.")
+
+            return(list(discharge = self$dischargeToTrade, volumeToTrade = self$volumeToTrade, volumeToRemain = self$volumeToRemain))
 
           }
       )
@@ -51,6 +57,7 @@ SoluteTransportPerTime <-
         boundary = NULL,
         load = NULL,
         soluteToTrade = NULL,
+        soluteToRemain = NULL,
         timeInterval = NULL,
         upstreamCellDischarge = NULL,
         upstreamCellConcentration = NULL,
@@ -68,7 +75,11 @@ SoluteTransportPerTime <-
           # mass to of solute to trade
           self$soluteToTrade <- self$load * self$timeInterval # ug N
 
-          return(list(load = self$load, massToTrade = self$soluteToTrade))
+          self$soluteToRemain <- boundary$upstreamCell$soluteMass - self$soluteToTrade
+
+          if(self$soluteToRemain < 0) warning("You are about to remove more solute mass from a cell than is present at the start of a time step")
+
+          return(list(load = self$load, massToTrade = self$soluteToTrade, massToRemain = self$soluteToRemain))
         }
       )
   )
@@ -209,7 +220,8 @@ CalcFractionalSoluteDynams <-
 
 #' @title updateMassAndConc
 #'
-#' @description Changes the solute mass and concentration values in the upstream cell according to the fractional solute dynams calculator.
+#' @description Changes the solute mass and concentration values in the upstream
+#'   cell according to the fractional solute dynams calculator.
 #'
 #' @param boundary is the rxn boundary
 #'

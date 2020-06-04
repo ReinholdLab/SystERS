@@ -149,29 +149,39 @@ WQModel$set(
     # empty vectors to populate
     boundIdx <- NA
     tradeVals <- NA
+    remainVals <- NA
     tradeCurrency <- NA
     rxnVals <- NULL
     valName <- NA
+    usCellIdx <- NA
+    dsCellIdx <- NA
 
     for(i in 1:length(self$bounds) ){
 
       tradeCurrency[i] <- self$bounds[[i]]$currency
       boundIdx[i] <- self$bounds[[i]]$boundaryIdx
+      usCellIdx[i] <- self$bounds[[i]]$upstreamCell$cellIdx
+      dsCellIdx[i]  <- self$bounds[[i]]$downstreamCell$cellIdx
 
       if(self$bounds[[i]]$currency == "H2O" & self$bounds[[i]]$boundarySuperClass == "transport"){
-        tradeVals[i] <- WaterTransportPerTime$new(self$bounds[[i]], self$timeInterval)$volumeToTrade
-        valName[i] <- "water volume to transport"
+        newCalc <- WaterTransportPerTime$new(self$bounds[[i]], self$timeInterval)
+        tradeVals[i] <- newCalc$volumeToTrade
+        remainVals[i] <- newCalc$volumeToRemain
+        valName[i] <- "water volume  (L)"
       }
 
       if(self$bounds[[i]]$currency == "NO3" & self$bounds[[i]]$boundarySuperClass == "transport"){
-        tradeVals[i] <- SoluteTransportPerTime$new(self$bounds[[i]], self$timeInterval)$soluteToTrade
-        valName[i] <- "solute mass to transport"
+        newCalc <- SoluteTransportPerTime$new(self$bounds[[i]], self$timeInterval)
+        tradeVals[i] <- newCalc$soluteToTrade
+        remainVals[i] <- newCalc$soluteToRemain
+        valName[i] <- "solute mass (ug)"
       }
 
       if(self$bounds[[i]]$currency == "NO3" & self$bounds[[i]]$boundarySuperClass == "reaction"){
         newCalc <- CalcFractionalSoluteDynams$new(boundary = self$bounds[[i]], removalMethod = self$soluteRemovalMethod, timeInterval = self$timeInterval)
         tradeVals[i] <- newCalc$massToRemove
-        valName[i] <- "solute mass to remove from u/s cell"
+        remainVals[i] <- newCalc$massToRemain
+        valName[i] <- "solute mass (ug)"
         if(is.null(rxnVals) ) {
 
           newVals <- newCalc$rxnVals
@@ -185,7 +195,7 @@ WQModel$set(
       }
 
     }
-    tradeDf <- data.frame(boundIdx, tradeCurrency, tradeVals, valName)
+    tradeDf <- data.frame(boundIdx, tradeCurrency, tradeVals, remainVals, valName, usCellIdx, dsCellIdx)
     rxnValDf <- rxnVals
     return(list(tradeDf, rxnValDf))
   }
