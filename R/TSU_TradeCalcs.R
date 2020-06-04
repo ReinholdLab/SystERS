@@ -52,17 +52,21 @@ SoluteTransportPerTime <-
         load = NULL,
         soluteToTrade = NULL,
         timeInterval = NULL,
+        upstreamCellDischarge = NULL,
+        upstreamCellConcentration = NULL,
         initialize = function(boundary, timeInterval){
+          self$boundary <- boundary
+          self$timeInterval <- timeInterval
 
           # get the discharge and solute concentration in the upstream cells
-          upstreamCellDischarge <- boundary$upstreamCell$discharge
-          upstreamCellConcentration <- boundary$upstreamCell$soluteConcentration
+          self$upstreamCellDischarge <- boundary$upstreamCell$discharge # L s-1
+          self$upstreamCellConcentration <- boundary$upstreamCell$soluteConcentration # ug N L-1
 
           # multiply discharge by concentration to get load
-          self$load <- upstreamCellDischarge * upstreamCellConcentration
+          self$load <- self$upstreamCellDischarge * self$upstreamCellConcentration # ug N s-1
 
           # mass to of solute to trade
-          self$soluteToTrade <- self$load * timeInterval
+          self$soluteToTrade <- self$load * self$timeInterval # ug N
 
           return(list(load = self$load, massToTrade = self$soluteToTrade))
         }
@@ -119,9 +123,9 @@ CalcFractionalSoluteDynams <-
             } else if(self$removalMethod == "RT-PL") {
 
               self$fractionRemovedStorage <- self$resTmWtdFracRemovStrg(boundary, remaining = FALSE)
-              print(self$fractionRemovedStorage)
+              # print(self$fractionRemovedStorage)
               self$fractionRemainingStorage <- self$resTmWtdFracRemovStrg(boundary, remaining = TRUE)
-              print(self$fractionRemainingStorage)
+              # print(self$fractionRemainingStorage)
 
             } else if(self$removalMethod == "pcnt") {
 
@@ -195,16 +199,34 @@ CalcFractionalSoluteDynams <-
                 massToRemain = self$massToRemain
               )
 
-            print(self$rxnVals)
+            # self$updateMassAndConc(boundary, timeInterval)
+
+            # print(self$rxnVals)
 
           }
       )
   )
 
+#' @title updateMassAndConc
+#'
+#' @description Changes the solute mass and concentration values in the upstream cell according to the fractional solute dynams calculator.
+#'
+#' @param boundary is the rxn boundary
+#'
+CalcFractionalSoluteDynams$set(
+  which = "public",
+  name = "updateMassAndConc",
+  value = function(boundary, timeInterval){
+    self$boundary$upstreamCell$soluteMass <- self$massToRemain
+    self$boundary$upstreamCell$soluteConcentration <- ( self$massToRemain / (1000 * self$channelArea * self$channelDepth) )
+  }
+)
+
+
 #' @title fracRemovSimple
 #'
-#' @description Calculates the fraction of a solute removed e using a very
-#'   simple approach of removing a certain percentage of the initial solute.
+#' @description Calculates the fraction of a solute removed using a very simple
+#'   approach of removing a certain percentage of the initial solute.
 #'
 #' @param pcntToRemove is the percent (0-100) of the solute to remove from the
 #'   cell
@@ -222,25 +244,14 @@ CalcFractionalSoluteDynams$set(
 #'
 #' @description Calculates the fraction of a solute removed and
 #'   remaining in the storage zone using the residence-time weighted fractional
-#'   removal approach.
+#'   removal approach. If remaining = TRUE, then the function
+#' calculates the fraction of the solute REMAINING; however if remaining = FALSE,
+#' then the function calculates the fraction of solute REMOVED
 CalcFractionalSoluteDynams$set(
   which = "public",
   name = "resTmWtdFracRemovStrg",
   value = function(boundary,
                    remaining){
-
-    # tau_0 = boundary$upstreamCell$tauMin
-    # tau_n = boundary$upstreamCell$tauMax
-    # a = boundary$upstreamCell$alpha
-    # k = boundary$upstreamCell$k
-    #
-    # print(paste(tau_0, tau_n, a, k, remaining))
-
-    # Calculate proportional uptake by the HZ. If remaining = TRUE, then the function
-    # calculates the fraction of the solute REMAINING; however if remaining = FALSE,
-    # then the function calculates the fraction of solute REMOVED
-
-
 
     prop.uptk.funct <-
       function(
