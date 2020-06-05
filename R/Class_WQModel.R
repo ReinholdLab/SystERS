@@ -72,7 +72,7 @@ WQModel <-
                     porosity = cellsTable$porosity[rowNum],
                     channelWidth = cellsTable$channelWidth[rowNum],
                     channelLength = cellsTable$channelLength[rowNum],
-                    channelArea = cellsTable$channelLength[rowNum],
+                    channelArea = cellsTable$channelArea[rowNum],
                     channelDepth = cellsTable$channelDepth[rowNum],
                     channelVelocity = cellsTable$channelVelocity[rowNum],
                     channelResidenceTime = cellsTable$channelResidenceTime[rowNum],
