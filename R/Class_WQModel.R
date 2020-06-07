@@ -187,15 +187,12 @@ WQModel$set(
         valName[i] <- "solute mass (ug)"
         tradeType[i] <- newCalc$tradeType
 
+        # Output the key values from the reactions occuring in the timestep
+        newVals <- newCalc$rxnVals
         if(is.null(rxnVals) ) {
-
-          newVals <- newCalc$rxnVals
-          rxnVals <- data.frame(matrix(nrow = 0, ncol = length(newVals)))
-          colnames(rxnVals) <- names(newVals)
-          rxnVals[1, ] <- newVals
-
+          rxnVals <- newVals
         } else {
-          rxnVals <- rbind(rxnVals, newVals$rxnVals)
+          rxnVals <- rbind(rxnVals, newVals)
           }
       }
 
