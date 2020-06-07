@@ -205,4 +205,17 @@ WQModel$set(
 
 
 
+#' @method WQModel$store
+#'
+#' @description Calculates all the stores for the model
+#'
+WQModel$set(
+  which = "public",
+  name = "store",
+  value = function(...){
+    cells <- self$cells
+    tradeTable <- self$trade()[[1]]
+    return(CalcStores$new(cells, tradeTable)$stores)
+  }
+)
 
