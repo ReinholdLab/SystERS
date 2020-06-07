@@ -223,3 +223,17 @@ WQModel$set(
   }
 )
 
+#' @method WQModel$update
+#'
+#' @description Does all the updates for the model
+#'
+WQModel$set(
+  which = "public",
+  name = "update",
+  value = function(...){
+    cells <- self$cells
+    storesList <- self$store()
+    return(UpdateCells$new(cells, storesList))
+  }
+)
+
