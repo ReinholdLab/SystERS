@@ -4,17 +4,18 @@
 \alias{CalcFractionalSoluteDynams}
 \title{CalcFractionalSoluteDynams}
 \value{
-the fraction of solute removed and remaining in the cell by the
+the mass of solute removed and remaining in the cell by the
   boundary.
 }
 \description{
-Calculate the fraction of solute removed and remaining.
+Calculate the mass of solute removed and remaining.
 }
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{CalcFractionalSoluteDynams$new()}}
 \item \href{#method-fracRemovSimple}{\code{CalcFractionalSoluteDynams$fracRemovSimple()}}
+\item \href{#method-resTmWtdFracRemovStrg}{\code{CalcFractionalSoluteDynams$resTmWtdFracRemovStrg()}}
 \item \href{#method-clone}{\code{CalcFractionalSoluteDynams$clone()}}
 }
 }
@@ -23,7 +24,7 @@ Calculate the fraction of solute removed and remaining.
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CalcFractionalSoluteDynams$new(boundary, removalMethod, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{CalcFractionalSoluteDynams$new(boundary, removalMethod, timeInterval, ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -41,6 +42,15 @@ Currently, only \code{RT-PL} and \code{pcnt} is supported.}
 \subsection{Method \code{fracRemovSimple()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{CalcFractionalSoluteDynams$fracRemovSimple(boundary)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-resTmWtdFracRemovStrg"></a>}}
+\if{latex}{\out{\hypertarget{method-resTmWtdFracRemovStrg}{}}}
+\subsection{Method \code{resTmWtdFracRemovStrg()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{CalcFractionalSoluteDynams$resTmWtdFracRemovStrg(boundary, remaining)}\if{html}{\out{</div>}}
 }
 
 }

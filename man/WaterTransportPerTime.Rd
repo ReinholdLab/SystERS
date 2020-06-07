@@ -21,7 +21,7 @@ Calculate the discharge of water (Volume/Time).
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{WaterTransportPerTime$new(boundary)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{WaterTransportPerTime$new(boundary, timeInterval)}\if{html}{\out{</div>}}
 }
 
 }

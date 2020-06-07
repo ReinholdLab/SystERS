@@ -5,7 +5,11 @@
 \title{Class WQModel (R6)}
 \value{
 The ojbect of class \code{WQModel}.  Boundaries and cells are stored
-  in lists called \code{bounds} and \code{cells}, respectively.
+  in lists called \code{bounds} and \code{cells}, respectively.  **Importantly,
+  as of 06/07/2020, the subsequent calculations done by the model will only
+  return correct trade values for topologies that are linear or have convergent
+  flow.  Calculations will be wrong for models with divergent transport
+  boundaries.***
 }
 \description{
 Define the WQ model and the network topology of cells and
@@ -16,6 +20,7 @@ Define the WQ model and the network topology of cells and
 \itemize{
 \item \href{#method-new}{\code{WQModel$new()}}
 \item \href{#method-trade}{\code{WQModel$trade()}}
+\item \href{#method-store}{\code{WQModel$store()}}
 \item \href{#method-clone}{\code{WQModel$clone()}}
 }
 }
@@ -31,7 +36,7 @@ Define the WQ model and the network topology of cells and
   unitsTable,
   soluteRemovalMethod,
   k,
-  pcntToRemove,
+  timeInterval,
   ...
 )}\if{html}{\out{</div>}}
 }
@@ -60,6 +65,15 @@ with this table.  It is only for reference.}
 \subsection{Method \code{trade()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{WQModel$trade(...)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-store"></a>}}
+\if{latex}{\out{\hypertarget{method-store}{}}}
+\subsection{Method \code{store()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{WQModel$store(...)}\if{html}{\out{</div>}}
 }
 
 }

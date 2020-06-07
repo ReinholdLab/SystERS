@@ -50,7 +50,8 @@ Instantiate a \code{StreamCell} object. Class \code{StreamCell}
   qStorage,
   hydraulicLoad,
   tauMin,
-  tauMax
+  tauMax,
+  k
 )}\if{html}{\out{</div>}}
 }
 
