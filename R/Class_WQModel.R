@@ -155,6 +155,7 @@ WQModel$set(
     valName <- NA
     usCellIdx <- NA
     dsCellIdx <- NA
+    tradeType <- NA
 
     for(i in 1:length(self$bounds) ){
 
@@ -168,6 +169,7 @@ WQModel$set(
         tradeVals[i] <- newCalc$volumeToTrade
         remainVals[i] <- newCalc$volumeToRemain
         valName[i] <- "water volume  (L)"
+        tradeType[i] <- newCalc$tradeType
       }
 
       if(self$bounds[[i]]$currency == "NO3" & self$bounds[[i]]$boundarySuperClass == "transport"){
@@ -175,6 +177,7 @@ WQModel$set(
         tradeVals[i] <- newCalc$soluteToTrade
         remainVals[i] <- newCalc$soluteToRemain
         valName[i] <- "solute mass (ug)"
+        tradeType[i] <- newCalc$tradeType
       }
 
       if(self$bounds[[i]]$currency == "NO3" & self$bounds[[i]]$boundarySuperClass == "reaction"){
@@ -182,6 +185,8 @@ WQModel$set(
         tradeVals[i] <- newCalc$massToRemove
         remainVals[i] <- newCalc$massToRemain
         valName[i] <- "solute mass (ug)"
+        tradeType[i] <- newCalc$tradeType
+
         if(is.null(rxnVals) ) {
 
           newVals <- newCalc$rxnVals
@@ -195,7 +200,7 @@ WQModel$set(
       }
 
     }
-    tradeDf <- data.frame(boundIdx, tradeCurrency, tradeVals, remainVals, valName, usCellIdx, dsCellIdx)
+    tradeDf <- data.frame(boundIdx, tradeCurrency, tradeVals, remainVals, valName, usCellIdx, dsCellIdx, tradeType)
     rxnValDf <- rxnVals
     return(list(tradeDf, rxnValDf))
   }

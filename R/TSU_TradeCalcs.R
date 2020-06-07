@@ -20,6 +20,7 @@ WaterTransportPerTime <-
         volumeToTrade = NULL,
         volumeToRemain = NULL,
         timeInterval = NULL,
+        tradeType = "move",
         initialize =
           function(boundary, timeInterval){
 
@@ -61,6 +62,7 @@ SoluteTransportPerTime <-
         timeInterval = NULL,
         upstreamCellDischarge = NULL,
         upstreamCellConcentration = NULL,
+        tradeType = "move",
         initialize = function(boundary, timeInterval){
           self$boundary <- boundary
           self$timeInterval <- timeInterval
@@ -113,6 +115,7 @@ CalcFractionalSoluteDynams <-
         massToRemove = NULL,
         massToRemain = NULL,
         rxnVals = NULL,
+        tradeType = "remove",
         initialize =
           function(
             boundary,
@@ -225,14 +228,14 @@ CalcFractionalSoluteDynams <-
 #'
 #' @param boundary is the rxn boundary
 #'
-CalcFractionalSoluteDynams$set(
-  which = "public",
-  name = "updateMassAndConc",
-  value = function(boundary, timeInterval){
-    self$boundary$upstreamCell$soluteMass <- self$massToRemain #ug
-    self$boundary$upstreamCell$soluteConcentration <- ( self$massToRemain / boundary$upstreamCell$channelVolume_L ) #ug L-1
-  }
-)
+# CalcFractionalSoluteDynams$set(
+#   which = "public",
+#   name = "updateMassAndConc",
+#   value = function(boundary, timeInterval){
+#     self$boundary$upstreamCell$soluteMass <- self$massToRemain #ug
+#     self$boundary$upstreamCell$soluteConcentration <- ( self$massToRemain / boundary$upstreamCell$channelVolume_L ) #ug L-1
+#   }
+# )
 
 
 #' @title fracRemovSimple
