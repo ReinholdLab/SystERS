@@ -128,7 +128,7 @@ StreamCell <-
             self$tauMax <- tauMax
             self$k <- k
 
-            self$channelVolume_m3 <- self$channelArea*self$channelDepth
+            self$channelVolume_m3 <- self$channelArea * self$channelDepth
             self$channelVolume_L <- 1000 *  self$channelVolume_m3
 
             # have to multiply by 1000 because units of concentration are ug/L
