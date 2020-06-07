@@ -213,29 +213,13 @@ CalcFractionalSoluteDynams <-
                 massToRemain = self$massToRemain
               )
 
-            # self$updateMassAndConc(boundary, timeInterval)
-
             # print(self$rxnVals)
 
           }
       )
   )
 
-#' @title updateMassAndConc
-#'
-#' @description Changes the solute mass and concentration values in the upstream
-#'   cell according to the fractional solute dynams calculator.
-#'
-#' @param boundary is the rxn boundary
-#'
-# CalcFractionalSoluteDynams$set(
-#   which = "public",
-#   name = "updateMassAndConc",
-#   value = function(boundary, timeInterval){
-#     self$boundary$upstreamCell$soluteMass <- self$massToRemain #ug
-#     self$boundary$upstreamCell$soluteConcentration <- ( self$massToRemain / boundary$upstreamCell$channelVolume_L ) #ug L-1
-#   }
-# )
+
 
 
 #' @title fracRemovSimple
