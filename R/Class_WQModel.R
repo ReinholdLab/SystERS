@@ -6,7 +6,11 @@
 #' @export
 #'
 #' @return The ojbect of class \code{WQModel}.  Boundaries and cells are stored
-#'   in lists called \code{bounds} and \code{cells}, respectively.
+#'   in lists called \code{bounds} and \code{cells}, respectively.  **Importantly,
+#'   as of 06/07/2020, the subsequent calculations done by the model will only
+#'   return correct trade values for topologies that are linear or have convergent
+#'   flow.  Calculations will be wrong for models with divergent transport
+#'   boundaries.***
 #'
 #' @param boundsTable At this point, \code{booundsTable} needs to be a table
 #'   specifying the currency, type of boundary (reaction or transport), the
