@@ -153,6 +153,7 @@ WQModel <-
             linkedBounds <- self$bounds[ unlist(plyr::llply(self$bounds, function(bound) !is.na( bound$linkedTo))) ]
             for(bound in linkedBounds){
               bound$linkedTo <- self$bounds[[which(sapply(self$bounds, function(b) b$boundaryIdx) == bound$linkedTo)]]
+
             }
 
           } # closes initialize function
