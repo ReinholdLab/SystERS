@@ -42,7 +42,7 @@ WQModel <-
         initialize =
           function(modelName, boundsTable, cellsTable, unitsTable, soluteRemovalMethod, k, timeInterval, ...) {
             # set duration of each time step
-            self$timeInterval = timeInterval
+            self$timeInterval <- timeInterval
 
             self$modelName <- modelName
             self$cellsTable <- cellsTable
@@ -68,23 +68,16 @@ WQModel <-
                 function(rowNum){
                   StreamCell$new(
                     cellIdx = cellsTable$cellIdx[rowNum],
+
                     soluteConcentration = cellsTable$initConcNO3[rowNum],
-                    pcntToRemove = cellsTable$pcntToRemove[rowNum],
-                    discharge = cellsTable$discharge[rowNum],
-                    alpha = cellsTable$alpha[rowNum],
-                    aquiferVolume = cellsTable$aquiferVolume[rowNum],
-                    porosity = cellsTable$porosity[rowNum],
+
                     channelWidth = cellsTable$channelWidth[rowNum],
                     channelLength = cellsTable$channelLength[rowNum],
-                    channelArea = cellsTable$channelArea[rowNum],
                     channelDepth = cellsTable$channelDepth[rowNum],
-                    channelVelocity = cellsTable$channelVelocity[rowNum],
-                    channelResidenceTime = cellsTable$channelResidenceTime[rowNum],
-                    qStorage = cellsTable$qStorage[rowNum],
-                    hydraulicLoad = cellsTable$hydraulicLoad[rowNum],
+
+                    alpha = cellsTable$alpha[rowNum],
                     tauMin = cellsTable$tauMin[rowNum],
-                    tauMax = cellsTable$tauMax[rowNum],
-                    k = self$k
+                    tauMax = cellsTable$tauMax[rowNum]
                   )
                 }
               )
@@ -105,10 +98,10 @@ WQModel <-
             if(length(boundsTable$boundaryIdx) != length(unique(boundsTable$boundaryIdx))) {
               stop("A boundary name was duplicated in the boundsTable.  All boundary names must be unique.")
             }
-            if( any(!(unique(boundsTable$downstreamCellIdx) %in% unique(sapply(self$cells, function(cell) cell$cellIdx)))) ){
+            if( any(!(unique(boundsTable$downstreamCellIdx[!is.na(boundsTable$downstreamCellIdx)]) %in% unique(sapply(self$cells, function(cell) cell$cellIdx)))) ){
               stop("In the boundsTable, a name of a downstream cell was provided that refers to a cell that has not been instantiated.")
             }
-            if( any(!(unique(boundsTable$upstreamCellIdx) %in% unique(sapply(self$cells, function(cell) cell$cellIdx)))) ){
+            if( any(!(unique(boundsTable$upstreamCellIdx[!is.na(boundsTable$upstreamCellIdx)]) %in% unique(sapply(self$cells, function(cell) cell$cellIdx)))) ){
               stop("In the boundsTable, a name of an upstream cell was provided that refers to a cell that has not been instantiated.")
             }
 
@@ -118,8 +111,20 @@ WQModel <-
                 1:nrow(boundsTable),
                 function(rowNum) {
 
-                  usCellIdx <- self$cells[[ which(names(self$cells) ==  self$boundsTable$upstreamCellIdx[rowNum]) ]]$cellIdx
-                  dsCellIdx <- self$cells[[ which(names(self$cells) ==  self$boundsTable$downstreamCellIdx[rowNum]) ]]$cellIdx
+                  usCrit <- self$boundsTable$upstreamCellIdx[rowNum]
+                  dsCrit <- self$boundsTable$downstreamCellIdx[rowNum]
+
+                  if(is.na(usCrit)){
+                    usCell <- NA
+                  } else{
+                    usCell <- self$cells[[ which(names(self$cells) ==  usCrit) ]]
+                  }
+
+                  if(is.na(dsCrit)){
+                    dsCell <- NA
+                  } else{
+                    dsCell <- self$cells[[ which(names(self$cells) ==  dsCrit) ]]
+                  }
 
                   # print(paste("bound:", boundsTable$boundaryIdx[rowNum] , ";   u/s cell:", usCellIdx, ";   d/s cell:", dsCellIdx, sep = ""))
 
@@ -127,15 +132,28 @@ WQModel <-
                       boundaryIdx = boundsTable$boundaryIdx[rowNum],
                       currency = boundsTable$currency[rowNum],
                       boundarySuperClass = boundsTable$boundarySuperClass[rowNum],
-                      upstreamCell = self$cells[[ usCellIdx ]],
-                      downstreamCell = self$cells[[ dsCellIdx ]],
-                      calculateOrder = boundsTable$calculateOrder[rowNum]
+                      upstreamCell = usCell,
+                        # self$cells[[ usCellIdx ]],
+                      downstreamCell = dsCell,
+                        # self$cells[[ dsCellIdx ]],
+                      calculateOrder = boundsTable$calculateOrder[rowNum],
+                      pcntToRemove = boundsTable$pcntToRemove[rowNum],
+                      discharge = boundsTable$discharge[rowNum],
+                      k = self$k,
+                      soluteLoad = boundsTable$soluteLoad[rowNum],
+                      qStorage = boundsTable$qStorage[rowNum],
+                      linkedTo = boundsTable$linkedTo[rowNum]
                     )
 
                 }
               )
             names(self$bounds) <- boundsTable$boundaryIdx
 
+            # bounds with links...link 'em up...
+            linkedBounds <- self$bounds[ unlist(plyr::llply(self$bounds, function(bound) !is.na( bound$linkedTo))) ]
+            for(bound in linkedBounds){
+              bound$linkedTo <- self$bounds[[which(sapply(self$bounds, function(b) b$boundaryIdx) == bound$linkedTo)]]
+            }
 
           } # closes initialize function
       ) # closes public list
@@ -153,7 +171,6 @@ WQModel$set(
     # empty vectors to populate
     boundIdx <- NA
     tradeVals <- NA
-    remainVals <- NA
     tradeCurrency <- NA
     rxnVals <- NULL
     valName <- NA
@@ -165,13 +182,20 @@ WQModel$set(
 
       tradeCurrency[i] <- self$bounds[[i]]$currency
       boundIdx[i] <- self$bounds[[i]]$boundaryIdx
-      usCellIdx[i] <- self$bounds[[i]]$upstreamCell$cellIdx
-      dsCellIdx[i]  <- self$bounds[[i]]$downstreamCell$cellIdx
+      if(! self$bounds[[i]]$usModBound){
+        usCellIdx[i] <- self$bounds[[i]]$upstreamCell$cellIdx
+      } else{
+        usCellIdx[i] <- NA
+      }
+      if(! self$bounds[[i]]$dsModBound) {
+        dsCellIdx[i]  <- self$bounds[[i]]$downstreamCell$cellIdx
+      } else {
+        dsCellIdx[i] <- NA
+      }
 
       if(self$bounds[[i]]$currency == "H2O" & self$bounds[[i]]$boundarySuperClass == "transport"){
         newCalc <- WaterTransportPerTime$new(self$bounds[[i]], self$timeInterval)
         tradeVals[i] <- newCalc$volumeToTrade
-        remainVals[i] <- newCalc$volumeToRemain
         valName[i] <- "water volume  (L)"
         tradeType[i] <- newCalc$tradeType
       }
@@ -179,7 +203,6 @@ WQModel$set(
       if(self$bounds[[i]]$currency == "NO3" & self$bounds[[i]]$boundarySuperClass == "transport"){
         newCalc <- SoluteTransportPerTime$new(self$bounds[[i]], self$timeInterval)
         tradeVals[i] <- newCalc$soluteToTrade
-        remainVals[i] <- newCalc$soluteToRemain
         valName[i] <- "solute mass (ug)"
         tradeType[i] <- newCalc$tradeType
       }
@@ -187,7 +210,6 @@ WQModel$set(
       if(self$bounds[[i]]$currency == "NO3" & self$bounds[[i]]$boundarySuperClass == "reaction"){
         newCalc <- CalcFractionalSoluteDynams$new(boundary = self$bounds[[i]], removalMethod = self$soluteRemovalMethod, timeInterval = self$timeInterval)
         tradeVals[i] <- newCalc$massToRemove
-        remainVals[i] <- newCalc$massToRemain
         valName[i] <- "solute mass (ug)"
         tradeType[i] <- newCalc$tradeType
 
@@ -201,7 +223,7 @@ WQModel$set(
       }
 
     }
-    tradeDf <- data.frame(boundIdx, tradeCurrency, tradeVals, remainVals, valName, usCellIdx, dsCellIdx, tradeType)
+    tradeDf <- data.frame(boundIdx, tradeCurrency, tradeVals, valName, usCellIdx, dsCellIdx, tradeType)
     rxnValDf <- rxnVals
     return(list(tradeDf, rxnValDf))
   }
