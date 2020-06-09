@@ -31,64 +31,35 @@ Instantiate a \code{StreamCell} object. Class \code{StreamCell}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StreamCell$new(
   ...,
   soluteConcentration,
-  discharge,
-  alpha,
-  aquiferVolume,
-  porosity,
   channelWidth,
   channelLength,
-  channelArea,
   channelDepth,
-  channelVelocity,
-  channelResidenceTime,
-  qStorage,
-  hydraulicLoad,
+  alpha,
   tauMin,
-  tauMax,
-  k
+  tauMax
 )}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{discharge}}{is the water discharge, Q, in user specified units.}
-
-\item{\code{alpha}}{is the exponent of the power law used to represent the shape of
-the residence time distribution of the hyporheic zone.}
-
-\item{\code{aquiferVolume}}{is the volume of the stream aquifer/hyporheic zone.}
-
-\item{\code{porosity}}{is the porosity of the streambed and hyporheic zone.}
+\item{\code{soluteConcentration}}{is the concentration of the solute in user
+specified units.}
 
 \item{\code{channelWidth}}{is the width of the stream channel surface.}
 
 \item{\code{channelLength}}{is the length of the stream channel surface for the
 given reach represented by the \code{StreamCell} specified herein.}
 
-\item{\code{channelArea}}{is the area of the stream channel surface for the given
-\code{StreamCell}.}
-
 \item{\code{channelDepth}}{is the height of the water surface above the streambed.}
 
-\item{\code{channelVelocity}}{is the mean velocity of the water in the stream
-channel.}
-
-\item{\code{channelResidenceTime}}{is the mean residence time of the reach
-represented by the \code{StreamCell} specified herein.}
-
-\item{\code{qStorage}}{is the total hyporheic exchange rate, i.e., the rate at which
-water is downwelling into and - since this model assumes steady state -
-upwelling up from the hyporheic zone.}
-
-\item{\code{hydraulicLoad}}{is the hydraulic load for the reach represented by the
-\code{StreamCell} specified herein.}
+\item{\code{alpha}}{is the exponent of the power law used to represent the shape of
+the residence time distribution of the hyporheic zone.}
 
 \item{\code{tauMin}}{is the minimum residence time for the hyporheic zone.}
 
@@ -99,7 +70,6 @@ upwelling up from the hyporheic zone.}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

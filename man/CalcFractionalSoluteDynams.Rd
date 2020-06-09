@@ -21,7 +21,6 @@ Calculate the mass of solute removed and remaining.
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{CalcFractionalSoluteDynams$new(boundary, removalMethod, timeInterval, ...)}\if{html}{\out{</div>}}
@@ -38,7 +37,6 @@ Currently, only \code{RT-PL} and \code{pcnt} is supported.}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-fracRemovSimple"></a>}}
-\if{latex}{\out{\hypertarget{method-fracRemovSimple}{}}}
 \subsection{Method \code{fracRemovSimple()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{CalcFractionalSoluteDynams$fracRemovSimple(boundary)}\if{html}{\out{</div>}}
@@ -47,7 +45,6 @@ Currently, only \code{RT-PL} and \code{pcnt} is supported.}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-resTmWtdFracRemovStrg"></a>}}
-\if{latex}{\out{\hypertarget{method-resTmWtdFracRemovStrg}{}}}
 \subsection{Method \code{resTmWtdFracRemovStrg()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{CalcFractionalSoluteDynams$resTmWtdFracRemovStrg(boundary, remaining)}\if{html}{\out{</div>}}
@@ -56,7 +53,6 @@ Currently, only \code{RT-PL} and \code{pcnt} is supported.}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

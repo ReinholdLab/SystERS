@@ -15,16 +15,24 @@ Boundary superclass
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Boundary$new(
   boundaryIdx,
   currency,
   boundarySuperClass,
+  calculateOrder,
   upstreamCell,
   downstreamCell,
-  calculateOrder
+  discharge,
+  channelVelocity,
+  channelResidenceTime,
+  hydraulicLoad,
+  pcntToRemove,
+  k,
+  qStorage,
+  soluteLoad,
+  linkedTo
 )}\if{html}{\out{</div>}}
 }
 
@@ -40,13 +48,15 @@ Boundary superclass
 \item{\code{upstreamCell}}{the upstream cell}
 
 \item{\code{downstreamCell}}{the downstream cell}
+
+\item{\code{pcntToRemove}}{is the percent of the solute to remove fom a cell by the
+reaction boundary IF the removal method is set to \code{pcnt}}
 }
 \if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{
