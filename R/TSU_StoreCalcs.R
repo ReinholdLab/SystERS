@@ -31,8 +31,8 @@ CalcStores <-
 
               tradeTable <- masterTable[masterTable$tradeCurrency == curr, ]
 
-              usCellIdxs <- unique(as.character(tradeTable$usCellIdx))
-              dsCellIdxs <- unique(as.character(tradeTable$dsCellIdx))
+              usCellIdxs <- unique(as.character(tradeTable$usCellIdx[!is.na(tradeTable$usCellIdx)]))
+              dsCellIdxs <- unique(as.character(tradeTable$dsCellIdx[!is.na(tradeTable$dsCellIdx)]))
               cellIdxs <- sort(unique(c(usCellIdxs, dsCellIdxs)))
               # orderingVect <- match(cellIdxs, unlist(plyr::llply(wq.pl$cells, function(cell) return(cell$cellIdx))))
               outVal <- rep(0, length(cellIdxs)) #vect of zeros same length as cellIdxs
@@ -43,12 +43,17 @@ CalcStores <-
 
               for(i in 1:length(cellIdxs)){
                 if(any(cellIdxs[i] %in% tradeTable$usCellIdx)){
-                  outVal[i] <- sum(tradeTable$tradeVals[tradeTable$usCellIdx == cellIdxs[i]])
+                  crit <- tradeTable$usCellIdx == cellIdxs[i]
+                  crit[is.na(crit)] <- FALSE # get rid of the NAs so you can query
+                  outVal[i] <- sum(tradeTable$tradeVals[crit])
                 }
                 if(any(cellIdxs[i] %in% tradeTable$dsCellIdx)){
-                  inVal[i] <- sum(tradeTable$tradeVals[tradeTable$dsCellIdx == cellIdxs[i] & tradeTable$tradeType != "remove" ])
+                  crit <- tradeTable$dsCellIdx == cellIdxs[i]
+                  crit[is.na(crit)] <- FALSE
+                  inVal[i] <- sum(tradeTable$tradeVals[crit & tradeTable$tradeType != "remove" ])
                 }
               }
+
               endVal <- startVal - outVal + inVal
 
               storeTable <- cbind(startVal, outVal, inVal, endVal)

@@ -24,18 +24,28 @@ WaterTransportPerTime <-
         initialize =
           function(boundary, timeInterval){
 
-            # discharge in the cell
-            self$dischargeToTrade <- boundary$upstreamCell$discharge # L s-1
+            if(!boundary$usModBound) {
+              # discharge in the cell
+              self$dischargeToTrade <- boundary$discharge # L s-1
+            } else{
+              self$dischargeToTrade <- boundary$discharge
+            }
 
             # volume of water to trade
             self$volumeToTrade <- self$dischargeToTrade * timeInterval #L
 
-            # volume of water to remain
-            self$volumeToRemain <- boundary$upstreamCell$channelVolume_L - self$volumeToTrade
+            if(!boundary$usModBound){
+              # volume of water to remain
+              self$volumeToRemain <- boundary$upstreamCell$channelVolume_L - self$volumeToTrade
+              if(self$volumeToRemain < 0) warning(
+                paste("You are about to remove more water volume from a cell than it held at the start of the timestep.
+                      Boundary is", boundary$boundaryIdx,
+                      "Cell is", boundary$upstreamCell$upstreamCellIdx
+                )
+              )
+            }
 
-            if(self$volumeToRemain < 0) warning("You are about to remove more water volume from a cell than it currently holds.")
-
-            return(list(discharge = self$dischargeToTrade, volumeToTrade = self$volumeToTrade, volumeToRemain = self$volumeToRemain))
+            return(list(discharge = self$dischargeToTrade, volumeToTrade = self$volumeToTrade))
 
           }
       )
@@ -60,28 +70,40 @@ SoluteTransportPerTime <-
         soluteToTrade = NULL,
         soluteToRemain = NULL,
         timeInterval = NULL,
-        upstreamCellDischarge = NULL,
+        discharge = NULL,
         upstreamCellConcentration = NULL,
         tradeType = "move",
         initialize = function(boundary, timeInterval){
           self$boundary <- boundary
           self$timeInterval <- timeInterval
 
-          # get the discharge and solute concentration in the upstream cells
-          self$upstreamCellDischarge <- boundary$upstreamCell$discharge # L s-1
-          self$upstreamCellConcentration <- boundary$upstreamCell$soluteConcentration # ug N L-1
+          # get the discharge and solute concentration in the water transport
+          # boundary to which this solute transport boundary is linked
+          self$discharge <- boundary$linkedTo$discharge # L s-1
 
-          # multiply discharge by concentration to get load
-          self$load <- self$upstreamCellDischarge * self$upstreamCellConcentration # ug N s-1
+          if(!boundary$usModBound) {
+            self$upstreamCellConcentration <- boundary$upstreamCell$soluteConcentration # ug N L-1
+            # multiply discharge by concentration to get load
+            self$load <- self$discharge * self$upstreamCellConcentration # ug N s-1
+          } else{
+            self$load <- boundary$soluteLoad
+          }
 
           # mass to of solute to trade
           self$soluteToTrade <- self$load * self$timeInterval # ug N
 
-          self$soluteToRemain <- boundary$upstreamCell$soluteMass - self$soluteToTrade
+          if(!boundary$usModBound){
+            # solute mass to remain
+            self$soluteToRemain <- boundary$upstreamCell$soluteMass - self$soluteToTrade
+            if(self$soluteToRemain < 0) warning(
+              paste("You are about to remove more water volume from a cell than it held at the start of the timestep.
+                      Boundary is", boundary$boundaryIdx,
+                    "Cell is", boundary$upstreamCell$upstreamCellIdx
+              )
+            )
+          }
 
-          if(self$soluteToRemain < 0) warning("You are about to remove more solute mass from a cell than is present at the start of a time step")
-
-          return(list(load = self$load, massToTrade = self$soluteToTrade, massToRemain = self$soluteToRemain))
+          return(list(load = self$load, massToTrade = self$soluteToTrade))
         }
       )
   )
@@ -128,7 +150,7 @@ CalcFractionalSoluteDynams <-
 
             if( is.null(self$removalMethod) ) {
 
-              stop(
+              warning(
                 paste0(
                   "The removalMethod is currently NULL for boundaryIdx = ",
                   boundary$boundaryIdx, ", .  A removalMethod must be provided.")
@@ -155,12 +177,12 @@ CalcFractionalSoluteDynams <-
                 "\nFraction removed from storage:", self$fractionRemovedStorage,
                 "\nFraction remaining in storage:", self$fractionRemainingStorage
               )
-              stop(
+              warning(
                 noquote( strsplit (msgDetail, "\n") [[1]])
               )
             }
 
-            self$fractionRemaining <- exp(-boundary$upstreamCell$qStorage * self$fractionRemovedStorage * timeInterval / boundary$upstreamCell$channelDepth)
+            self$fractionRemaining <- exp(-1 * boundary$qStorage * self$fractionRemovedStorage * timeInterval / boundary$upstreamCell$channelDepth)
             self$fractionRemoved <- 1 - self$fractionRemaining
 
             self$mustBeOne <- self$fractionRemoved + self$fractionRemaining
@@ -178,7 +200,7 @@ CalcFractionalSoluteDynams <-
                 fracRemovStrg = self$fractionRemovedStorage,
                 fracRemov = self$fractionRemoved,
                 fracRmn = self$fractionRemaining)
-              stop(
+              warning(
                 noquote( strsplit (msgDetail, "\n") [[1]]),
                 print( tmp )
               )
@@ -197,7 +219,6 @@ CalcFractionalSoluteDynams <-
             self$startingMass <- boundary$upstreamCell$soluteMass
 
             self$massToRemove <- self$startingMass * self$fractionRemoved
-            self$massToRemain <- self$startingMass * self$fractionRemaining
 
             self$rxnVals <-
               data.frame(
@@ -208,9 +229,8 @@ CalcFractionalSoluteDynams <-
                 fracRemovedFromStrg = self$fractionRemovedStorage ,
                 fracRemainingInStrg = self$fractionRemainingStorage ,
                 mustBeOne = self$mustBeOne ,
-                startingMass = self$startingMass,
-                massToRemove = self$massToRemove ,
-                massToRemain = self$massToRemain
+                startingMass = self$startingMass ,
+                massToRemove = self$massToRemove
               )
 
             # print(self$rxnVals)
@@ -234,7 +254,7 @@ CalcFractionalSoluteDynams$set(
   which = "public",
   name = "fracRemovSimple",
   value = function(boundary){
-    return(boundary$upstreamCell$pcntToRemove / 100)
+    return(boundary$pcntToRemove / 100)
   }
 )
 
@@ -280,7 +300,7 @@ CalcFractionalSoluteDynams$set(
         tau_0 = boundary$upstreamCell$tauMin,
         tau_n = boundary$upstreamCell$tauMax,
         a = boundary$upstreamCell$alpha,
-        k = boundary$upstreamCell$k,
+        k = boundary$k,
         remaining = remaining
       )$value
     return(prop.uptk)

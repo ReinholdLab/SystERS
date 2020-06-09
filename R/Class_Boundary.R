@@ -7,6 +7,8 @@
 #' @param boundarySuperClass the super class of the boundary, e.g., \code{transport} or \code{reaction}
 #' @param upstreamCell  the upstream cell
 #' @param downstreamCell the downstream cell
+#' @param pcntToRemove is the percent of the solute to remove fom a cell by the
+#'   reaction boundary IF the removal method is set to \code{pcnt}
 #'
 #' @export
 #'
@@ -18,19 +20,108 @@ Boundary <-
         boundaryIdx = NULL,
         currency = NULL,
         boundarySuperClass = NULL,
+        calculateOrder = NULL,
+
         upstreamCell = NULL,
         downstreamCell = NULL,
-        calculateOrder = NULL,
+
+        discharge = NULL,
+        channelVelocity = NULL,
+        channelResidenceTime = NULL,
+        hydraulicLoad = NULL,
+
+        pcntToRemove = NULL,
+        k = NULL,
+        qStorage = NULL,
+
+        usModBound = NULL,
+        dsModBound = NULL,
+
+        soluteLoad = NULL,
+
+        linkedTo = NULL,
+
         initialize =
-          function(boundaryIdx, currency, boundarySuperClass, upstreamCell, downstreamCell, calculateOrder){
+          function(
+            boundaryIdx,
+            currency,
+            boundarySuperClass,
+            calculateOrder,
+
+            upstreamCell,
+            downstreamCell,
+
+            discharge,
+            channelVelocity,
+            channelResidenceTime,
+            hydraulicLoad,
+
+            pcntToRemove,
+            k,
+            qStorage,
+
+            soluteLoad,
+
+            linkedTo
+            ){
+
             self$boundaryIdx <- boundaryIdx
             self$currency <- currency
             self$boundarySuperClass <- boundarySuperClass
+            self$calculateOrder <- calculateOrder
+
             self$upstreamCell <- upstreamCell
             self$downstreamCell <- downstreamCell
-            self$calculateOrder <- calculateOrder
+
+            # Is this boundary a model boundary? Check to see if it has either
+            # no u/s or no d/s cell...
+            self$usModBound <- !(is.environment(self$upstreamCell)) # has no u/s cell
+            self$dsModBound <- !(is.environment(self$downstreamCell)) # has no d/s cell
+
+            self$discharge <- as.numeric(discharge) # as.numeric is b/c reading from sparse table
+
+            # To get velocity, divide Q by the mean of x-sec area of u/s and d/s
+            # cell.  Upstream model boundaries (ie, most upstream) will thus
+            # have a velocity equal only to the d/s cell (because there is no
+            # u/s cell).  The opposite is true for the most d/s boundaries.
+            # Likewise, to get residence time, divide by the mean of u/s and d/s
+            # channel lengths.  Upstream model boundaries will thus have the
+            # channel length defined by the d/s cell because no u/s cell exists
+            # and vice versa for d/s model boundaries. Same pattern applies to
+            # hydraulic load...
+            if(!any(c(self$usModBound, self$dsModBound))) {
+              depth <- mean(c(self$upstreamCell$channelDepth, self$downstreamCell$channelDepth))
+              widthXdepth <- mean(c(self$upstreamCell$channelWidth * self$upstreamCell$channelDepth, self$downstreamCell$channelWidth * self$downstreamCell$channelDepth))
+              len <- mean(c(self$upstreamCell$channelLength, self$downstreamCell$channelLength))
+            }else{
+              if(self$usModBound) {
+                depth <- self$downstreamCell$channelDepth
+                widthXdepth <- self$downstreamCell$channelWidth * depth
+                len <-self$downstreamCell$channelLength
+              }
+              if(self$dsModBound){
+                depth <- self$upstreamCell$channelDepth
+                widthXdepth <- self$upstreamCell$channelWidth * depth
+                len <-self$upstreamCell$channelLength
+              }
+            }
+            self$channelVelocity <- self$discharge / widthXdepth
+            self$channelResidenceTime <- len / self$channelVelocity
+            self$hydraulicLoad <- depth / self$channelResidenceTime
+
+            self$soluteLoad <- soluteLoad
+
+            self$pcntToRemove <- as.numeric(pcntToRemove) # as.numeric is b/c reading from excel sparse table with NAs
+            self$k <- k
+            self$qStorage <- qStorage
+
+            # other boundary it is linked to
+            self$linkedTo <- linkedTo
+
           }
 
       )
   )
+
+
 
