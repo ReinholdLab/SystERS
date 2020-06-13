@@ -80,34 +80,7 @@ Boundary <-
 
             self$discharge <- as.numeric(discharge) # as.numeric is b/c reading from sparse table
 
-            # To get velocity, divide Q by the mean of x-sec area of u/s and d/s
-            # cell.  Upstream model boundaries (ie, most upstream) will thus
-            # have a velocity equal only to the d/s cell (because there is no
-            # u/s cell).  The opposite is true for the most d/s boundaries.
-            # Likewise, to get residence time, divide by the mean of u/s and d/s
-            # channel lengths.  Upstream model boundaries will thus have the
-            # channel length defined by the d/s cell because no u/s cell exists
-            # and vice versa for d/s model boundaries. Same pattern applies to
-            # hydraulic load...
-            if(!any(c(self$usModBound, self$dsModBound))) {
-              depth <- mean(c(self$upstreamCell$channelDepth, self$downstreamCell$channelDepth))
-              widthXdepth <- mean(c(self$upstreamCell$channelWidth * self$upstreamCell$channelDepth, self$downstreamCell$channelWidth * self$downstreamCell$channelDepth))
-              len <- mean(c(self$upstreamCell$channelLength, self$downstreamCell$channelLength))
-            }else{
-              if(self$usModBound) {
-                depth <- self$downstreamCell$channelDepth
-                widthXdepth <- self$downstreamCell$channelWidth * depth
-                len <-self$downstreamCell$channelLength
-              }
-              if(self$dsModBound){
-                depth <- self$upstreamCell$channelDepth
-                widthXdepth <- self$upstreamCell$channelWidth * depth
-                len <-self$upstreamCell$channelLength
-              }
-            }
-            self$channelVelocity <- self$discharge / widthXdepth
-            self$channelResidenceTime <- len / self$channelVelocity
-            self$hydraulicLoad <- depth / self$channelResidenceTime
+
 
             self$soluteLoad <- soluteLoad
 
@@ -123,5 +96,43 @@ Boundary <-
       )
   )
 
+#' Populate boundary dependencies
+#'
+Boundary$set(
+  which = "public",
+  name = "populateDependencies",
+  value = function(boundary){
+    if(boundary$boundarySuperClass == "transport" & boundary$currency == "H2O"){
 
-
+      # To get velocity, divide Q by the mean of x-sec area of u/s and d/s
+      # cell.  Upstream model boundaries (ie, most upstream) will thus
+      # have a velocity equal only to the d/s cell (because there is no
+      # u/s cell).  The opposite is true for the most d/s boundaries.
+      # Likewise, to get residence time, divide by the mean of u/s and d/s
+      # channel lengths.  Upstream model boundaries will thus have the
+      # channel length defined by the d/s cell because no u/s cell exists
+      # and vice versa for d/s model boundaries. Same pattern applies to
+      # hydraulic load...
+      if(!any(c(boundary$usModBound, boundary$dsModBound))) {
+        depth <- mean(c(boundary$upstreamCell$channelDepth, boundary$downstreamCell$channelDepth))
+        widthXdepth <- mean(c(boundary$upstreamCell$channelWidth * boundary$upstreamCell$channelDepth, boundary$downstreamCell$channelWidth * boundary$downstreamCell$channelDepth))
+        len <- mean(c(boundary$upstreamCell$channelLength, boundary$downstreamCell$channelLength))
+      }else{
+        if(boundary$usModBound) {
+          depth <- boundary$downstreamCell$channelDepth
+          widthXdepth <- boundary$downstreamCell$channelWidth * depth
+          len <-boundary$downstreamCell$channelLength
+        }
+        if(boundary$dsModBound){
+          depth <- boundary$upstreamCell$channelDepth
+          widthXdepth <- boundary$upstreamCell$channelWidth * depth
+          len <-boundary$upstreamCell$channelLength
+        }
+      }
+      boundary$channelVelocity <- boundary$discharge / widthXdepth
+      boundary$channelResidenceTime <- len / boundary$channelVelocity
+      boundary$hydraulicLoad <- depth / boundary$channelResidenceTime
+    }
+    return()
+  }
+)
