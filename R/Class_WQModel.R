@@ -153,8 +153,10 @@ WQModel <-
             linkedBounds <- self$bounds[ unlist(plyr::llply(self$bounds, function(bound) !is.na( bound$linkedTo))) ]
             for(bound in linkedBounds){
               bound$linkedTo <- self$bounds[[which(sapply(self$bounds, function(b) b$boundaryIdx) == bound$linkedTo)]]
-
             }
+
+            # populate dependencies
+            lapply(self$bounds, function(b) Boundary$public_methods$populateDependencies(b) )
 
           } # closes initialize function
       ) # closes public list
