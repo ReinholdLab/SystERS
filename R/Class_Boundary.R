@@ -96,7 +96,9 @@ Boundary <-
       )
   )
 
-#' Populate boundary dependencies
+#' @method populateDependencies
+#' @description Populate boundary dependencies
+#' @param boundary The boundary to update
 #'
 Boundary$set(
   which = "public",

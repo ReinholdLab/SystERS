@@ -258,7 +258,10 @@ WQModel$set(
   value = function(...){
     cells <- self$cells
     storesList <- self$store()
-    return(UpdateCells$new(cells, storesList))
+    tradeTable <- self$trade()[[1]]
+    timeInterval <- self$timeInterval
+    bounds <- self$bounds
+    return(c(UpdateCells$new(cells, storesList), UpdateBounds$new(tradeDf = tradeTable, boundsList = bounds, timeInterval = timeInterval)))
   }
 )
 
