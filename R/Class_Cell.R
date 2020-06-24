@@ -33,8 +33,6 @@ Cell <-
 #' @param soluteConcentration is the concentration of the solute in user
 #'   specified units.
 #' @param discharge is the water discharge, Q, in user specified units.
-#' @param alpha is the exponent of the power law used to represent the shape of
-#'   the residence time distribution of the hyporheic zone.
 #' @param aquiferVolume is the volume of the stream aquifer/hyporheic zone.
 #' @param porosity is the porosity of the streambed and hyporheic zone.
 #' @param channelWidth is the width of the stream channel surface.
@@ -52,8 +50,7 @@ Cell <-
 #'   upwelling up from the hyporheic zone.
 #' @param hydraulicLoad is the hydraulic load for the reach represented by the
 #'   \code{StreamCell} specified herein.
-#' @param tauMin is the minimum residence time for the hyporheic zone.
-#' @param tauMax is the maximum residence time for the hyporheic zone.
+
 #'
 #' @export
 #'
@@ -72,9 +69,6 @@ StreamCell <-
         channelArea = NULL,
         channelDepth = NULL,
 
-        alpha = NULL,
-        tauMin = NULL,
-        tauMax = NULL,
 
         channelVolume_L = NULL,
         channelVolume_m3 = NULL,
@@ -84,10 +78,7 @@ StreamCell <-
                    soluteConcentration,
                    channelWidth,
                    channelLength,
-                   channelDepth,
-                   alpha,
-                   tauMin,
-                   tauMax
+                   channelDepth
           ){
 
             super$initialize(...)
@@ -106,9 +97,6 @@ StreamCell <-
             # idea...anyhow, this gives units of ug NO3-N
             self$soluteMass <- self$soluteConcentration * self$channelVolume_L
 
-            self$tauMin <- tauMin
-            self$tauMax <- tauMax
-            self$alpha <- alpha
           }
       )
   )

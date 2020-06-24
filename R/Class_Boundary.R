@@ -9,6 +9,10 @@
 #' @param downstreamCell the downstream cell
 #' @param pcntToRemove is the percent of the solute to remove fom a cell by the
 #'   reaction boundary IF the removal method is set to \code{pcnt}
+#' @param alpha is the exponent of the power law used to represent the shape of
+#'   the residence time distribution of the hyporheic zone.
+#' @param tauMin is the minimum residence time for the hyporheic zone.
+#' @param tauMax is the maximum residence time for the hyporheic zone.
 #'
 #' @export
 #'
@@ -33,6 +37,10 @@ Boundary <-
         pcntToRemove = NULL,
         k = NULL,
         qStorage = NULL,
+
+        alpha = NULL,
+        tauMin = NULL,
+        tauMax = NULL,
 
         usModBound = NULL,
         dsModBound = NULL,
@@ -59,6 +67,9 @@ Boundary <-
             pcntToRemove,
             k,
             qStorage,
+            alpha,
+            tauMin,
+            tauMax,
 
             soluteLoad,
 
@@ -87,6 +98,10 @@ Boundary <-
             self$pcntToRemove <- as.numeric(pcntToRemove) # as.numeric is b/c reading from excel sparse table with NAs
             self$k <- k
             self$qStorage <- qStorage
+
+            self$tauMin <- tauMin
+            self$tauMax <- tauMax
+            self$alpha <- alpha
 
             # other boundary it is linked to
             self$linkedTo <- linkedTo

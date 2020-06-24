@@ -73,11 +73,7 @@ WQModel <-
 
                     channelWidth = cellsTable$channelWidth[rowNum],
                     channelLength = cellsTable$channelLength[rowNum],
-                    channelDepth = cellsTable$channelDepth[rowNum],
-
-                    alpha = cellsTable$alpha[rowNum],
-                    tauMin = cellsTable$tauMin[rowNum],
-                    tauMax = cellsTable$tauMax[rowNum]
+                    channelDepth = cellsTable$channelDepth[rowNum]
                   )
                 }
               )
@@ -140,6 +136,9 @@ WQModel <-
                       pcntToRemove = boundsTable$pcntToRemove[rowNum],
                       discharge = boundsTable$discharge[rowNum],
                       k = self$k,
+                      alpha = boundsTable$alpha[rowNum],
+                      tauMin = boundsTable$tauMin[rowNum],
+                      tauMax = boundsTable$tauMax[rowNum],
                       soluteLoad = boundsTable$soluteLoad[rowNum],
                       qStorage = boundsTable$qStorage[rowNum],
                       linkedTo = boundsTable$linkedTo[rowNum]

@@ -295,11 +295,11 @@ CalcFractionalSoluteDynams$set(
     prop.uptk <-
       integrate(
         prop.uptk.funct,
-        lower = boundary$upstreamCell$tauMin,
-        upper = boundary$upstreamCell$tauMax,
-        tau_0 = boundary$upstreamCell$tauMin,
-        tau_n = boundary$upstreamCell$tauMax,
-        a = boundary$upstreamCell$alpha,
+        lower = boundary$tauMin,
+        upper = boundary$tauMax,
+        tau_0 = boundary$tauMin,
+        tau_n = boundary$tauMax,
+        a = boundary$alpha,
         k = boundary$k,
         remaining = remaining
       )$value
