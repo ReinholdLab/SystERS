@@ -179,6 +179,8 @@ WQModel$set(
     usCellIdx <- NA
     dsCellIdx <- NA
     tradeType <- NA
+    valIdx <- NA
+    trades <- list()
 
     for(i in 1:length(self$bounds) ){
 
@@ -197,21 +199,27 @@ WQModel$set(
 
       if(self$bounds[[i]]$currency == "H2O" & self$bounds[[i]]$boundarySuperClass == "transport"){
         newCalc <- WaterTransportPerTime$new(self$bounds[[i]], self$timeInterval)
+        trades[[i]]<- newCalc
         tradeVals[i] <- newCalc$volumeToTrade
+        valIdx[i] <- "volumeToTrade"
         valName[i] <- "water volume  (L)"
         tradeType[i] <- newCalc$tradeType
       }
 
       if(self$bounds[[i]]$currency == "NO3" & self$bounds[[i]]$boundarySuperClass == "transport"){
         newCalc <- SoluteTransportPerTime$new(self$bounds[[i]], self$timeInterval)
+        trades[[i]] <- newCalc
         tradeVals[i] <- newCalc$soluteToTrade
+        valIdx[i] <- "soluteToTrade"
         valName[i] <- "solute mass (ug)"
         tradeType[i] <- newCalc$tradeType
       }
 
       if(self$bounds[[i]]$currency == "NO3" & self$bounds[[i]]$boundarySuperClass == "reaction"){
         newCalc <- CalcFractionalSoluteDynams$new(boundary = self$bounds[[i]], removalMethod = self$soluteRemovalMethod, timeInterval = self$timeInterval)
+        trades[[i]] <- newCalc
         tradeVals[i] <- newCalc$massToRemove
+        valIdx[i] <- "massToRemove"
         valName[i] <- "solute mass (ug)"
         tradeType[i] <- newCalc$tradeType
 
@@ -224,8 +232,10 @@ WQModel$set(
           }
       }
 
-    }
-    tradeDf <- data.frame(boundIdx, tradeCurrency, tradeVals, valName, usCellIdx, dsCellIdx, tradeType)
+    } # close for loop
+
+    tradeDf <- data.frame(trades = I(trades), boundIdx, tradeCurrency, tradeVals, valIdx, valName, usCellIdx, dsCellIdx, tradeType)
+    class(tradeDf$trades) <- "list"
     rxnValDf <- rxnVals
     return(list(tradeDf, rxnValDf))
   }
