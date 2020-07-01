@@ -171,31 +171,40 @@ WQModel$set(
   name = "trade",
   value = function(...){
     # empty vectors to populate
-    boundIdx <- NA
-    tradeVals <- NA
-    tradeCurrency <- NA
+    boundIdx <- rep(NA, length(self$bounds))
+    tradeVals <- rep(NA, length(self$bounds))
+    tradeCurrency <- rep(NA, length(self$bounds))
     rxnVals <- NULL
-    valName <- NA
-    usCellIdx <- NA
-    dsCellIdx <- NA
-    tradeType <- NA
-    valIdx <- NA
+    valName <- rep(NA, length(self$bounds))
+    usCell <- as.list(rep(NA, length(self$bounds)))
+    dsCell <- as.list(rep(NA, length(self$bounds)))
+    usCellIdx <- rep(NA, length(self$bounds))
+    dsCellIdx <- rep(NA, length(self$bounds))
+    tradeType <- rep(NA, length(self$bounds))
+    valIdx <- rep(NA, length(self$bounds))
     trades <- list()
+
+    print(length(self$bounds))
 
     for(i in 1:length(self$bounds) ){
 
       tradeCurrency[i] <- self$bounds[[i]]$currency
       boundIdx[i] <- self$bounds[[i]]$boundaryIdx
       if(! self$bounds[[i]]$usModBound){
-        usCellIdx[i] <- self$bounds[[i]]$upstreamCell$cellIdx
-      } else{
-        usCellIdx[i] <- NA
+        usCell[[i]] <- self$bounds[[i]]$upstreamCell
+        usCellIdx[i] <- usCell[[i]]$cellIdx
+
       }
+      # else{
+      #   usCellIdx[i] <- NA
+      # }
       if(! self$bounds[[i]]$dsModBound) {
-        dsCellIdx[i]  <- self$bounds[[i]]$downstreamCell$cellIdx
-      } else {
-        dsCellIdx[i] <- NA
+        dsCell[[i]] <- self$bounds[[i]]$downstreamCell
+        dsCellIdx[i]  <- dsCell[[i]]$cellIdx
       }
+      # else {
+      #   dsCellIdx[i] <- NA
+      # }
 
       if(self$bounds[[i]]$currency == "H2O" & self$bounds[[i]]$boundarySuperClass == "transport"){
         newCalc <- WaterTransportPerTime$new(self$bounds[[i]], self$timeInterval)
@@ -234,8 +243,11 @@ WQModel$set(
 
     } # close for loop
 
-    tradeDf <- data.frame(trades = I(trades), boundIdx, tradeCurrency, tradeVals, valIdx, valName, usCellIdx, dsCellIdx, tradeType)
+    # tradeList <- list(trades = I(trades), boundIdx = boundIdx, tradeCurrency = tradeCurrency, tradeVals = tradeVals, valIdx = valIdx, valName = valName, usCellIdx = usCellIdx, dsCellIdx = dsCellIdx, tradeType = tradeType, usCell = I(usCell), dsCell = I(dsCell))
+    tradeDf <- data.frame(trades = I(trades), boundIdx, tradeCurrency, tradeVals, valIdx, valName, usCellIdx, dsCellIdx, tradeType, usCell = I(usCell), dsCell = I(dsCell))
     class(tradeDf$trades) <- "list"
+    class(tradeDf$usCell) <- "list"
+    class(tradeDf$dsCell) <- "list"
     rxnValDf <- rxnVals
     return(list(tradeDf, rxnValDf))
   }
