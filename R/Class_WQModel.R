@@ -38,6 +38,7 @@ WQModel <-
         pcntToRemove = NULL,
         k = NULL,
         timeInterval = NULL,
+        storeData = NULL,
 
         initialize =
           function(modelName, boundsTable, cellsTable, unitsTable, soluteRemovalMethod, k, timeInterval, ...) {
@@ -157,6 +158,9 @@ WQModel <-
             # populate dependencies
             lapply(self$bounds, function(b) Boundary$public_methods$populateDependencies(b) )
 
+            # initialize store info
+            self$storeData <- self$initializeStores()
+
           } # closes initialize function
       ) # closes public list
   ) # closes WQ model
@@ -184,7 +188,7 @@ WQModel$set(
     valIdx <- rep(NA, length(self$bounds))
     trades <- list()
 
-    print(length(self$bounds))
+    # print(length(self$bounds))
 
     for(i in 1:length(self$bounds) ){
 
@@ -253,7 +257,18 @@ WQModel$set(
   }
 )
 
-
+#' @method WQModel$initializeStores
+#'
+#' @description Structured info for storing all the stores for the model
+#'
+WQModel$set(
+  which = "public",
+  name = "initializeStores",
+  value = function(...){
+    # tradeTable <- self$trade()[[1]]
+    return(CalcStores$new(cells = self$cells, bounds = self$bounds))
+  }
+)
 
 #' @method WQModel$store
 #'
@@ -263,9 +278,11 @@ WQModel$set(
   which = "public",
   name = "store",
   value = function(...){
-    cells <- self$cells
     tradeTable <- self$trade()[[1]]
-    return(CalcStores$new(cells, tradeTable)$stores)
+    initStores <- self$storeData
+    returnVal <- CalcStores$public_methods$doCalc( tradeTable = tradeTable, initStores = initStores )
+    return( returnVal )
+    # return(CalcStores$calculate(cells = self$cells, bounds = self$bounds, tradeTable = self$trade()[[1]])$stores)
   }
 )
 

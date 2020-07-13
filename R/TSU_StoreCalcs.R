@@ -17,51 +17,64 @@ CalcStores <-
       list(
         stores = NULL,
         cells = NULL,
+        bounds = NULL,
         tradeTable = NULL,
+        currencies = NULL,
         initialize =
-          function(cells, tradeTable){
-            masterTable <- tradeTable
+          function(cells, bounds){
 
-            currencies <- c("H2O", "NO3")
+            self$cells <- cells
+            self$bounds <- bounds
 
-            stores <- vector("list", length = 2)
-            names(stores) <- currencies
+            self$currencies <- unique(sapply(bounds, function(b) b$currency))
 
-            for(curr in currencies){
+            self$stores <- vector("list", length = length(self$currencies))
+            names(self$stores) <- self$currencies
 
-              tradeTable <- masterTable[masterTable$tradeCurrency == curr, ]
+          } # end initialize
+      ) # close public
+  ) # close class def
 
-              usCellIdxs <- unique(as.character(tradeTable$usCellIdx[!is.na(tradeTable$usCellIdx)]))
-              dsCellIdxs <- unique(as.character(tradeTable$dsCellIdx[!is.na(tradeTable$dsCellIdx)]))
-              cellIdxs <- sort(unique(c(usCellIdxs, dsCellIdxs)))
-              # orderingVect <- match(cellIdxs, unlist(plyr::llply(wq.pl$cells, function(cell) return(cell$cellIdx))))
-              outVal <- rep(0, length(cellIdxs)) #vect of zeros same length as cellIdxs
-              inVal <- outVal #vect of zeros same length as outVol and cellIdxs
+CalcStores$set(
+  which = "public",
+  name = "doCalc",
+  value = function(tradeTable, initStores){
 
-              valToGrab <- ifelse(curr == "H2O", "channelVolume_L", "soluteMass")
-              startVal <- sapply(cells, function(c) c[[valToGrab]])[match(cellIdxs, sapply(cells, function(c) c$cellIdx))]
+    masterTable <- tradeTable
 
-              for(i in 1:length(cellIdxs)){
-                if(any(cellIdxs[i] %in% tradeTable$usCellIdx)){
-                  crit <- tradeTable$usCellIdx == cellIdxs[i]
-                  crit[is.na(crit)] <- FALSE # get rid of the NAs so you can query
-                  outVal[i] <- sum(tradeTable$tradeVals[crit])
-                }
-                if(any(cellIdxs[i] %in% tradeTable$dsCellIdx)){
-                  crit <- tradeTable$dsCellIdx == cellIdxs[i]
-                  crit[is.na(crit)] <- FALSE
-                  inVal[i] <- sum(tradeTable$tradeVals[crit & tradeTable$tradeType != "remove" ])
-                }
-              }
+    for(curr in initStores$currencies){
+      tradeTable <- masterTable[masterTable$tradeCurrency == curr, ]
 
-              endVal <- startVal - outVal + inVal
+      usCellIdxs <- unique(as.character(tradeTable$usCellIdx[!is.na(tradeTable$usCellIdx)]))
+      dsCellIdxs <- unique(as.character(tradeTable$dsCellIdx[!is.na(tradeTable$dsCellIdx)]))
+      cellIdxs <- sort(unique(c(usCellIdxs, dsCellIdxs)))
+      # orderingVect <- match(cellIdxs, unlist(plyr::llply(wq.pl$cells, function(cell) return(cell$cellIdx))))
+      outVal <- rep(0, length(cellIdxs)) #vect of zeros same length as cellIdxs
+      inVal <- outVal #vect of zeros same length as outVol and cellIdxs
 
-              storeTable <- cbind(startVal, outVal, inVal, endVal)
-              row.names(storeTable) <- cellIdxs
+      valToGrab <- ifelse(curr == "H2O", "channelVolume_L", "soluteMass")
+      startVal <- sapply(initStores$cells, function(c) c[[valToGrab]])[match(cellIdxs, sapply(initStores$cells, function(c) c$cellIdx))]
 
-              stores[[curr]] <- storeTable
-            }
-            self$stores <- stores
-          }
-      )
-  )
+      for(i in 1:length(cellIdxs)){
+        if(any(cellIdxs[i] %in% tradeTable$usCellIdx)){
+          crit <- tradeTable$usCellIdx == cellIdxs[i]
+          crit[is.na(crit)] <- FALSE # get rid of the NAs so you can query
+          outVal[i] <- sum(tradeTable$tradeVals[crit])
+        }
+        if(any(cellIdxs[i] %in% tradeTable$dsCellIdx)){
+          crit <- tradeTable$dsCellIdx == cellIdxs[i]
+          crit[is.na(crit)] <- FALSE
+          inVal[i] <- sum(tradeTable$tradeVals[crit & tradeTable$tradeType != "remove" ])
+        }
+      }
+      endVal <- startVal - outVal + inVal
+
+      storeTable <- cbind(startVal, outVal, inVal, endVal)
+      row.names(storeTable) <- cellIdxs
+
+      #populate stores list
+      initStores$stores[[curr]] <- storeTable
+    } # end currency for loop
+    return(initStores$stores)
+  } # close function
+) # close def
