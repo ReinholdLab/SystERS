@@ -23,6 +23,8 @@ WaterTransportPerTime <-
         tradeType = "move",
         initialize =
           function(boundary, timeInterval){
+            self$boundary <- boundary
+            self$timeInterval <- timeInterval
 
             if(!boundary$usModBound) {
               # discharge in the cell
