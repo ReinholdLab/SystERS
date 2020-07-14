@@ -13,15 +13,17 @@ UpdateCells <-
     classname = "UpdateCells",
     public =
       list(
-        storesList = NULL,
+        # storesList = NULL,
         cells = NULL,
         initialize =
-          function(cells, storesList){
+          function(cells){
+          # function(cells, storesList){
+
 
             for(cellIdx in row.names(storesList[["H2O"]]) ){
               cellToUpdate <- cells[[which(sapply(cells, function(c) c$cellIdx) == cellIdx)]]
 
-              cellToUpdate$channelVolume_L <- storesList[["H2O"]][cellIdx,"endVal"]
+              # cellToUpdate$channelVolume_L <- storesList[["H2O"]][cellIdx,"endVal"]
               cellToUpdate$channelVolume_m3 <- cellToUpdate$channelVolume_L / 1000
               cellToUpdate$channelDepth <- cellToUpdate$channelVolume_m3 / cellToUpdate$channelArea # assumes channel is a rectangular cuboid with fixed W and L
 
@@ -29,7 +31,7 @@ UpdateCells <-
               #### we can update mean water velocity, channel residence time,
               #### and hydraulic load ###
 
-              cellToUpdate$soluteMass <- storesList[["NO3"]][cellIdx, "endVal"]
+              # cellToUpdate$soluteMass <- storesList[["NO3"]][cellIdx, "endVal"]
               cellToUpdate$soluteConcentration <- cellToUpdate$soluteMass / cellToUpdate$channelVolume_L
             }
             return()
