@@ -13,17 +13,12 @@ UpdateCells <-
     classname = "UpdateCells",
     public =
       list(
-        # storesList = NULL,
         cells = NULL,
         initialize =
           function(cells){
-          # function(cells, storesList){
 
+            lapply(cells, function(cellToUpdate) {
 
-            for(cellIdx in row.names(storesList[["H2O"]]) ){
-              cellToUpdate <- cells[[which(sapply(cells, function(c) c$cellIdx) == cellIdx)]]
-
-              # cellToUpdate$channelVolume_L <- storesList[["H2O"]][cellIdx,"endVal"]
               cellToUpdate$channelVolume_m3 <- cellToUpdate$channelVolume_L / 1000
               cellToUpdate$channelDepth <- cellToUpdate$channelVolume_m3 / cellToUpdate$channelArea # assumes channel is a rectangular cuboid with fixed W and L
 
@@ -31,9 +26,9 @@ UpdateCells <-
               #### we can update mean water velocity, channel residence time,
               #### and hydraulic load ###
 
-              # cellToUpdate$soluteMass <- storesList[["NO3"]][cellIdx, "endVal"]
               cellToUpdate$soluteConcentration <- cellToUpdate$soluteMass / cellToUpdate$channelVolume_L
             }
+            )
             return()
           }
       )
@@ -58,15 +53,16 @@ UpdateBounds <-
     public =
       list(
         cells = NULL,
-        initialize = function(tradeDf, boundsList, timeInterval){
-          # this first bit overwrites the passed bounds list after extracting
-          # only the boundaries to be updated and ordering them according to the
-          # order in the trade df
-          boundsList <- apply(as.data.frame(tradeDf$boundIdx), 1, function(b) boundsList[[b]])
+        initialize = function(tradeDf, timeInterval){
 
-          # now that the bounds list is in the same order as the trade df, we
-          # can start updating the values in the boundaries using the indicies
-          # (ie row number in the trades df)
+          boundsList <- lapply(tradeDf$trades, function(t) t$boundary)
+          currencyList <- lapply(boundsList, '[[', "currency")
+          boundSuperClassList <- lapply(boundsList, '[[', "boundarySuperClass")
+          tradeList <- tradeDf$trades
+
+
+         # the bounds list is in the same order as the trade list, so we
+          # can start updating the values in the boundaries using the trade values
           plyr::llply(1:length(boundsList), function(i){
             # make sure this is a boundary that "should" be updated; leave the
             # upstream model bounds alone for now; we can certainly use a time
@@ -75,19 +71,17 @@ UpdateBounds <-
             if(!boundsList[[i]]$usModBound){
 
               # if we're working with a water trade, then...
-              if(boundsList[[i]]$currency == "H2O" & boundsList[[i]]$boundarySuperClass == "transport"){
+              if(currencyList[[i]] == "H2O" & boundSuperClassList[[i]] == "transport"){
                 # update Q
-                boundsList[[i]]$discharge <- tradeDf$tradeVals[i] / timeInterval # Pay attention: Units matter here; this is L s-1 in the current model
+                boundsList[[i]]$discharge <- tradeList[[i]]$volumeToTrade / timeInterval # Pay attention: Units matter here; this is L s-1 in the current model
                 # update everything that depends on Q
                 Boundary$public_methods$populateDependencies(boundsList[[i]])
-
               }
-              if(boundsList[[i]]$currency == "NO3") {
-                if(boundsList[[i]]$boundarySuperClass == "transport"){
-                  boundsList[[i]]$soluteLoad <- tradeDf$tradeVals[i]
-
+              if(currencyList[[i]] == "NO3") {
+                if(boundSuperClassList[[i]] == "transport"){
+                  boundsList[[i]]$soluteLoad <- tradeList[[i]]$soluteToTrade
                 }
-                if(boundsList[[i]]$boundarySuperClass == "reaction"){
+                if(boundSuperClassList[[i]] == "reaction"){
                   # placeholder #
                   # do nothing for now #
                 }
@@ -95,6 +89,7 @@ UpdateBounds <-
             } # close boundary
           } # close internal function passed to llply
           ) # close llply
+          return()
         } # close initialize
       ) # close public
   ) # close class

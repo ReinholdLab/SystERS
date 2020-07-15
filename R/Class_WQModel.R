@@ -265,7 +265,7 @@ WQModel$set(
   which = "public",
   name = "initializeStores",
   value = function(...){
-    # tradeTable <- self$trade()[[1]]
+
     return(CalcStores$new(cells = self$cells, bounds = self$bounds))
   }
 )
@@ -280,9 +280,8 @@ WQModel$set(
   value = function(...){
     tradeTable <- self$trade()[[1]]
     initStores <- self$storeData
-    returnVal <- CalcStores$public_methods$doCalc( tradeTable = tradeTable, initStores = initStores )
-    return( returnVal )
-    # return(CalcStores$calculate(cells = self$cells, bounds = self$bounds, tradeTable = self$trade()[[1]])$stores)
+
+    return( CalcStores$public_methods$doCalc( tradeTable = tradeTable, initStores = initStores ) )
   }
 )
 
@@ -295,11 +294,11 @@ WQModel$set(
   name = "update",
   value = function(...){
     cells <- self$cells
-    storesList <- self$store()
     tradeTable <- self$trade()[[1]]
     timeInterval <- self$timeInterval
-    bounds <- self$bounds
-    return(c(UpdateCells$new(cells, storesList), UpdateBounds$new(tradeDf = tradeTable, boundsList = bounds, timeInterval = timeInterval)))
+
+    return( c(UpdateCells$new(cells), UpdateBounds$new(tradeDf = tradeTable, timeInterval = timeInterval)
+    ) )
   }
 )
 
