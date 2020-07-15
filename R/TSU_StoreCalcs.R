@@ -38,28 +38,45 @@ CalcStores <-
 CalcStores$set(
   which = "public",
   name = "doCalc",
-  value = function(tradeTable, initStores){
+  value = function(tradeTable){
 
     masterTable <- tradeTable
-    masterTable$cellAttrToCalc <- ifelse(masterTable$tradeCurrency == "H2O", "channelVolume_L", "soluteMass")
+    currencyVect <- sapply(masterTable$trades, function(tr) tr$boundary$currency)
+    masterTable$cellAttrToCalc <- ifelse(currencyVect == "H2O", "channelVolume_L", "soluteMass")
 
-    plyr::llply(1:nrow(masterTable), function(rw) {
-      # if there is an upstream cell (i.e., not an upstream model boundary, then do the calc for that cell
-      if(is.environment(masterTable[rw,]$usCell[[1]]) ){
-        startVal <- masterTable[rw,]$usCell[[1]][[masterTable[rw,]$cellAttrToCalc]]
-        masterTable[rw,]$usCell[[1]][[masterTable[rw,]$cellAttrToCalc]] <- startVal - masterTable[rw,]$tradeVals
-      }
-      # if there is downstream cell (i.e., not an d/s model boundary, then do the calc for that cell
-      if(is.environment(masterTable[rw,]$usCell[[1]]) ){
-        startVal <- masterTable[rw,]$usCell[[1]][[masterTable[rw,]$cellAttrToCalc]]
-        masterTable[rw,]$usCell[[1]][[masterTable[rw,]$cellAttrToCalc]] <- startVal + masterTable[rw,]$tradeVals
-      }
-    }
-    )
+    currencies <- sort(unique(currencyVect))
+
+    lapply(currencies, function(curr) {
+      subsettedTable <- subset.data.frame(masterTable, tradeCurrency == curr)
+
+      plyr::llply(1:nrow(subsettedTable), function(rw) {
+
+        usCell <- subsettedTable[rw,]$usCell[[1]]
+        dsCell <- subsettedTable[rw,]$dsCell[[1]]
+        attrCriteria <- subsettedTable[rw,]$cellAttrToCalc
+
+        # if there is an upstream cell (i.e., not an upstream model boundary, then do the calc for that cell
+        if( is.environment(usCell) ){
+          outVal <- subsettedTable[rw,]$tradeVals
+          usCell[[attrCriteria]] <- usCell[[attrCriteria]] - outVal
+
+        }
+        # if there is downstream cell (i.e., not an d/s model boundary, then do the calc for that cell
+        if( is.environment(dsCell) ){
+          inVal <- subsettedTable[rw,]$tradeVals
+          dsCell[[attrCriteria]] <- dsCell[[attrCriteria]] + inVal
+
+        } # close if
+      } # close llply funct that runs through table rows
+      ) # close llply
+    } # close lapply funct that goes through the model currencies
+    ) # close lapply
 
     return()
   } # close function
 ) # close def
+
+
 
 # Old doCalc code below:
 # CalcStores$set(
