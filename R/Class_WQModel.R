@@ -282,7 +282,7 @@ WQModel$set(
     # initStores <- self$storeData
 
     # return( CalcStores$public_methods$doCalc( tradeTable = tradeTable, initStores = initStores ) )
-    return( CalcStores$public_methods$doCalc( tradeTable = tradeTable ) )
+    return( self$storeData$doCalc( tradeTable = tradeTable ) )
 
   }
 )

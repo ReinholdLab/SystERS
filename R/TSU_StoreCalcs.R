@@ -31,50 +31,49 @@ CalcStores <-
             self$stores <- vector("list", length = length(self$currencies))
             names(self$stores) <- self$currencies
 
-          } # end initialize
+          }, # end initialize
+        doCalc = function(tradeTable){
+
+          masterTable <- tradeTable
+          # currencyVect <- sapply(masterTable$trades, function(tr) tr$boundary$currency)
+          masterTable$cellAttrToCalc <- ifelse(currencyVect == "H2O", "channelVolume_L", "soluteMass")
+
+          # currencies <- self$currencies
+          # sort(unique(currencyVect))
+
+          lapply(self$currencies, function(curr) {
+            subsettedTable <- subset.data.frame(masterTable, tradeCurrency == curr)
+
+            plyr::llply(1:nrow(subsettedTable), function(rw) {
+
+              usCell <- subsettedTable[rw,]$usCell[[1]]
+              dsCell <- subsettedTable[rw,]$dsCell[[1]]
+              attrCriteria <- subsettedTable[rw,]$cellAttrToCalc
+
+              # if there is an upstream cell (i.e., not an upstream model boundary, then do the calc for that cell
+              if( is.environment(usCell) ){
+                outVal <- subsettedTable[rw,]$tradeVals
+                usCell[[attrCriteria]] <- usCell[[attrCriteria]] - outVal
+
+              }
+              # if there is downstream cell (i.e., not an d/s model boundary, then do the calc for that cell
+              if( is.environment(dsCell) ){
+                inVal <- subsettedTable[rw,]$tradeVals
+                dsCell[[attrCriteria]] <- dsCell[[attrCriteria]] + inVal
+
+              } # close if
+            } # close llply funct that runs through table rows
+            ) # close llply
+          } # close lapply funct that goes through the model currencies
+          ) # close lapply
+
+          return()
+        } # close function
+
       ) # close public
   ) # close class def
 
-CalcStores$set(
-  which = "public",
-  name = "doCalc",
-  value = function(tradeTable){
 
-    masterTable <- tradeTable
-    currencyVect <- sapply(masterTable$trades, function(tr) tr$boundary$currency)
-    masterTable$cellAttrToCalc <- ifelse(currencyVect == "H2O", "channelVolume_L", "soluteMass")
-
-    currencies <- sort(unique(currencyVect))
-
-    lapply(currencies, function(curr) {
-      subsettedTable <- subset.data.frame(masterTable, tradeCurrency == curr)
-
-      plyr::llply(1:nrow(subsettedTable), function(rw) {
-
-        usCell <- subsettedTable[rw,]$usCell[[1]]
-        dsCell <- subsettedTable[rw,]$dsCell[[1]]
-        attrCriteria <- subsettedTable[rw,]$cellAttrToCalc
-
-        # if there is an upstream cell (i.e., not an upstream model boundary, then do the calc for that cell
-        if( is.environment(usCell) ){
-          outVal <- subsettedTable[rw,]$tradeVals
-          usCell[[attrCriteria]] <- usCell[[attrCriteria]] - outVal
-
-        }
-        # if there is downstream cell (i.e., not an d/s model boundary, then do the calc for that cell
-        if( is.environment(dsCell) ){
-          inVal <- subsettedTable[rw,]$tradeVals
-          dsCell[[attrCriteria]] <- dsCell[[attrCriteria]] + inVal
-
-        } # close if
-      } # close llply funct that runs through table rows
-      ) # close llply
-    } # close lapply funct that goes through the model currencies
-    ) # close lapply
-
-    return()
-  } # close function
-) # close def
 
 
 
