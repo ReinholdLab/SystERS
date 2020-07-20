@@ -10,6 +10,7 @@ Boundary superclass
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{Boundary$new()}}
+\item \href{#method-populateDependencies}{\code{Boundary$populateDependencies()}}
 \item \href{#method-clone}{\code{Boundary$clone()}}
 }
 }
@@ -31,6 +32,9 @@ Boundary superclass
   pcntToRemove,
   k,
   qStorage,
+  alpha,
+  tauMin,
+  tauMax,
   soluteLoad,
   linkedTo
 )}\if{html}{\out{</div>}}
@@ -51,9 +55,24 @@ Boundary superclass
 
 \item{\code{pcntToRemove}}{is the percent of the solute to remove fom a cell by the
 reaction boundary IF the removal method is set to \code{pcnt}}
+
+\item{\code{alpha}}{is the exponent of the power law used to represent the shape of
+the residence time distribution of the hyporheic zone.}
+
+\item{\code{tauMin}}{is the minimum residence time for the hyporheic zone.}
+
+\item{\code{tauMax}}{is the maximum residence time for the hyporheic zone.}
 }
 \if{html}{\out{</div>}}
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-populateDependencies"></a>}}
+\subsection{Method \code{populateDependencies()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Boundary$populateDependencies(boundary)}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}

@@ -38,10 +38,7 @@ Instantiate a \code{StreamCell} object. Class \code{StreamCell}
   soluteConcentration,
   channelWidth,
   channelLength,
-  channelDepth,
-  alpha,
-  tauMin,
-  tauMax
+  channelDepth
 )}\if{html}{\out{</div>}}
 }
 
@@ -57,13 +54,6 @@ specified units.}
 given reach represented by the \code{StreamCell} specified herein.}
 
 \item{\code{channelDepth}}{is the height of the water surface above the streambed.}
-
-\item{\code{alpha}}{is the exponent of the power law used to represent the shape of
-the residence time distribution of the hyporheic zone.}
-
-\item{\code{tauMin}}{is the minimum residence time for the hyporheic zone.}
-
-\item{\code{tauMax}}{is the maximum residence time for the hyporheic zone.}
 }
 \if{html}{\out{</div>}}
 }

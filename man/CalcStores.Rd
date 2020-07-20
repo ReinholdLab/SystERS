@@ -14,6 +14,7 @@ Calculate the mass balances for water and solute.
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{CalcStores$new()}}
+\item \href{#method-doCalc}{\code{CalcStores$doCalc()}}
 \item \href{#method-clone}{\code{CalcStores$clone()}}
 }
 }
@@ -21,14 +22,27 @@ Calculate the mass balances for water and solute.
 \if{html}{\out{<a id="method-new"></a>}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CalcStores$new(cells, tradeTable)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{CalcStores$new(cells, bounds)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{cells}}{A list of cells in the model.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-doCalc"></a>}}
+\subsection{Method \code{doCalc()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{CalcStores$doCalc(tradeTable)}\if{html}{\out{</div>}}
+}
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
 \item{\code{tradeTable}}{A table with the neccessary trade information to calculate
 the stores.}
 }

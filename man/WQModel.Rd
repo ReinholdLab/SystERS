@@ -20,6 +20,7 @@ Define the WQ model and the network topology of cells and
 \itemize{
 \item \href{#method-new}{\code{WQModel$new()}}
 \item \href{#method-trade}{\code{WQModel$trade()}}
+\item \href{#method-initializeStores}{\code{WQModel$initializeStores()}}
 \item \href{#method-store}{\code{WQModel$store()}}
 \item \href{#method-update}{\code{WQModel$update()}}
 \item \href{#method-clone}{\code{WQModel$clone()}}
@@ -64,6 +65,14 @@ with this table.  It is only for reference.}
 \subsection{Method \code{trade()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{WQModel$trade(...)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-initializeStores"></a>}}
+\subsection{Method \code{initializeStores()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{WQModel$initializeStores(...)}\if{html}{\out{</div>}}
 }
 
 }
