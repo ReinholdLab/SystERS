@@ -102,4 +102,60 @@ StreamCell <-
   )
 
 
+Cell_Water_Stream <-
+  R6::R6Class(
+    classname = "Cell_Water_Stream",
+    inherit = Cell,
+    public =
+      list(
+        channelWidth = NULL,
+        channelLength = NULL,
+        channelArea = NULL,
+        channelDepth = NULL,
 
+        channelVolume = NULL,
+
+        initialize =
+          function(
+            ...,
+            soluteConcentration,
+            channelWidth,
+            channelLength,
+            channelDepth
+          ){
+            super$initialize(...)
+
+            self$channelWidth <- channelWidth
+            self$channelLength <- channelLength
+            self$channelDepth <- channelDepth
+            self$channelArea <- self$channelWidth * self$channelLength
+            self$channelVolume <- self$channelArea * self$channelDepth
+          }
+      )
+  )
+
+Cell_Solute_Stream <-
+  R6::R6Class(
+    classname = "Cell_Solute_Stream",
+    inherit = Cell,
+    public =
+      list(
+        concentration = NULL,
+        amount = NULL,
+
+        linkedCell = NULL,
+
+        initialize =
+          function(
+            ...,
+            linkedCell,
+            concentration
+          ){
+            super$initialize(...)
+
+            self$concentration <- concentration
+            self$amount <- self$concentration * self$linkedCell$channelVolume
+
+          }
+      )
+  )
