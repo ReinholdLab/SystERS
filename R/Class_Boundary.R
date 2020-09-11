@@ -19,7 +19,6 @@ Boundary <-
         boundaryIdx = NULL,
         currency = NULL,
         boundarySuperClass = NULL,
-        calculateOrder = NULL,
 
         timeInterval = NULL,
 
@@ -34,7 +33,7 @@ Boundary <-
             boundaryIdx,
             currency,
             boundarySuperClass,
-            calculateOrder,
+            timeInterval,
 
             upstreamCell,
             downstreamCell
@@ -43,7 +42,6 @@ Boundary <-
             self$boundaryIdx <- boundaryIdx
             self$currency <- currency
             self$boundarySuperClass <- boundarySuperClass
-            self$calculateOrder <- calculateOrder
 
             self$timeInterval <- timeInterval
 
@@ -84,10 +82,7 @@ Boundary_Transport_Water_Stream <-
         initialize =
           function(
             ...,
-            discharge,
-            channelVelocity,
-            channelResidenceTime,
-            hydraulicLoad,
+            discharge
           ){
             super$initialize(...)
 
@@ -100,8 +95,6 @@ Boundary_Transport_Water_Stream <-
 #' @method populateDependencies
 #'
 #' @description Populate boundary dependencies
-#'
-#' @param boundary The boundary to update
 #'
 #' @export
 #'
@@ -146,8 +139,6 @@ Boundary_Transport_Water_Stream$set(
 #'
 #' @description Calculates the trades between the water cells using static
 #'   values for the boundary conditions; these values are provided by the user.
-#'
-#' @param boundary The boundary for which the trade is calculated
 #'
 #' @export
 #'

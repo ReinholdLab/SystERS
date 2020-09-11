@@ -19,6 +19,7 @@ Cell <-
         initialize =
           function(cellIdx){
             self$cellIdx <- cellIdx
+            self$processDomain <- processDomain
             self$currency <- currency
           }
       )
