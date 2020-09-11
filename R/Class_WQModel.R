@@ -28,57 +28,84 @@ WQModel <-
 
     public =
       list(
-        modelName = NULL,
-        boundsTable = NULL,
-        cellsTable = NULL,
+        boundsTransportTable_water = NULL,
+        boundsTransportTable_solute = NULL,
+        boundsReactionTable_solute = NULL,
+        cellsTable_water = NULL,
+        cellsTable_solute = NULL,
         unitsTable = NULL,
         cells = NULL,
         bounds = NULL,
         soluteRemovalMethod = NULL,
-        pcntToRemove = NULL,
-        k = NULL,
         timeInterval = NULL,
         storeData = NULL,
 
         initialize =
-          function(modelName, boundsTable, cellsTable, unitsTable, soluteRemovalMethod, k, timeInterval, ...) {
+          function(boundsTable, cellsTable, unitsTable, soluteRemovalMethod, k, timeInterval, ...) {
             # set duration of each time step
             self$timeInterval <- timeInterval
 
-            self$modelName <- modelName
-            self$cellsTable <- cellsTable
+            self$cellsTable_water <- cellsTable_water
+            self$cellsTable_solute <- cellsTable_solute
 
-            # A series of error checks:
-            if( any( duplicated(self$cellsTable) ) ){
-              stop("At least one specification for a cell is duplicated in the cellsTable.")
+            lapply(c(self$cellsTable_water, self$cellsTable_solute), function(t) {
+              # A series of error checks:
+              if( any( duplicated(t) ) ){
+                stop("At least one specification for a cell is duplicated in one of the cell tables.")
+              }
+              if(length(t$cellIdx) != length(unique(t$cellIdx))) {
+                stop("A cell name was duplicated in one of the cell tables.  All cell names must be unique.")
+              }
             }
-            if(length(cellsTable$cellIdx) != length(unique(cellsTable$cellIdx))) {
-              stop("A cell name was duplicated in the cellsTable.  All cell names must be unique.")
-            }
+            )
 
             self$unitsTable <- unitsTable
 
             self$soluteRemovalMethod <- soluteRemovalMethod
 
-            self$k <- k
-
-            # generate the stream cells from the cellsTable
-            self$cells <-
+            # generate the stream cells from the cells tables
+            cells_stream_water <-
               plyr::llply(
-                1:nrow(cellsTable),
+                1:nrow(self$cellsTable_water),
                 function(rowNum){
-                  StreamCell$new(
-                    cellIdx = cellsTable$cellIdx[rowNum],
+                  Cell_Water_Stream$new(
+                    cellIdx = self$cellsTable_water$cellIdx[rowNum],
 
-                    soluteConcentration = cellsTable$initConcNO3[rowNum],
+                    processDomain = self$cellsTable_water$processDomain[rowNum],
 
-                    channelWidth = cellsTable$channelWidth[rowNum],
-                    channelLength = cellsTable$channelLength[rowNum],
-                    channelDepth = cellsTable$channelDepth[rowNum]
+                    channelWidth = self$cellsTable_water$channelWidth[rowNum],
+                    channelLength = self$cellsTable_water$channelLength[rowNum],
+                    channelDepth = self$cellsTable_water$channelDepth[rowNum]
                   )
                 }
               )
-            names(self$cells) <- cellsTable$cellIdx
+            names(cells_stream_water) <- self$cellsTable_water$cellIdx
+
+            cells_stream_solute <-
+              plyr::llply(
+                1:nrow(self$cellsTable_solute),
+                function(rowNum){
+                  Cell_Water_Stream$new(
+                    cellIdx = self$cellsTable_solute$cellIdx[rowNum],
+                    processDomain = self$cellsTable_solute$processDomain[rowNum],
+                    currency = self$cellsTable_solute$currency[rowNum],
+
+                    concentration = self$cellsTable_solute$concentration[rowNum],
+                    linkedCell = self$cellsTable_solute$linkedCell[rowNum]
+                  )
+                }
+              )
+            names(cells_stream_solute) <- self$cellsTable_solute$cellIdx
+
+            self$cells <- c(cells_stream_water, cells_stream_solute)
+
+            #############################  AMR stopped editing code here on 09/11/2020 at 2:45 PM
+
+
+
+
+
+
 
             # Generate the boundaries from the boundsTable in the model
 
