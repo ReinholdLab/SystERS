@@ -15,93 +15,33 @@ Cell <-
     public =
       list(
         cellIdx = NULL,
+        currency = NULL,
         initialize =
           function(cellIdx){
             self$cellIdx <- cellIdx
+            self$currency <- currency
           }
       )
   )
 
-#' @title Class StreamCell (R6)
+#' @title Class Cell_Water_Stream (R6)
 #'
-#' @description Instantiate a \code{StreamCell} object. Class \code{StreamCell}
-#'   inherits from class \code{Cell}. The following parameters will be
-#'   calculated on the fly from the remaining parameters if they are not
-#'   specified directly by the user: \code{channelArea, channelVelocity,
-#'   channelResidenceTime, qStorage, hydraulicLoad}.
+#' @description Instantiate a \code{Class Cell_Water_Stream} object. Class
+#'   \code{Class Cell_Water_Stream} inherits from class \code{Cell}.
 #'
-#' @param soluteConcentration is the concentration of the solute in user
-#'   specified units.
-#' @param discharge is the water discharge, Q, in user specified units.
-#' @param aquiferVolume is the volume of the stream aquifer/hyporheic zone.
-#' @param porosity is the porosity of the streambed and hyporheic zone.
-#' @param channelWidth is the width of the stream channel surface.
-#' @param channelLength is the length of the stream channel surface for the
-#'   given reach represented by the \code{StreamCell} specified herein.
-#' @param channelArea is the area of the stream channel surface for the given
-#'   \code{StreamCell}.
-#' @param channelDepth is the height of the water surface above the streambed.
-#' @param channelVelocity is the mean velocity of the water in the stream
-#'   channel.
-#' @param channelResidenceTime is the mean residence time of the reach
-#'   represented by the \code{StreamCell} specified herein.
-#' @param qStorage is the total hyporheic exchange rate, i.e., the rate at which
-#'   water is downwelling into and - since this model assumes steady state -
-#'   upwelling up from the hyporheic zone.
-#' @param hydraulicLoad is the hydraulic load for the reach represented by the
-#'   \code{StreamCell} specified herein.
-
+#' @param channelWidth the width of the stream channel surface (distance from
+#'   left bank to right bank)
+#' @param channelLength is the length of the stream channel surface for the cell
+#'   (distance of cell from upstream to downstream)
+#' @param channelArea the area of the stream channel surface of the water in the
+#'   cell
+#' @param channelDepth  the height of the water surface above the streambed
+#' @param channelVolume the volume of water in the cell
 #'
 #' @export
 #'
-#' @return The object of class \code{Cell}.
+#' @return The object of class \code{Cell_Water_Stream}.
 #'
-StreamCell <-
-  R6::R6Class(
-    classname = "StreamCell",
-    inherit = Cell,
-    public =
-      list(
-        soluteConcentration = NULL,
-        soluteMass = NULL,
-        channelWidth = NULL,
-        channelLength = NULL,
-        channelArea = NULL,
-        channelDepth = NULL,
-
-
-        channelVolume_L = NULL,
-        channelVolume_m3 = NULL,
-
-        initialize =
-          function(...,
-                   soluteConcentration,
-                   channelWidth,
-                   channelLength,
-                   channelDepth
-          ){
-
-            super$initialize(...)
-
-            self$channelWidth <- channelWidth
-            self$channelLength <- channelLength
-            self$channelDepth <- channelDepth
-            self$channelArea <- self$channelWidth * self$channelLength
-            self$channelVolume_m3 <- self$channelArea * self$channelDepth
-            self$channelVolume_L <- 1000 *  self$channelVolume_m3
-
-            self$soluteConcentration <- soluteConcentration
-            # have to multiply by 1000 because units of concentration are ug/L
-            # but cell volume is m3 --- will need to decide how we want to
-            # handle this in time as hardcoding it this way is clearly a bad
-            # idea...anyhow, this gives units of ug NO3-N
-            self$soluteMass <- self$soluteConcentration * self$channelVolume_L
-
-          }
-      )
-  )
-
-
 Cell_Water_Stream <-
   R6::R6Class(
     classname = "Cell_Water_Stream",
@@ -118,7 +58,6 @@ Cell_Water_Stream <-
         initialize =
           function(
             ...,
-            soluteConcentration,
             channelWidth,
             channelLength,
             channelDepth
@@ -134,6 +73,21 @@ Cell_Water_Stream <-
       )
   )
 
+
+#' @title Class Cell_Solute_Stream (R6)
+#'
+#' @description Instantiate a \code{Cell_Solute_Stream} object. Class
+#'   \code{Cell_Solute_Stream} inherits from class \code{Cell}.
+#'
+#' @param concentration the concentration of the solute in user specified units
+#'   (mass or mols per unit volume)
+#' @param amount the amount of the solute in user specified units (mass or mols)
+#' @param linkedCell the cell containing the water in which this solute is located
+#'
+#' @export
+#'
+#' @return The object of class \code{Cell_Solute_Stream}.
+#'
 Cell_Solute_Stream <-
   R6::R6Class(
     classname = "Cell_Solute_Stream",
