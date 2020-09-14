@@ -41,7 +41,16 @@ WQModel <-
         storeData = NULL,
 
         initialize =
-          function(boundsTable, cellsTable, unitsTable, soluteRemovalMethod, k, timeInterval, ...) {
+          function(boundsTransportTable_water,
+                   boundsTransportTable_solute,
+                   boundsReactionTable_solute,
+                   cellsTable_water,
+                   cellsTable_solute,
+                   unitsTable,
+                   soluteRemovalMethod,
+                   k,
+                   timeInterval,
+                   ...) {
             # set duration of each time step
             self$timeInterval <- timeInterval
 
@@ -64,6 +73,8 @@ WQModel <-
             self$soluteRemovalMethod <- soluteRemovalMethod
 
             # generate the stream cells from the cells tables
+
+            # water cells
             cells_stream_water <-
               plyr::llply(
                 1:nrow(self$cellsTable_water),
@@ -81,6 +92,7 @@ WQModel <-
               )
             names(cells_stream_water) <- self$cellsTable_water$cellIdx
 
+            # solute cells
             cells_stream_solute <-
               plyr::llply(
                 1:nrow(self$cellsTable_solute),
@@ -97,84 +109,149 @@ WQModel <-
               )
             names(cells_stream_solute) <- self$cellsTable_solute$cellIdx
 
+            # store all cells
             self$cells <- c(cells_stream_water, cells_stream_solute)
 
-            #############################  AMR stopped editing code here on 09/11/2020 at 2:45 PM
 
+            # Generate the boundaries from the three tables with boundaries info
+            self$boundsTransportTable_water <- boundsTransportTable_water
+            self$boundsTransportTable_solute <- boundsTransportTable_solute
+            self$boundsReactionTable_solute <- boundsReactionTable_solute
 
-
-
-
-
-
-            # Generate the boundaries from the boundsTable in the model
-
-            # First, order the bounds table by the calculate order column. This
-            # ordering makes it so that you can call the boundaries in the the
-            # correct order simply by looping through the list of bounds.
-            boundsTable <- boundsTable[order(boundsTable$calculateOrder), ]
-            self$boundsTable <- boundsTable
+            boundsTables <- list(bounds_stream_water_transport = self$boundsTransportTable_water,
+                                 bounds_stream_solute_transport = self$boundsTransportTable_solute,
+                                 bounds_stream_solute_reaction = self$boundsReactionTable_solute)
 
             # A series of error checks:
-            if( any( duplicated(self$boundsTable) ) ){
-              stop("At least one specification for a boundary is duplicated.")
-            }
-            if(length(boundsTable$boundaryIdx) != length(unique(boundsTable$boundaryIdx))) {
-              stop("A boundary name was duplicated in the boundsTable.  All boundary names must be unique.")
-            }
-            if( any(!(unique(boundsTable$downstreamCellIdx[!is.na(boundsTable$downstreamCellIdx)]) %in% unique(sapply(self$cells, function(cell) cell$cellIdx)))) ){
-              stop("In the boundsTable, a name of a downstream cell was provided that refers to a cell that has not been instantiated.")
-            }
-            if( any(!(unique(boundsTable$upstreamCellIdx[!is.na(boundsTable$upstreamCellIdx)]) %in% unique(sapply(self$cells, function(cell) cell$cellIdx)))) ){
-              stop("In the boundsTable, a name of an upstream cell was provided that refers to a cell that has not been instantiated.")
-            }
+            llply(
+              1:length(boundsTables),
+              function(i) {
+                tblName <- names(boundsTables)[i]
+                t <- boundsTables[[i]]
+                if( any( duplicated(t$boundsTable) ) ){
+                  stop(paste0("At least one specification for a boundary is duplicated in the table", tblName, "."))
+                }
+                if(length(t$boundaryIdx) != length(unique(t$boundaryIdx))) {
+                  stop(paste0("A boundary name was duplicated in the table:", tblName, ".  All boundary names must be unique."))
+                }
+                if( any(!(unique(t$downstreamCellIdx[!is.na(t$downstreamCellIdx)]) %in% unique(sapply(t$cells, function(cell) cell$cellIdx)))) ){
+                  stop(paste0("In the table", tblName, ", a name of a downstream cell was provided that refers to a cell that has not been instantiated."))
+                }
+                if( any(!(unique(t$upstreamCellIdx[!is.na(t$upstreamCellIdx)]) %in% unique(sapply(t$cells, function(cell) cell$cellIdx)))) ){
+                  stop(paste0("In the table", tblName, ", a name of a upstream cell was provided that refers to a cell that has not been instantiated."))
+                }
+              }
+            )
 
-
+            # First, create the water transport boundaries
             self$bounds <-
               plyr::llply(
-                1:nrow(boundsTable),
+                1:nrow(boundsTables[["bounds_transport_water"]]),
                 function(rowNum) {
 
-                  usCrit <- self$boundsTable$upstreamCellIdx[rowNum]
-                  dsCrit <- self$boundsTable$downstreamCellIdx[rowNum]
+                  usCrit <- boundsTables[["bounds_transport_water"]]$upstreamCellIdx[rowNum]
+                  dsCrit <- boundsTables[["bounds_transport_water"]]$downstreamCellIdx[rowNum]
 
                   if(is.na(usCrit)){
-                    usCell <- NA
+                    upstreamCell <- NA
                   } else{
-                    usCell <- self$cells[[ which(names(self$cells) ==  usCrit) ]]
+                    upstreamCell <- self$cells[[ which(names(self$cells) ==  usCrit) ]]
                   }
 
                   if(is.na(dsCrit)){
-                    dsCell <- NA
+                    downstreamCell <- NA
                   } else{
-                    dsCell <- self$cells[[ which(names(self$cells) ==  dsCrit) ]]
+                    downstreamCell <- self$cells[[ which(names(self$cells) ==  dsCrit) ]]
                   }
 
-                  # print(paste("bound:", boundsTable$boundaryIdx[rowNum] , ";   u/s cell:", usCellIdx, ";   d/s cell:", dsCellIdx, sep = ""))
-
-                    Boundary$new(
-                      boundaryIdx = boundsTable$boundaryIdx[rowNum],
-                      currency = boundsTable$currency[rowNum],
-                      boundarySuperClass = boundsTable$boundarySuperClass[rowNum],
-                      upstreamCell = usCell,
-                        # self$cells[[ usCellIdx ]],
-                      downstreamCell = dsCell,
-                        # self$cells[[ dsCellIdx ]],
-                      calculateOrder = boundsTable$calculateOrder[rowNum],
-                      pcntToRemove = boundsTable$pcntToRemove[rowNum],
-                      discharge = boundsTable$discharge[rowNum],
-                      k = self$k,
-                      alpha = boundsTable$alpha[rowNum],
-                      tauMin = boundsTable$tauMin[rowNum],
-                      tauMax = boundsTable$tauMax[rowNum],
-                      soluteLoad = boundsTable$soluteLoad[rowNum],
-                      qStorage = boundsTable$qStorage[rowNum],
-                      linkedTo = boundsTable$linkedTo[rowNum]
-                    )
+                  Boundary$new(
+                    boundaryIdx = boundsTable$boundaryIdx[rowNum],
+                    currency = boundsTable$currency[rowNum],
+                    boundarySuperClass = boundsTable$boundarySuperClass[rowNum],
+                    upstreamCell = upstreamCell,
+                    downstreamCell = downstreamCell,
+                    discharge = boundsTable$discharge[rowNum]
+                  )
 
                 }
               )
             names(self$bounds) <- boundsTable$boundaryIdx
+
+            # Solute transport boundaries
+            bounds_transport_solute <-
+              plyr::llply(
+                1:nrow(boundsTables[["bounds_transport_solute"]]),
+                function(rowNum) {
+                  Boundary$new(
+                    boundaryIdx = boundsTable$boundaryIdx[rowNum],
+                    currency = boundsTable$currency[rowNum],
+                    boundarySuperClass = boundsTable$boundarySuperClass[rowNum],
+                    linkedBound = boundsTable$linkedBound[rowNum],
+                    concentration = boundsTable$concentration,
+                    load = boundsTable$load
+                  )
+
+                }
+              )
+            names(bounds_transport_solute) <- boundsTables[["bounds_transport_solute"]]$boundaryIdx
+            # add the  u/s and d/s cells from the linked cells table
+            plyr::llply(
+              1:nrow(bounds_transport_solute),
+              function(b) {
+                b$upstreamCell <- b$linkedBound$upstreamCell
+                b$downstreamCell <- b$linkedBound$downstreamCell
+              }
+            )
+
+            # Create solute reaction boundaries
+            bounds_react_solute <-
+              plyr::llply(
+                1:nrow(boundsTables[["bounds_react_solute"]]),
+                function(rowNum) {
+                  Boundary$new(
+                    boundaryIdx = boundsTable$boundaryIdx[rowNum],
+                    currency = boundsTable$currency[rowNum],
+                    boundarySuperClass = boundsTable$boundarySuperClass[rowNum],
+                    upstreamCell = boundsTable$upstreamCell[rowNum],
+                    pcntToRemove = boundsTable$pcntToRemove[rowNum],
+                    qStorage = boundsTable$qStorage[rowNum],
+                    alpha = boundsTable$alpha[rowNum],
+                    tauMin = boundsTable$tauMin[rowNum],
+                    tauMax = boundsTable$tauMax[rowNum],
+                    k = boundsTable$k[rowNum]
+                  )
+
+                }
+              )
+            names(bounds_transport_solute) <- boundsTables[["bounds_transport_solute"]]$boundaryIdx
+
+
+            # Add the solute transport and solute reaction boundaries to the bounds list
+            self$bounds <- c(self$bounds, bounds_transport_solute, bounds_react_solute)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             # bounds with links...link 'em up...
             linkedBounds <- self$bounds[ unlist(plyr::llply(self$bounds, function(bound) !is.na( bound$linkedTo))) ]
@@ -207,10 +284,10 @@ WQModel$set(
     tradeCurrency <- rep(NA, length(self$bounds))
     rxnVals <- NULL
     valName <- rep(NA, length(self$bounds))
-    usCell <- as.list(rep(NA, length(self$bounds)))
-    dsCell <- as.list(rep(NA, length(self$bounds)))
-    usCellIdx <- rep(NA, length(self$bounds))
-    dsCellIdx <- rep(NA, length(self$bounds))
+    upstreamCell <- as.list(rep(NA, length(self$bounds)))
+    downstreamCell <- as.list(rep(NA, length(self$bounds)))
+    upstreamCellIdx <- rep(NA, length(self$bounds))
+    downstreamCellIdx <- rep(NA, length(self$bounds))
     tradeType <- rep(NA, length(self$bounds))
     valIdx <- rep(NA, length(self$bounds))
     trades <- list()
@@ -222,19 +299,19 @@ WQModel$set(
       tradeCurrency[i] <- self$bounds[[i]]$currency
       boundIdx[i] <- self$bounds[[i]]$boundaryIdx
       if(! self$bounds[[i]]$usModBound){
-        usCell[[i]] <- self$bounds[[i]]$upstreamCell
-        usCellIdx[i] <- usCell[[i]]$cellIdx
+        upstreamCell[[i]] <- self$bounds[[i]]$upstreamCell
+        upstreamCellIdx[i] <- upstreamCell[[i]]$cellIdx
 
       }
       # else{
-      #   usCellIdx[i] <- NA
+      #   upstreamCellIdx[i] <- NA
       # }
       if(! self$bounds[[i]]$dsModBound) {
-        dsCell[[i]] <- self$bounds[[i]]$downstreamCell
-        dsCellIdx[i]  <- dsCell[[i]]$cellIdx
+        downstreamCell[[i]] <- self$bounds[[i]]$downstreamCell
+        downstreamCellIdx[i]  <- downstreamCell[[i]]$cellIdx
       }
       # else {
-      #   dsCellIdx[i] <- NA
+      #   downstreamCellIdx[i] <- NA
       # }
 
       if(self$bounds[[i]]$currency == "H2O" & self$bounds[[i]]$boundarySuperClass == "transport"){
@@ -274,11 +351,11 @@ WQModel$set(
 
     } # close for loop
 
-    # tradeList <- list(trades = I(trades), boundIdx = boundIdx, tradeCurrency = tradeCurrency, tradeVals = tradeVals, valIdx = valIdx, valName = valName, usCellIdx = usCellIdx, dsCellIdx = dsCellIdx, tradeType = tradeType, usCell = I(usCell), dsCell = I(dsCell))
-    tradeDf <- data.frame(trades = I(trades), boundIdx, tradeCurrency, tradeVals, valIdx, valName, usCellIdx, dsCellIdx, tradeType, usCell = I(usCell), dsCell = I(dsCell))
+    # tradeList <- list(trades = I(trades), boundIdx = boundIdx, tradeCurrency = tradeCurrency, tradeVals = tradeVals, valIdx = valIdx, valName = valName, upstreamCellIdx = upstreamCellIdx, downstreamCellIdx = downstreamCellIdx, tradeType = tradeType, upstreamCell = I(upstreamCell), downstreamCell = I(downstreamCell))
+    tradeDf <- data.frame(trades = I(trades), boundIdx, tradeCurrency, tradeVals, valIdx, valName, upstreamCellIdx, downstreamCellIdx, tradeType, upstreamCell = I(upstreamCell), downstreamCell = I(downstreamCell))
     class(tradeDf$trades) <- "list"
-    class(tradeDf$usCell) <- "list"
-    class(tradeDf$dsCell) <- "list"
+    class(tradeDf$upstreamCell) <- "list"
+    class(tradeDf$downstreamCell) <- "list"
     rxnValDf <- rxnVals
     return(list(tradeDf, rxnValDf))
   }
