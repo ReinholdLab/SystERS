@@ -25,6 +25,51 @@ Cell <-
       )
   )
 
+
+#' @title Class Cell_Water (R6)
+#'
+#' @description Instantiate a \code{Class Cell_Water} object. Class
+#'   \code{Class Cell_Water} inherits from class \code{Cell}.
+#'
+#' @param waterVolume the volume of water in the cell
+#'
+#' @export
+#'
+Cell_Water <-
+  R6::R6Class(
+    classname = "Cell_Water",
+    inherit = Cell,
+    public =
+      list(
+        waterVolume = NULL,
+        linkedSoluteCells = NULL,
+
+        initialize =
+          function(
+            waterVolume,
+            # linkedSoluteCells,
+            ...
+            ){
+
+            super$initialize(...)
+
+            self$waterVolume <- waterVolume
+            # self$linkedSoluteCells <- linkedSoluteCells
+          }
+      )
+  )
+
+Cell_Water$set(
+  which = "public",
+  name = "linkedSoluteCells",
+  value = function(linkedSoluteCells){
+    self$linkedSoluteCells <- linkedSoluteCells
+  }
+)
+
+
+
+
 #' @title Class Cell_Water_Stream (R6)
 #'
 #' @description Instantiate a \code{Class Cell_Water_Stream} object. Class
@@ -54,7 +99,7 @@ Cell_Water_Stream <-
         channelArea = NULL,
         channelDepth = NULL,
 
-        channelVolume = NULL,
+        # waterVolume = NULL,
 
         initialize =
           function(
@@ -69,16 +114,16 @@ Cell_Water_Stream <-
             self$channelLength <- channelLength
             self$channelDepth <- channelDepth
             self$channelArea <- self$channelWidth * self$channelLength
-            self$channelVolume <- self$channelArea * self$channelDepth
+            self$waterVolume <- self$channelArea * self$channelDepth
           }
       )
   )
 
 
-#' @title Class Cell_Solute_Stream (R6)
+#' @title Class Cell_Solute (R6)
 #'
-#' @description Instantiate a \code{Cell_Solute_Stream} object. Class
-#'   \code{Cell_Solute_Stream} inherits from class \code{Cell}.
+#' @description Instantiate a \code{Cell_Solute} object. Class
+#'   \code{Cell_Solute} inherits from class \code{Cell}.
 #'
 #' @param concentration the concentration of the solute in user specified units
 #'   (mass or mols per unit volume)
@@ -87,11 +132,11 @@ Cell_Water_Stream <-
 #'
 #' @export
 #'
-#' @return The object of class \code{Cell_Solute_Stream}.
+#' @return The object of class \code{Cell_Solute}.
 #'
-Cell_Solute_Stream <-
+Cell_Solute <-
   R6::R6Class(
-    classname = "Cell_Solute_Stream",
+    classname = "Cell_Solute",
     inherit = Cell,
     public =
       list(
@@ -109,7 +154,7 @@ Cell_Solute_Stream <-
             super$initialize(...)
 
             self$concentration <- concentration
-            self$amount <- self$concentration * self$linkedCell$channelVolume
+            self$amount <- self$concentration * self$linkedCell$waterVolume
 
           }
       )

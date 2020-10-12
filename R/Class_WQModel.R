@@ -148,8 +148,19 @@ WQModel <-
                     )
                   }
                 )
-              names(cells_solute_stream) <- self$self$cellsTable_solute_stream$cellIdx
+              names(cells_solute_stream) <- self$cellsTable_solute_stream$cellIdx
             }
+
+            cells_water_stream <-
+              lapply(
+                cells_water_stream,
+                function(c) {
+                  # identify the water cells to which the solute cells are connected
+                  theCells <- as.list(self$cellsTable_solute_stream$cellIdx[self$cellsTable_solute_stream$linkedCell == c$cellIdx])
+                  # link the solute cells to the water cells
+                  c$linkedSoluteCells(theCells)
+                })
+
 
             # store all cells
             self$cells <- mget(names(cellsTableList))
@@ -266,13 +277,11 @@ WQModel <-
                     concentration = solute_transport_df$concentration,
                     load = solute_transport_df$load
                   )
-
                 }
               )
             names(bounds_transport_solute) <- solute_transport_df$boundaryIdx
             # add the  u/s and d/s cells from the linked cells table
 
-            #################  AM review this code here and below (10/09/2020)
             plyr::llply(
               1:nrow(bounds_transport_solute),
               function(b) {
