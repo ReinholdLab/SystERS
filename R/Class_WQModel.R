@@ -164,20 +164,16 @@ WQModel <-
             names(bounds_transport_solute) <- solute_transport_df$boundaryIdx
 
 
-
-
-
-
             # Create solute reaction boundaries
             bounds_react_solute <- self$initializeSoluteReactionBoundaries()
             names(bounds_react_solute) <- self$boundsTableList[["bounds_react_solute"]]$boundaryIdx
 
 
             # Add the solute transport and solute reaction boundaries to the bounds list
-            self$bounds <- c(self$bounds, bounds_transport_solute, bounds_react_solute)
+            self$bounds <- c(bounds_transport_water_ext, bounds_transport_water_int, bounds_transport_solute, bounds_react_solute)
 
 
-            # populate dependencies
+            # populate dependencies  ############################ AMR CHECK THIS>>>>
             lapply(self$bounds, function(b) Boundary$public_methods$populateDependencies(b) )
 
             # initialize store info
@@ -416,7 +412,10 @@ WQModel$set(
   which = "public",
   name = "initializeSoluteTransportBoundaries",
   value =
-    function(){
+    function(
+      bounds_transport_water_ext = bounds_transport_water_ext,
+      bounds_transport_water_int = bounds_transport_water_int
+    ){
       plyr::llply(
         1:nrow(self$solute_transport_df),
         function(rowNum) {
@@ -424,7 +423,7 @@ WQModel$set(
             boundaryIdx = self$solute_transport_df$boundaryIdx[rowNum],
             currency = self$solute_transport_df$currency[rowNum],
             boundarySuperClass = self$solute_transport_df$boundarySuperClass[rowNum],
-            linkedBound = c(boundsTransportTable_water_ext, bounds_transport_water_int)[[ self$solute_transport_df$linkedBound[rowNum] ]],
+            linkedBound = c(bounds_transport_water_ext, bounds_transport_water_int)[[ self$solute_transport_df$linkedBound[rowNum] ]],
             concentration = self$solute_transport_df$concentration[rowNum],
             load = self$solute_transport_df$load[rowNum]
           )
