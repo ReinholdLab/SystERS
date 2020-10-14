@@ -42,7 +42,7 @@ Cell_Water <-
     public =
       list(
         waterVolume = NULL,
-        linkedSoluteCells = NULL,
+        # linkedSoluteCells = NULL,
 
         initialize =
           function(
