@@ -49,15 +49,18 @@ Boundary_Transport_Solute <-
 
 
         #' @method Method Boundary_Transport_Solute$trade_static
-        #' @description Calculate the amount of solute to pass through the boundary.
-        #' @return The amount of solute and the load to pass through the boundary.
+        #' @description Calculate the amount of solute to pass through the
+        #'   boundary.
+        #' @return Updates the \code{load} and \code{amount} in the boundary.
+        #'   Returns a list of length 2 corresponding to both \code{load} and
+        #'   \code{amount}.
         trade_static = function(){
           # get the discharge and solute concentration in the water transport
           # boundary to which this solute transport boundary is linked
           discharge <- self$linkedBound$discharge # L s-1
 
           if(!self$usModBound) {
-            upstreamConcentration <- self$upstreamCell$linkedCell$concentration # g  m-3
+            upstreamConcentration <- self$upstreamCell$concentration # g  m-3
             # multiply discharge by concentration to get load
             self$load <- self$linkedBound$discharge * upstreamConcentration # g s-1
           }
