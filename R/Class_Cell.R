@@ -71,6 +71,8 @@ Cell_Water <-
 Cell_Water_Stream <-
   R6::R6Class(
     classname = "Cell_Water_Stream",
+
+    #' @inherit Cell_Water
     inherit = Cell_Water,
     public =
       list(
@@ -129,13 +131,13 @@ Cell_Water_Stream <-
 #' A cell containing a solute.  Must be linked to a water cell.
 #' @description Instantiate a \code{Cell_Solute} object. Class
 #'   \code{Cell_Solute} inherits from class \code{Cell}.
-#'
-#'
 #' @export
 
 Cell_Solute <-
   R6::R6Class(
     classname = "Cell_Solute",
+
+    #' @inherit Cell
     inherit = Cell,
     public =
       list(
