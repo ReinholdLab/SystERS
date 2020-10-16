@@ -165,10 +165,10 @@ Cell_Solute <-
           ){
             super$initialize(...)
 
+            self$linkedCell <- linkedCell
+
             self$concentration <- concentration
             self$amount <- self$concentration * self$linkedCell$waterVolume
-
-            self$linkedCell <- linkedCell
           }
       )
   )
