@@ -1,23 +1,25 @@
 #' @title Class Cell (R6)
-#'
-#' @description Instantiate a \code{Cell} object.
-#'
-#' @param cellIdx is the index for the cell
-#'
+#' Model cell
+#' @description Instantiate a \code{Cell}.
 #' @export
-#'
-#' @return The ojbect of class \code{Cell}.
-#'
-
 Cell <-
   R6::R6Class(
     classname = "Cell",
     public =
       list(
+        #' @field cellIdx Cell index
         cellIdx = NULL,
+        #' @field processDomain Process domain of the cell
+        processDomain = NULL,
+        #' @field currency Currency of the cell
         currency = NULL,
-        initialize =
-          function(cellIdx){
+
+        #' @description Instantiate a \code{Cell} object.
+        #' @param cellIdx Character string denoting the index for the cell
+        #' @param processDomain Character string indicating process domain of cell (soil, groundwater, or stream)
+        #' @param currency Character string with either water or name of solute
+        #' @return The ojbect of class \code{Cell}.
+        initialize = function(cellIdx, processDomain, currency){
             self$cellIdx <- cellIdx
             self$processDomain <- processDomain
             self$currency <- currency
@@ -25,82 +27,81 @@ Cell <-
       )
   )
 
-
 #' @title Class Cell_Water (R6)
-#'
-#' @description Instantiate a \code{Class Cell_Water} object. Class
-#'   \code{Class Cell_Water} inherits from class \code{Cell}.
-#'
-#' @param waterVolume the volume of water in the cell
-#'
+#' Water cell
+#' @description Instantiate a water cell. Inherits from class \code{Cell}.
 #' @export
-#'
+
 Cell_Water <-
   R6::R6Class(
     classname = "Cell_Water",
+
+    #' @inherit Cell
     inherit = Cell,
+
     public =
       list(
+        #' @field waterVolume volume of water stored in cell
         waterVolume = NULL,
-        # linkedSoluteCells = NULL,
+        #' @field linkedSoluteCells solute cells that are linked to the water cell
+        linkedSoluteCells = NULL,
+
+        #' @description Create a new water cell
+        #' @param waterVolume the volume of water in the cell
+        #' @param cellIdx Character string denoting the index for the cell
+        #' @param processDomain Character string indicating process domain of cell (soil, groundwater, or stream)
+        #' @param currency Character string with either water or name of solute
+        #' @return The ojbect of class \code{Cell}.
 
         initialize =
-          function(
-            waterVolume,
-            # linkedSoluteCells,
-            ...
-            ){
-
+          function(..., waterVolume = NULL){
             super$initialize(...)
 
             self$waterVolume <- waterVolume
-            # self$linkedSoluteCells <- linkedSoluteCells
           }
       )
-  )
-
-Cell_Water$set(
-  which = "public",
-  name = "linkedSoluteCells",
-  value = function(linkedSoluteCells){
-    self$linkedSoluteCells <- linkedSoluteCells
-  }
 )
 
 
-
-
 #' @title Class Cell_Water_Stream (R6)
-#'
-#' @description Instantiate a \code{Class Cell_Water_Stream} object. Class
-#'   \code{Class Cell_Water_Stream} inherits from class \code{Cell}.
-#'
-#' @param channelWidth the width of the stream channel surface (distance from
-#'   left bank to right bank)
-#' @param channelLength is the length of the stream channel surface for the cell
-#'   (distance of cell from upstream to downstream)
-#' @param channelArea the area of the stream channel surface of the water in the
-#'   cell
-#' @param channelDepth  the height of the water surface above the streambed
-#' @param channelVolume the volume of water in the cell
-#'
+#' A water cell in the stream processing domain
+#' @description Instantiate a water cell. Inherits from class \code{Cell_Water}.
 #' @export
-#'
-#' @return The object of class \code{Cell_Water_Stream}.
-#'
+
 Cell_Water_Stream <-
   R6::R6Class(
     classname = "Cell_Water_Stream",
-    inherit = Cell,
+    inherit = Cell_Water,
     public =
       list(
+        #' @field channelWidth Average width of stream channel in cell
         channelWidth = NULL,
+        #' @field channelLength Average length of channel in stream cell
         channelLength = NULL,
+        #' @field channelArea Area of surface water in stream cell
         channelArea = NULL,
+        #' @field channelDepth Average depth of channel in stream cell
         channelDepth = NULL,
 
-        # waterVolume = NULL,
-
+        #' @description Instantiate a \code{Class Cell_Water_Stream} object.
+        #'   Class \code{Class Cell_Water_Stream} inherits from class
+        #'   \code{Cell}.
+        #' @param waterVolume the volume of water in the cell calculated from
+        #'   the \code{channelLength, channelArea, and channelDepth} params
+        #' @param cellIdx Character string denoting the index for the cell
+        #' @param processDomain Character string indicating process domain of
+        #'   cell (soil, groundwater, or stream)
+        #' @param currency Character string with either water or name of solute
+        #' @param channelWidth the width of the stream channel surface (distance
+        #'   from left bank to right bank)
+        #' @param channelLength is the length of the stream channel surface for
+        #'   the cell (distance of cell from upstream to downstream)
+        #' @param channelArea the area of the stream channel surface of the
+        #'   water in the cell
+        #' @param channelDepth  the height of the water surface above the
+        #'   streambed
+        #' @return The object of class \code{Cell_Water_Stream}.
+        #'
         initialize =
           function(
             ...,
@@ -108,42 +109,50 @@ Cell_Water_Stream <-
             channelLength,
             channelDepth
           ){
+            channelArea <- channelWidth * channelLength
+            waterVolume <- channelArea * channelDepth
+
             super$initialize(...)
 
             self$channelWidth <- channelWidth
             self$channelLength <- channelLength
             self$channelDepth <- channelDepth
-            self$channelArea <- self$channelWidth * self$channelLength
-            self$waterVolume <- self$channelArea * self$channelDepth
+            self$channelArea <- channelArea
+            self$waterVolume <- waterVolume
+
           }
       )
   )
 
 
 #' @title Class Cell_Solute (R6)
-#'
+#' A cell containing a solute.  Must be linked to a water cell.
 #' @description Instantiate a \code{Cell_Solute} object. Class
 #'   \code{Cell_Solute} inherits from class \code{Cell}.
 #'
-#' @param concentration the concentration of the solute in user specified units
-#'   (mass or mols per unit volume)
-#' @param amount the amount of the solute in user specified units (mass or mols)
-#' @param linkedCell the cell containing the water in which this solute is located
 #'
 #' @export
-#'
-#' @return The object of class \code{Cell_Solute}.
-#'
+
 Cell_Solute <-
   R6::R6Class(
     classname = "Cell_Solute",
     inherit = Cell,
     public =
       list(
+        #' @field concentration Solute concentration in user specified units;
+        #'   user must ensure consistency in units
         concentration = NULL,
+        #' @field amount Solute amount in units of mass or mols
         amount = NULL,
-
+        #' @field linkedCell The water cell to which the solute cell is linked
         linkedCell = NULL,
+
+
+        #' @param concentration the concentration of the solute in user specified units
+        #'   (mass or mols per unit volume)
+        #' @param amount the amount of the solute in user specified units (mass or mols)
+        #' @param linkedCell the cell containing the water in which this solute is located
+        #' @return The object of class \code{Cell_Solute}.
 
         initialize =
           function(
@@ -159,3 +168,4 @@ Cell_Solute <-
           }
       )
   )
+
