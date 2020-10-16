@@ -84,7 +84,7 @@ Boundary_Transport_Water_Stream <-
         #' @description Populate boundary dependencies.  Sets the following
         #'   \code{channelVelocity, channelResidenceTime, hydraulicLoad} based
         #'   on the \code{discharge}.
-        #' @method Boundary_Transport_Water_Stream$populateDependencies
+        #' @method Method Boundary_Transport_Water_Stream$populateDependencies
         populateDependencies = function(){
           # To get velocity, divide Q by the mean of x-sec area of u/s and d/s
           # cell.  Upstream model boundaries (ie, most upstream) will thus
@@ -122,7 +122,7 @@ Boundary_Transport_Water_Stream <-
 
         #' @description Calculates the trades between the stream water cells
         #'   using the values provided for \code{discharge}.
-        #' @method Boundary_Transport_Water_Stream$trade_static
+        #' @method Method Boundary_Transport_Water_Stream$trade_static
         #' @return Updates the \code{volume} in the cell based on
         #'   \code{discharge}. Returns a list with two elements
         #'   (\code{discharge, volume}).
