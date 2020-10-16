@@ -185,7 +185,7 @@ WQModel <-
 
 
 
-#' @method errorCheckCellInputs
+#' @method WQModel$errorCheckCellInputs
 #'
 #' @description Error check to see if any cell specifications are duplicated
 #'
@@ -213,7 +213,7 @@ WQModel$set(
 
 
 
-#' @method initializeWaterCells_stream
+#' @method WQModel$initializeWaterCells_stream
 #'
 #' @description Instantiate the water cells in the stream process domain
 #'
@@ -243,7 +243,7 @@ WQModel$set(
     }
 )
 
-#' @method initializeSoluteCells_stream
+#' @method WQModel$initializeSoluteCells_stream
 #'
 #' @description Instantiate the solute cells in the stream process domain
 #'
@@ -272,7 +272,7 @@ WQModel$set(
     }
 )
 
-#' @method linkSoluteCellsToWaterCells_stream
+#' @method WQModel$linkSoluteCellsToWaterCells_stream
 #'
 #' @description Link the solute cells to the water cells in the stream process domain
 #'
@@ -291,14 +291,14 @@ WQModel$set(
           theCells <- cells_solute_stream[ names(cells_solute_stream) == cellIdxs]
           names(theCells) <- cellIdxs
           # link the solute cells to the water cells
-          c$linkedSoluteCells(theCells)
+          c$linkedSoluteCells <- theCells
         }
       )
     }
 )
 
 
-#' @method errorCheckBoundaryInputs
+#' @method WQModel$errorCheckBoundaryInputs
 #'
 #' @description Error check to see if any boundary specifications are duplicated
 #'   or have references to cells that do not exist.
@@ -332,7 +332,7 @@ WQModel$set(
     }
 )
 
-#' @method initializeExternalWaterTransportBoundaries
+#' @method WQModel$initializeExternalWaterTransportBoundaries
 #'
 #' @description Instantiate the transport boundaries that are on the physical edges of the model
 #'
@@ -374,7 +374,7 @@ WQModel$set(
 )
 
 
-#' @method initializeInternalWaterTransportBoundaries
+#' @method WQModel$initializeInternalWaterTransportBoundaries
 #'
 #' @description Instantiate the transport boundaries that are internal to the physical edges of the model
 #'
@@ -402,7 +402,7 @@ WQModel$set(
 )
 
 
-#' @method initializeSoluteTransportBoundaries
+#' @method WQModel$initializeSoluteTransportBoundaries
 #'
 #' @description Instantiate the solute transport boundaries
 #'
@@ -440,7 +440,7 @@ WQModel$set(
     }
 )
 
-#' @method initializeSoluteReactionBoundaries
+#' @method WQModel$initializeSoluteReactionBoundaries
 #'
 #' @description Instantiate the solute reaction boundaries
 #'

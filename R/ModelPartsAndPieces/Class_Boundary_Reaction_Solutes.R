@@ -1,11 +1,10 @@
 
 
-#' @title Boundary_Reaction_Solute
-#'
-#' @description Reaction boundary for solutes
-#'
+#' @title Class Boundary_Reaction_Solute (R6)
+#' Reaction boundary for a solute
+#' @description Reaction boundary for a solute
 #' @export
-#'
+
 Boundary_Reaction_Solute <-
   R6::R6Class(
     classname = "Boundary_Reaction_Solute",
