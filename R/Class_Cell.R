@@ -84,12 +84,14 @@ Cell_Water_Stream <-
         channelArea = NULL,
         #' @field channelDepth Average depth of channel in stream cell
         channelDepth = NULL,
+        #' @field waterVolume the volume of water in the cell calculated from
+        #'   the \code{channelLength, channelArea, and channelDepth} params
+        #' @field channelArea the area of the stream channel surface of the
+        #'   water in the cell
 
         #' @description Instantiate a \code{Class Cell_Water_Stream} object.
         #'   Class \code{Class Cell_Water_Stream} inherits from class
         #'   \code{Cell}.
-        #' @param waterVolume the volume of water in the cell calculated from
-        #'   the \code{channelLength, channelArea, and channelDepth} params
         #' @param cellIdx Character string denoting the index for the cell
         #' @param processDomain Character string indicating process domain of
         #'   cell (soil, groundwater, or stream)
@@ -98,8 +100,6 @@ Cell_Water_Stream <-
         #'   from left bank to right bank)
         #' @param channelLength is the length of the stream channel surface for
         #'   the cell (distance of cell from upstream to downstream)
-        #' @param channelArea the area of the stream channel surface of the
-        #'   water in the cell
         #' @param channelDepth  the height of the water surface above the
         #'   streambed
         #' @return The object of class \code{Cell_Water_Stream}.
@@ -144,15 +144,16 @@ Cell_Solute <-
         #' @field concentration Solute concentration in user specified units;
         #'   user must ensure consistency in units
         concentration = NULL,
-        #' @field amount Solute amount in units of mass or mols
+        #' @field amount Solute amount in user specified units (mass or mols)
         amount = NULL,
         #' @field linkedCell The water cell to which the solute cell is linked
         linkedCell = NULL,
 
-
+        #' @param cellIdx Character string denoting the index for the cell
+        #' @param processDomain Character string indicating process domain of cell (soil, groundwater, or stream)
+        #' @param currency Character string with either water or name of solute
         #' @param concentration the concentration of the solute in user specified units
         #'   (mass or mols per unit volume)
-        #' @param amount the amount of the solute in user specified units (mass or mols)
         #' @param linkedCell the cell containing the water in which this solute is located
         #' @return The object of class \code{Cell_Solute}.
 
@@ -167,6 +168,7 @@ Cell_Solute <-
             self$concentration <- concentration
             self$amount <- self$concentration * self$linkedCell$waterVolume
 
+            self$linkedCell <- linkedCell
           }
       )
   )
