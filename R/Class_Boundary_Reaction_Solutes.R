@@ -30,6 +30,19 @@ Boundary_Reaction_Solute <-
         #' @field processDomain Process domain of cell on which the reaction
         #'   boundary is interacting
         processDomain = NULL,
+        #' @field processMethod How to process the solute, either \code{pcnt} or \code{RT-PL}
+        processMethod = NULL,
+        #' @field tauMin Minimum residence time to consider
+        tauMin = NULL,
+        #' @field tauMax Maximum residence time to consider
+        tauMax = NULL,
+        #' @field alpha Power law exponent describing the shape of the curve,
+        #'   typically between -1.2 and -1.9
+        alpha = NULL,
+        #' @field k Uptake constant for solute in units of T-1
+        k = NULL,
+        #' @field qStorage Volumeteric rate of water entering the storage zone
+        qStorage = NULL,
         #' @field rxnVals A data frame storing the key reaction boundary inputs
         #'   and outputs
         rxnVals = NULL,
@@ -43,11 +56,24 @@ Boundary_Reaction_Solute <-
         #' @param upstreamCell  Cell (if one exists) upstream of the boundary
         #' @param downstreamCell Cell (if one exists) downstream of the boundary
         #' @param timeInterval  Model time step
+        #' @param processMethod How to process the solute, either \code{pcnt} or \code{RT-PL}
+        #' @param tauMin Minimum residence time to consider
+        #' @param tauMax Maximum residence time to consider
+        #' @param alpha Power law exponent describing the shape of the curve,
+        #'   typically between -1.2 and -1.9
+        #' @param k Uptake constant for solute in units of T-1
+        #' @param qStorage Volumeteric rate of water entering the storage zone
         #' @return The ojbect of class \code{Boundary_Reaction_Solute}.
         initialize =
           function(...){
             super$initialize(...)
             self$processDomain <- self$upstreamCell$processDomain
+            self$processMethod <- processMethod
+            self$tauMin <- tauMin
+            self$tauMax <- tauMax
+            self$alpha <- alpha
+            self$k <- k
+            self$qstorage <- qStorage
           },
 
         #' @method Method Boundary_Reaction_Solute$calc_removal_storage
@@ -56,13 +82,13 @@ Boundary_Reaction_Solute <-
         #'   time weighted approach
         #' @param pcntToRemove Fraction of solute to remove from storage
         #' @return
-        calc_removal_pcnt = function(method, pcntToRemove = NULL){
+        calc_removal_pcnt = function(){
 
-          if(method == "RT-PL"){
+          if(processMethod == "RT-PL"){
             self$fractionRemovedStorage <- self$calc_fracRemoval_resTimeWtdPowerLaw(remaining = FALSE)
             self$fractionRemainingStorage <- self$calc_fracRemoval_resTimeWtdPowerLaw(remaining = TRUE)
-          } else if(method == pcnt){
-            self$fractionRemovedStorage <- pcntToRemove/100
+          } else if(processMethod == pcnt){
+            self$fractionRemovedStorage <- self$pcntToRemove/100
             self$fractionRemainingStorage <- 1 - self$fractionRemovedStorage
           }
         },
@@ -75,13 +101,9 @@ Boundary_Reaction_Solute <-
         #'   = TRUE, then the function calculates the fraction of the solute
         #'   REMAINING; however if remaining = FALSE, then the function
         #'   calculates the fraction of solute REMOVED
-        #' @param tauMin Minimum residence time to consider
-        #' @param tauMax Maximum residence time to consider
-        #' @param alpha Power law exponent describing the shape of the curve,
-        #'   typically between -1.2 and -1.9
-        #' @param k Uptake constant for solute in units of T-1
+        #' @returns Fraction of solute removed or remaining in the storage zone
         calc_fracRemoval_resTimeWtdPowerLaw =
-          function(tauMin, tauMax, alpha, k, remaining){
+          function(){
 
               propUptkFunc <-
                 function(

@@ -4,6 +4,9 @@
 \alias{Boundary_Reaction_Solute}
 \title{Class Boundary_Reaction_Solute (R6)
 Reaction boundary for a solute}
+\value{
+Fraction of solute removed or remaining in the storage zone
+}
 \description{
 Reaction boundary for a solute
 }
@@ -30,6 +33,19 @@ of solute removed from and remaining in a cell sum to 1}
 
 \item{\code{processDomain}}{Process domain of cell on which the reaction
 boundary is interacting}
+
+\item{\code{processMethod}}{How to process the solute, either \code{pcnt} or \code{RT-PL}}
+
+\item{\code{tauMin}}{Minimum residence time to consider}
+
+\item{\code{tauMax}}{Maximum residence time to consider}
+
+\item{\code{alpha}}{Power law exponent describing the shape of the curve,
+typically between -1.2 and -1.9}
+
+\item{\code{k}}{Uptake constant for solute in units of T-1}
+
+\item{\code{qStorage}}{Volumeteric rate of water entering the storage zone}
 
 \item{\code{rxnVals}}{A data frame storing the key reaction boundary inputs
 and outputs}
@@ -77,6 +93,19 @@ boundary, e.g., \code{transport} or \code{reaction}}
 \item{\code{downstreamCell}}{Cell (if one exists) downstream of the boundary}
 
 \item{\code{timeInterval}}{Model time step}
+
+\item{\code{processMethod}}{How to process the solute, either \code{pcnt} or \code{RT-PL}}
+
+\item{\code{tauMin}}{Minimum residence time to consider}
+
+\item{\code{tauMax}}{Maximum residence time to consider}
+
+\item{\code{alpha}}{Power law exponent describing the shape of the curve,
+typically between -1.2 and -1.9}
+
+\item{\code{k}}{Uptake constant for solute in units of T-1}
+
+\item{\code{qStorage}}{Volumeteric rate of water entering the storage zone}
 }
 \if{html}{\out{</div>}}
 }
@@ -92,7 +121,7 @@ Calculates the fraction solute to remove from storage
   based on either a user specified percent or a power law residence
   time weighted approach
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Boundary_Reaction_Solute$calc_removal_pcnt(method, pcntToRemove = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Boundary_Reaction_Solute$calc_removal_pcnt()}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -117,29 +146,9 @@ Calculate fraction of solute removed/remainig from a
   REMAINING; however if remaining = FALSE, then the function
   calculates the fraction of solute REMOVED
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Boundary_Reaction_Solute$calc_fracRemoval_resTimeWtdPowerLaw(
-  tauMin,
-  tauMax,
-  alpha,
-  k,
-  remaining
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Boundary_Reaction_Solute$calc_fracRemoval_resTimeWtdPowerLaw()}\if{html}{\out{</div>}}
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{tauMin}}{Minimum residence time to consider}
-
-\item{\code{tauMax}}{Maximum residence time to consider}
-
-\item{\code{alpha}}{Power law exponent describing the shape of the curve,
-typically between -1.2 and -1.9}
-
-\item{\code{k}}{Uptake constant for solute in units of T-1}
-}
-\if{html}{\out{</div>}}
-}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-calc_trade_stream"></a>}}
