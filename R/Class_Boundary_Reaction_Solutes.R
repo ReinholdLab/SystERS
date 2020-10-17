@@ -8,7 +8,7 @@ Boundary_Reaction_Solute <-
     classname = "Boundary_Reaction_Solute",
 
     #' @inherit Boundary
-    inherit = Boundary_Reaction_Solute,
+    inherit = Boundary,
 
     public =
       list(
