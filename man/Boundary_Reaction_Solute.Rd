@@ -49,6 +49,10 @@ typically between -1.2 and -1.9}
 
 \item{\code{rxnVals}}{A data frame storing the key reaction boundary inputs
 and outputs}
+
+\item{\code{pcntToRemove}}{If process method is set to \code{pcnt}, then the
+percent of solute amount (mass or mols) to remove from storage must
+be specified}
 }
 \if{html}{\out{</div>}}
 }
@@ -74,27 +78,23 @@ and outputs}
 \subsection{Method \code{new()}}{
 Instantiate a reaction boundary for a solute
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Boundary_Reaction_Solute$new(...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Boundary_Reaction_Solute$new(
+  ...,
+  processMethod,
+  tauMin,
+  tauMax,
+  alpha,
+  k,
+  qStorage,
+  pcntToRemove
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{boundaryIdx}}{String indexing the boundary}
-
-\item{\code{currency}}{String naming the currency handled by the boundary as
-a character e.g., \code{water, NO3}}
-
-\item{\code{boundarySuperClass}}{String indicating the super class of the
-boundary, e.g., \code{transport} or \code{reaction}}
-
-\item{\code{upstreamCell}}{Cell (if one exists) upstream of the boundary}
-
-\item{\code{downstreamCell}}{Cell (if one exists) downstream of the boundary}
-
-\item{\code{timeInterval}}{Model time step}
-
-\item{\code{processMethod}}{How to process the solute, either \code{pcnt} or \code{RT-PL}}
+\item{\code{processMethod}}{How to process the solute, either \code{pcnt} or
+\code{RT-PL}}
 
 \item{\code{tauMin}}{Minimum residence time to consider}
 
@@ -106,6 +106,21 @@ typically between -1.2 and -1.9}
 \item{\code{k}}{Uptake constant for solute in units of T-1}
 
 \item{\code{qStorage}}{Volumeteric rate of water entering the storage zone}
+
+\item{\code{pcntToRemove}}{Percent of solute amount (mass or mols) to remove
+from storage}
+
+\item{\code{boundaryIdx}}{String indexing the boundary}
+
+\item{\code{currency}}{String naming the currency handled by the boundary as
+a character e.g., \code{water, NO3}}
+
+\item{\code{boundarySuperClass}}{String indicating the super class of the
+boundary, e.g., \code{transport} or \code{reaction}}
+
+\item{\code{upstreamCell}}{Cell (if one exists) upstream of the boundary}
+
+\item{\code{timeInterval}}{Model time step}
 }
 \if{html}{\out{</div>}}
 }
@@ -124,13 +139,6 @@ Calculates the fraction solute to remove from storage
 \if{html}{\out{<div class="r">}}\preformatted{Boundary_Reaction_Solute$calc_removal_pcnt()}\if{html}{\out{</div>}}
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{pcntToRemove}}{Fraction of solute to remove from storage}
-}
-\if{html}{\out{</div>}}
-}
 \subsection{Returns}{
 
 }

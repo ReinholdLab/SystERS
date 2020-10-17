@@ -46,6 +46,10 @@ Boundary_Reaction_Solute <-
         #' @field rxnVals A data frame storing the key reaction boundary inputs
         #'   and outputs
         rxnVals = NULL,
+        #' @field pcntToRemove If process method is set to \code{pcnt}, then the
+        #'   percent of solute amount (mass or mols) to remove from storage must
+        #'   be specified
+        pcntToRemove = NULL,
 
         #' @description Instantiate a reaction boundary for a solute
         #' @param boundaryIdx String indexing the boundary
@@ -54,18 +58,20 @@ Boundary_Reaction_Solute <-
         #' @param boundarySuperClass String indicating the super class of the
         #'   boundary, e.g., \code{transport} or \code{reaction}
         #' @param upstreamCell  Cell (if one exists) upstream of the boundary
-        #' @param downstreamCell Cell (if one exists) downstream of the boundary
         #' @param timeInterval  Model time step
-        #' @param processMethod How to process the solute, either \code{pcnt} or \code{RT-PL}
+        #' @param processMethod How to process the solute, either \code{pcnt} or
+        #'   \code{RT-PL}
         #' @param tauMin Minimum residence time to consider
         #' @param tauMax Maximum residence time to consider
         #' @param alpha Power law exponent describing the shape of the curve,
         #'   typically between -1.2 and -1.9
         #' @param k Uptake constant for solute in units of T-1
         #' @param qStorage Volumeteric rate of water entering the storage zone
+        #' @param pcntToRemove Percent of solute amount (mass or mols) to remove
+        #'   from storage
         #' @return The ojbect of class \code{Boundary_Reaction_Solute}.
         initialize =
-          function(...){
+          function(..., processMethod, tauMin, tauMax, alpha, k, qStorage, pcntToRemove){
             super$initialize(...)
             self$processDomain <- self$upstreamCell$processDomain
             self$processMethod <- processMethod
@@ -73,14 +79,14 @@ Boundary_Reaction_Solute <-
             self$tauMax <- tauMax
             self$alpha <- alpha
             self$k <- k
-            self$qstorage <- qStorage
+            self$qStorage <- qStorage
+            self$pcntToRemove <- pcntToRemove
           },
 
         #' @method Method Boundary_Reaction_Solute$calc_removal_storage
         #' @description Calculates the fraction solute to remove from storage
         #'   based on either a user specified percent or a power law residence
         #'   time weighted approach
-        #' @param pcntToRemove Fraction of solute to remove from storage
         #' @return
         calc_removal_pcnt = function(){
 

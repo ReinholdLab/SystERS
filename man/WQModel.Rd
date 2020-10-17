@@ -2,7 +2,8 @@
 % Please edit documentation in R/Class_WQModel.R
 \name{WQModel}
 \alias{WQModel}
-\title{Class WQModel (R6) A water quality model}
+\title{Class WQModel (R6)
+A water quality model}
 \description{
 Define and instantiate the WQ model and the network topology of
   cells and boundaries
@@ -20,6 +21,8 @@ Define and instantiate the WQ model and the network topology of
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{WQModel$new()}}
+\item \href{#method-cellFactory}{\code{WQModel$cellFactory()}}
+\item \href{#method-boundaryFactory}{\code{WQModel$boundaryFactory()}}
 \item \href{#method-errorCheckCellInputs}{\code{WQModel$errorCheckCellInputs()}}
 \item \href{#method-initializeWaterCells_stream}{\code{WQModel$initializeWaterCells_stream()}}
 \item \href{#method-initializeSoluteCells_stream}{\code{WQModel$initializeSoluteCells_stream()}}
@@ -108,9 +111,33 @@ cells and their attributes in the groundwater processing domain}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-The ojbect of class \code{WQModel}.  Boundaries and cells are
-  stored in lists called \code{bounds} and \code{cells},
-  respectively.
+The ojbect of class \code{WQModel}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cellFactory"></a>}}
+\if{latex}{\out{\hypertarget{method-cellFactory}{}}}
+\subsection{Method \code{cellFactory()}}{
+Create a list of the model cells
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{WQModel$cellFactory()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A list of model cells
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-boundaryFactory"></a>}}
+\if{latex}{\out{\hypertarget{method-boundaryFactory}{}}}
+\subsection{Method \code{boundaryFactory()}}{
+Create a list of the model boundaries
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{WQModel$boundaryFactory()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A list of model boundaries
 }
 }
 \if{html}{\out{<hr>}}
@@ -161,9 +188,7 @@ List of stream solute cells
 Link the solute cells to the water cells in the stream process
   domain
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{WQModel$linkSoluteCellsToWaterCells_stream(
-  cells_water_stream = cells_water_stream
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{WQModel$linkSoluteCellsToWaterCells_stream()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
