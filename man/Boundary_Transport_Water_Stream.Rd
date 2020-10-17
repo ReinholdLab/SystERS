@@ -79,6 +79,9 @@ Populate boundary dependencies.  Sets the following
 \if{html}{\out{<div class="r">}}\preformatted{Boundary_Transport_Water_Stream$populateDependencies()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+Populates boundary dependencies
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-trade_static"></a>}}
