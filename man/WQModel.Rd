@@ -41,7 +41,8 @@ Define and instantiate the WQ model and the network topology of
   boundsTransportTable_water_int,
   boundsTransportTable_water_ext,
   boundsTransportTable_solute_int,
-  boundsTransportTable_solute_ext,
+  boundsTransportTable_solute_us,
+  boundsTransportTable_solute_ds,
   boundsReactionTable_solute_int,
   cellsTable_water_stream = NULL,
   cellsTable_solute_stream = NULL,
@@ -71,6 +72,14 @@ solute boundaries and their attributes for solute boundaries that
 are internal to the model, i.e., those with exactly one upstream
 and one downstream cell}
 
+\item{\code{boundsTransportTable_solute_us}}{Table with the names of the
+solute boundaries and their attributes for solute boundaries at the
+most upstream extent of the model topology}
+
+\item{\code{boundsTransportTable_solute_ds}}{Table with the names of the
+solute boundaries and their attributes for solute boundaries at the
+most downstream extent of the model topology}
+
 \item{\code{boundsReactionTable_solute_int}}{Table with the names of the
 solute reaction boundaries and their attributes}
 
@@ -95,14 +104,6 @@ cells and their attributes in the groundwater processing domain}
 \item{\code{unitsTable}}{Table of units for model parameters and outputs}
 
 \item{\code{timeInterval}}{Model time step}
-
-\item{\code{boundsTransportTable_solute_us}}{Table with the names of the
-solute boundaries and their attributes for solute boundaries at the
-most upstream extent of the model topology}
-
-\item{\code{boundsTransportTable_solute_ds}}{Table with the names of the
-solute boundaries and their attributes for solute boundaries at the
-most downstream extent of the model topology}
 }
 \if{html}{\out{</div>}}
 }
