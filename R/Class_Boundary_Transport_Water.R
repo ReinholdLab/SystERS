@@ -85,6 +85,7 @@ Boundary_Transport_Water_Stream <-
         #'   \code{channelVelocity, channelResidenceTime, hydraulicLoad} based
         #'   on the \code{discharge}.
         #' @method Method Boundary_Transport_Water_Stream$populateDependencies
+        #' @return Populates boundary dependencies
         populateDependencies = function(){
           # To get velocity, divide Q by the mean of x-sec area of u/s and d/s
           # cell.  Upstream model boundaries (ie, most upstream) will thus
