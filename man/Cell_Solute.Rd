@@ -47,6 +47,8 @@ user must ensure consistency in units}
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
+\item{\code{...}}{Parameters inherit from Class \code{\link{Cell}}}
+
 \item{\code{linkedCell}}{the cell containing the water in which this solute is located}
 
 \item{\code{concentration}}{the concentration of the solute in user specified units

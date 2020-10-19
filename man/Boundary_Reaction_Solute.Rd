@@ -34,7 +34,11 @@ of solute removed from and remaining in a cell sum to 1}
 \item{\code{processDomain}}{Process domain of cell on which the reaction
 boundary is interacting}
 
-\item{\code{processMethod}}{How to process the solute, either \code{pcnt} or \code{RT-PL}}
+\item{\code{processMethodName}}{How to process the solute, either
+\code{\link{Boundary_Reaction_Solute$processMethod_RT_PL}} or
+\code{\link{Boundary_Reaction_Solute$processMethod_pcnt}}}
+
+\item{\code{processMethod}}{Call to the Method  \code{pcnt} or \code{RT-PL}}
 
 \item{\code{tauMin}}{Minimum residence time to consider}
 
@@ -60,9 +64,9 @@ be specified}
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{Boundary_Reaction_Solute$new()}}
-\item \href{#method-calc_removal_pcnt}{\code{Boundary_Reaction_Solute$calc_removal_pcnt()}}
+\item \href{#method-processMethod_RT_PL}{\code{Boundary_Reaction_Solute$processMethod_RT_PL()}}
+\item \href{#method-processMethod_pcnt}{\code{Boundary_Reaction_Solute$processMethod_pcnt()}}
 \item \href{#method-calc_fracRemoval_resTimeWtdPowerLaw}{\code{Boundary_Reaction_Solute$calc_fracRemoval_resTimeWtdPowerLaw()}}
-\item \href{#method-calc_trade_stream}{\code{Boundary_Reaction_Solute$calc_trade_stream()}}
 \item \href{#method-clone}{\code{Boundary_Reaction_Solute$clone()}}
 }
 }
@@ -77,6 +81,7 @@ be specified}
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 Instantiate a reaction boundary for a solute
+#' @param ... Parameters inherit from Class \code{\link{Boundary}}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Boundary_Reaction_Solute$new(
   ...,
@@ -93,9 +98,6 @@ Instantiate a reaction boundary for a solute
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{processMethod}}{How to process the solute, either \code{pcnt} or
-\code{RT-PL}}
-
 \item{\code{tauMin}}{Minimum residence time to consider}
 
 \item{\code{tauMax}}{Maximum residence time to consider}
@@ -115,12 +117,12 @@ from storage}
 \item{\code{currency}}{String naming the currency handled by the boundary as
 a character e.g., \code{water, NO3}}
 
-\item{\code{boundarySuperClass}}{String indicating the super class of the
-boundary, e.g., \code{transport} or \code{reaction}}
-
 \item{\code{upstreamCell}}{Cell (if one exists) upstream of the boundary}
 
 \item{\code{timeInterval}}{Model time step}
+
+\item{\code{processMethodName}}{How to process the solute, either \code{pcnt} or
+\code{RT-PL}}
 }
 \if{html}{\out{</div>}}
 }
@@ -129,14 +131,24 @@ The ojbect of class \code{Boundary_Reaction_Solute}.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-calc_removal_pcnt"></a>}}
-\if{latex}{\out{\hypertarget{method-calc_removal_pcnt}{}}}
-\subsection{Method \code{calc_removal_pcnt()}}{
+\if{html}{\out{<a id="method-processMethod_RT_PL"></a>}}
+\if{latex}{\out{\hypertarget{method-processMethod_RT_PL}{}}}
+\subsection{Method \code{processMethod_RT_PL()}}{
 Calculates the fraction solute to remove from storage
-  based on either a user specified percent or a power law residence
-  time weighted approach
+  based on a power law residence time weighted approach
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Boundary_Reaction_Solute$calc_removal_pcnt()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Boundary_Reaction_Solute$processMethod_RT_PL()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-processMethod_pcnt"></a>}}
+\if{latex}{\out{\hypertarget{method-processMethod_pcnt}{}}}
+\subsection{Method \code{processMethod_pcnt()}}{
+Calculates the fraction solute to remove from storage
+  based on  a user specified percent
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Boundary_Reaction_Solute$processMethod_pcnt()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
@@ -157,20 +169,6 @@ Calculate fraction of solute removed/remainig from a
 \if{html}{\out{<div class="r">}}\preformatted{Boundary_Reaction_Solute$calc_fracRemoval_resTimeWtdPowerLaw()}\if{html}{\out{</div>}}
 }
 
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-calc_trade_stream"></a>}}
-\if{latex}{\out{\hypertarget{method-calc_trade_stream}{}}}
-\subsection{Method \code{calc_trade_stream()}}{
-Calculates the trades for reaction boundaries attached
-  to stream cells
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Boundary_Reaction_Solute$calc_trade_stream()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-Trades for reaction boundaries attached to stream cells
-}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}

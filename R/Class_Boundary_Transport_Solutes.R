@@ -24,11 +24,10 @@ Boundary_Transport_Solute <-
 
         #' @description Instantiate a transport boundary for solutes between
         #'   cells
+        #' @param ... Parameters inherit from Class \code{\link{Boundary}}
         #' @param boundaryIdx String indexing the boundary
         #' @param currency String naming the currency handled by the boundary as
         #'   a character e.g., \code{water, NO3}
-        #' @param boundarySuperClass String indicating the super class of the
-        #'   boundary, e.g., \code{transport} or \code{reaction}
         #' @param upstreamCell  Cell (if one exists) upstream of the boundary
         #' @param downstreamCell Cell (if one exists) downstream of the boundary
         #' @param timeInterval  Model time step

@@ -64,6 +64,9 @@ Instantiate a \code{Class Cell_Water_Stream} object.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
+\item{\code{...}}{Parameters inherit from Class \code{\link{Cell_Water}} and
+thus \code{\link{Cell}}}
+
 \item{\code{channelWidth}}{the width of the stream channel surface (distance
 from left bank to right bank)}
 

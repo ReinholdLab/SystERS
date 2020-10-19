@@ -12,9 +12,6 @@ Boundary <-
         boundaryIdx = NULL,
         #' @field currency Character string naming the currency
         currency = NULL,
-        #' @field boundarySuperClass Character string describing whether the
-        #'   boundary is a transport or reaction boundary
-        boundarySuperClass = NULL,
         #' @field timeInterval Model time step
         timeInterval = NULL,
         #' @field upstreamCell The cell upstream of the boundary (\code{NA} if
@@ -31,7 +28,6 @@ Boundary <-
         #' @description Instantiate a boundary
         #' @param boundaryIdx String indexing the boundary
         #' @param currency String naming the currency handled by the boundary as a character e.g., \code{water, NO3}
-        #' @param boundarySuperClass String indicating the super class of the boundary, e.g., \code{transport} or \code{reaction}
         #' @param upstreamCell  Cell (if one exists) upstream of the boundary
         #' @param downstreamCell Cell (if one exists) downstream of the boundary
         #' @param timeInterval  Model time step
@@ -40,7 +36,6 @@ Boundary <-
           function(
             boundaryIdx,
             currency,
-            boundarySuperClass,
             timeInterval,
 
             upstreamCell,
@@ -49,7 +44,6 @@ Boundary <-
 
             self$boundaryIdx <- boundaryIdx
             self$currency <- currency
-            self$boundarySuperClass <- boundarySuperClass
 
             self$timeInterval <- timeInterval
 

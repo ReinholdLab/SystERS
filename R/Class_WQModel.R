@@ -375,7 +375,6 @@ WQModel <-
                 Boundary_Transport_Water_Stream$new(
                   boundaryIdx = tbl$boundaryIdx[rowNum],
                   currency = tbl$currency[rowNum],
-                  boundarySuperClass = tbl$boundarySuperClass[rowNum],
                   upstreamCell = self$cells[[upstreamCell]],
                   downstreamCell = self$cells[[downstreamCell]],
                   discharge = tbl$discharge[rowNum],
@@ -385,7 +384,6 @@ WQModel <-
                 Boundary_Transport_Water$new(
                   boundaryIdx = tbl$boundaryIdx[rowNum],
                   currency = tbl$currency[rowNum],
-                  boundarySuperClass = tbl$boundarySuperClass[rowNum],
                   upstreamCell = self$cells[[upstreamCell]],
                   downstreamCell = self$cells[[downstreamCell]],
                   discharge = tbl$discharge[rowNum],
@@ -415,7 +413,6 @@ WQModel <-
                 Boundary_Transport_Water_Stream$new(
                   boundaryIdx = tbl$boundaryIdx[rowNum],
                   currency = tbl$currency[rowNum],
-                  boundarySuperClass = tbl$boundarySuperClass[rowNum],
                   upstreamCell = self$cells[[  tbl$upstreamCellIdx[rowNum] ]],
                   downstreamCell = self$cells[[ tbl$downstreamCellIdx[rowNum] ]],
                   discharge = tbl$discharge[rowNum],
@@ -425,7 +422,6 @@ WQModel <-
                 Boundary_Transport_Water$new(
                   boundaryIdx = tbl$boundaryIdx[rowNum],
                   currency = tbl$currency[rowNum],
-                  boundarySuperClass = tbl$boundarySuperClass[rowNum],
                   upstreamCell = self$cells[[  tbl$upstreamCellIdx[rowNum] ]],
                   downstreamCell = self$cells[[ tbl$downstreamCellIdx[rowNum] ]],
                   discharge = tbl$discharge[rowNum],
@@ -451,7 +447,6 @@ WQModel <-
                 Boundary_Transport_Solute$new(
                   boundaryIdx = tbl$boundaryIdx[rowNum],
                   currency = tbl$currency[rowNum],
-                  boundarySuperClass = tbl$boundarySuperClass[rowNum],
                   linkedBound = self$bounds[[ tbl$linkedBound[rowNum] ]],
                   # concentration = tbl$concentration[rowNum],
                   load = tbl$load[rowNum],
@@ -476,7 +471,6 @@ WQModel <-
               Boundary_Reaction_Solute$new(
                 boundaryIdx = tbl$boundaryIdx[rowNum],
                 currency = tbl$currency[rowNum],
-                boundarySuperClass = tbl$boundarySuperClass[rowNum],
                 upstreamCell = self$cells[[ tbl$upstreamCellIdx[rowNum] ]],
                 downstreamCell = NULL,
                 timeInterval = self$timeInterval,

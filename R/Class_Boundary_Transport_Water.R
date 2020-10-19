@@ -17,10 +17,10 @@ Boundary_Transport_Water <-
         volume = NULL,
 
         #' @description Instantiate a water transport boundary
+        #' @param ... Parameters inherit from Class \code{\link{Boundary}}
         #' @param discharge Rate of water discharge (a.k.a. Q)
         #' @param boundaryIdx String indexing the boundary
         #' @param currency String naming the currency handled by the boundary as a character e.g., \code{water, NO3}
-        #' @param boundarySuperClass String indicating the super class of the boundary, e.g., \code{transport} or \code{reaction}
         #' @param upstreamCell  Cell (if one exists) upstream of the boundary
         #' @param downstreamCell Cell (if one exists) downstream of the boundary
         #' @param timeInterval  Model time step
@@ -66,10 +66,10 @@ Boundary_Transport_Water_Stream <-
 
 
         #' @description Instantiate a water transport boundary in the stream processing domain
+        #' @param ... Parameters inherit from Class \code{\link{Boundary_Transport_Water}} and thus \code{\link{Boundary}}
         #' @param discharge Rate of water discharge (a.k.a. Q)
         #' @param boundaryIdx String indexing the boundary
         #' @param currency String naming the currency handled by the boundary as a character e.g., \code{water, NO3}
-        #' @param boundarySuperClass String indicating the super class of the boundary, e.g., \code{transport} or \code{reaction}
         #' @param upstreamCell  Cell (if one exists) upstream of the boundary
         #' @param downstreamCell Cell (if one exists) downstream of the boundary
         #' @param timeInterval  Model time step

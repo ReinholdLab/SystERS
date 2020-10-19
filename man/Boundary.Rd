@@ -14,9 +14,6 @@ Instantiate a boundary
 
 \item{\code{currency}}{Character string naming the currency}
 
-\item{\code{boundarySuperClass}}{Character string describing whether the
-boundary is a transport or reaction boundary}
-
 \item{\code{timeInterval}}{Model time step}
 
 \item{\code{upstreamCell}}{The cell upstream of the boundary (\code{NA} if
@@ -44,14 +41,7 @@ the boundary is at the downstream edge of the model)}
 \subsection{Method \code{new()}}{
 Instantiate a boundary
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Boundary$new(
-  boundaryIdx,
-  currency,
-  boundarySuperClass,
-  timeInterval,
-  upstreamCell,
-  downstreamCell
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Boundary$new(boundaryIdx, currency, timeInterval, upstreamCell, downstreamCell)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -60,8 +50,6 @@ Instantiate a boundary
 \item{\code{boundaryIdx}}{String indexing the boundary}
 
 \item{\code{currency}}{String naming the currency handled by the boundary as a character e.g., \code{water, NO3}}
-
-\item{\code{boundarySuperClass}}{String indicating the super class of the boundary, e.g., \code{transport} or \code{reaction}}
 
 \item{\code{timeInterval}}{Model time step}
 

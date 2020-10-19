@@ -92,6 +92,8 @@ Cell_Water_Stream <-
         #' @description Instantiate a \code{Class Cell_Water_Stream} object.
         #'   Class \code{Class Cell_Water_Stream} inherits from class
         #'   \code{Cell}.
+        #' @param ... Parameters inherit from Class \code{\link{Cell_Water}} and
+        #'   thus \code{\link{Cell}}
         #' @param cellIdx Character string denoting the index for the cell
         #' @param processDomain Character string indicating process domain of
         #'   cell (soil, groundwater, or stream)
@@ -149,6 +151,7 @@ Cell_Solute <-
         #' @field linkedCell The water cell to which the solute cell is linked
         linkedCell = NULL,
 
+        #' @param ... Parameters inherit from Class \code{\link{Cell}}
         #' @param cellIdx Character string denoting the index for the cell
         #' @param processDomain Character string indicating process domain of cell (soil, groundwater, or stream)
         #' @param currency Character string with either water or name of solute

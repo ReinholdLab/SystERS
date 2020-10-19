@@ -48,13 +48,13 @@ Instantiate a water transport boundary in the stream processing domain
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
+\item{\code{...}}{Parameters inherit from Class \code{\link{Boundary_Transport_Water}} and thus \code{\link{Boundary}}}
+
 \item{\code{discharge}}{Rate of water discharge (a.k.a. Q)}
 
 \item{\code{boundaryIdx}}{String indexing the boundary}
 
 \item{\code{currency}}{String naming the currency handled by the boundary as a character e.g., \code{water, NO3}}
-
-\item{\code{boundarySuperClass}}{String indicating the super class of the boundary, e.g., \code{transport} or \code{reaction}}
 
 \item{\code{upstreamCell}}{Cell (if one exists) upstream of the boundary}
 

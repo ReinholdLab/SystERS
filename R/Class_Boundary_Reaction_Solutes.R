@@ -30,7 +30,11 @@ Boundary_Reaction_Solute <-
         #' @field processDomain Process domain of cell on which the reaction
         #'   boundary is interacting
         processDomain = NULL,
-        #' @field processMethod How to process the solute, either \code{pcnt} or \code{RT-PL}
+        #' @field processMethodName How to process the solute, either
+        #'   \code{\link{Boundary_Reaction_Solute$processMethod_RT_PL}} or
+        #'   \code{\link{Boundary_Reaction_Solute$processMethod_pcnt}}
+        processMethodName = NULL,
+        #' @field processMethod Call to the Method  \code{pcnt} or \code{RT-PL}
         processMethod = NULL,
         #' @field tauMin Minimum residence time to consider
         tauMin = NULL,
@@ -51,15 +55,15 @@ Boundary_Reaction_Solute <-
         #'   be specified
         pcntToRemove = NULL,
 
+
         #' @description Instantiate a reaction boundary for a solute
+        #' #' @param ... Parameters inherit from Class \code{\link{Boundary}}
         #' @param boundaryIdx String indexing the boundary
         #' @param currency String naming the currency handled by the boundary as
         #'   a character e.g., \code{water, NO3}
-        #' @param boundarySuperClass String indicating the super class of the
-        #'   boundary, e.g., \code{transport} or \code{reaction}
         #' @param upstreamCell  Cell (if one exists) upstream of the boundary
         #' @param timeInterval  Model time step
-        #' @param processMethod How to process the solute, either \code{pcnt} or
+        #' @param processMethodName How to process the solute, either \code{pcnt} or
         #'   \code{RT-PL}
         #' @param tauMin Minimum residence time to consider
         #' @param tauMax Maximum residence time to consider
@@ -74,7 +78,12 @@ Boundary_Reaction_Solute <-
           function(..., processMethod, tauMin, tauMax, alpha, k, qStorage, pcntToRemove){
             super$initialize(...)
             self$processDomain <- self$upstreamCell$processDomain
-            self$processMethod <- processMethod
+            self$processMethodName <- processMethodName
+            if(processMethodName == "RT-PL"){
+              self$processMethod <- self$processMethod_RT_PL()
+            } else if(processMethod == "pcnt"){
+              self$processMethod <- self$processMethod_pcnt()
+            }
             self$tauMin <- tauMin
             self$tauMax <- tauMax
             self$alpha <- alpha
@@ -83,21 +92,25 @@ Boundary_Reaction_Solute <-
             self$pcntToRemove <- pcntToRemove
           },
 
-        #' @method Method Boundary_Reaction_Solute$calc_removal_storage
-        #' @description Calculates the fraction solute to remove from storage
-        #'   based on either a user specified percent or a power law residence
-        #'   time weighted approach
-        #' @return
-        calc_removal_pcnt = function(){
 
-          if(processMethod == "RT-PL"){
-            self$fractionRemovedStorage <- self$calc_fracRemoval_resTimeWtdPowerLaw(remaining = FALSE)
-            self$fractionRemainingStorage <- self$calc_fracRemoval_resTimeWtdPowerLaw(remaining = TRUE)
-          } else if(processMethod == pcnt){
-            self$fractionRemovedStorage <- self$pcntToRemove/100
-            self$fractionRemainingStorage <- 1 - self$fractionRemovedStorage
-          }
+        #' @method Method Boundary_Reaction_Solute$processMethod_RT_PL
+        #' @description Calculates the fraction solute to remove from storage
+        #'   based on a power law residence time weighted approach
+        processMethod_RT_PL = function(){
+          self$fractionRemovedStorage <- self$calc_fracRemoval_resTimeWtdPowerLaw(remaining = FALSE)
+          self$fractionRemainingStorage <- self$calc_fracRemoval_resTimeWtdPowerLaw(remaining = TRUE)
         },
+
+
+        #' @method Method Boundary_Reaction_Solute$processMethod_pcnt
+        #' @description Calculates the fraction solute to remove from storage
+        #'   based on  a user specified percent
+        #' @return
+        processMethod_pcnt = function(){
+          self$fractionRemovedStorage <- self$pcntToRemove/100
+          self$fractionRemainingStorage <- 1 - self$fractionRemovedStorage
+        },
+
 
         #' @method Method
         #'   Boundary_Reaction_Solute$calc_fracRemoval_resTimeWtdPowerLaw
@@ -111,117 +124,139 @@ Boundary_Reaction_Solute <-
         calc_fracRemoval_resTimeWtdPowerLaw =
           function(){
 
-              propUptkFunc <-
-                function(
-                  tau,
-                  tauMin,
-                  tauMax,
-                  alpha,
-                  k,
-                  remaining
-                ){
-                  PL_PDF <- hydrogeom::powerLawPDF(tau, tauMin, tauMax, alpha)
-                  minus_k_t <- (-1*k*tau) # if the -1  is removed (and this simply expressed as -k*tau), an "invalid argument to unary operator" error is thrown
+            propUptkFunc <-
+              function(
+                tau,
+                tauMin,
+                tauMax,
+                alpha,
+                k,
+                remaining
+              ){
+                PL_PDF <- hydrogeom::powerLawPDF(tau, tauMin, tauMax, alpha)
+                # in the following line, if the -1  is removed (and this
+                # simply expressed as -k*tau), an "invalid argument to unary
+                # operator" error is thrown
+                minus_k_t <- (-1*k*tau)
 
-                  if(remaining){
-                    out <- PL_PDF * exp(minus_k_t)
-                  }else{
-                    out <- PL_PDF * (1-exp(minus_k_t))
-                  }
-                  return(out)
+                if(remaining){
+                  out <- PL_PDF * exp(minus_k_t)
+                }else{
+                  out <- PL_PDF * (1-exp(minus_k_t))
                 }
+                return(out)
+              }
 
-              propUptk <-
-                integrate(
-                  propUptkFunc,
-                  lower = self$tauMin,
-                  upper = self$tauMax,
-                  tauMin = self$tauMin,
-                  tauMax = self$tauMax,
-                  alpha = self$alpha,
-                  k = self$k,
-                  remaining = remaining
-                )$value
-              return(propUptk)
-          },
-
-
-
-
-        #' @method Method Boundary_Reaction_Solute$calc_trade_stream
-        #' @description Calculates the trades for reaction boundaries attached
-        #'   to stream cells
-        #' @return Trades for reaction boundaries attached to stream cells
-        calc_trade_stream = function(){
-
-            # Error check: do the fraction of solute removed and remaining from STORAGE sum to one?
-            if( round(sum(self$fractionRemovedStorage, self$fractionRemainingStorage), 3) != 1 ) {
-              msgGeneral <- "The fraction of solute removed and remaining from storage do not sum to one."
-              msgDetail <- paste(
-                msgGeneral,
-                "\nBoundary:", self$boundaryIdx,
-                "\nFraction removed from storage:", self$fractionRemovedStorage,
-                "\nFraction remaining in storage:", self$fractionRemainingStorage
-              )
-              warning(
-                noquote( strsplit (msgDetail, "\n") [[1]])
-              )
-            }
-
-            # Calculate fraction removed and remaining from the cell
-            self$fractionRemaining <- exp(-1 * self$qStorage * self$fractionRemovedStorage * self$timeInterval / self$upstreamCell$channelDepth)
-            self$fractionRemoved <- 1 - self$fractionRemaining
-
-            # Error check: do the fraction of solute removed and remaining from the CELL sum to one?
-            self$mustBeOne <- round(sum(self$fractionRemoved, self$fractionRemaining), 3)
-            if( self$mustBeOne != 1 ) {
-              msgGeneral <- "The fraction of solute removed and remaining in the cell do not sum to one."
-              msgDetail <- paste(
-                msgGeneral,
-                "\nBoundary:", self$boundaryIdx,
-                "\nFraction removed from storage:", self$fractionRemovedStorage,
-                "\nFraction remaining in storage:", self$fractionRemainingStorage
-              )
-              tmp <- data.frame(
-                fracRemnStrg = self$fractionRemainingStorage,
-                fracRemovStrg = self$fractionRemovedStorage,
-                fracRemov = self$fractionRemoved,
-                fracRmn = self$fractionRemaining)
-              warning(
-                noquote( strsplit (msgDetail, "\n") [[1]]),
-                print( tmp )
-              )
-            }
-
-            self$startingAmount <- self$upstreamCell$amount
-
-            self$amountToRemove <- self$startingAmount * self$fractionRemoved
-
-            self$rxnVals <-
-              data.frame(
-                boundary = self$boundaryIdx,
-                removalMethod = self$removalMethod,
-                fracRemoved = self$fractionRemoved,
-                fracRemaning = self$fractionRemaining,
-                fracRemovedFromStrg = self$fractionRemovedStorage,
-                fracRemainingInStrg = self$fractionRemainingStorage,
-                mustBeOne = self$mustBeOne,
-                startingAmount = self$startingAmount,
-                amountToRemove = self$amountToRemove
-              )
-
-            return()
+            propUptk <-
+              integrate(
+                propUptkFunc,
+                lower = self$tauMin,
+                upper = self$tauMax,
+                tauMin = self$tauMin,
+                tauMax = self$tauMax,
+                alpha = self$alpha,
+                k = self$k,
+                remaining = remaining
+              )$value
+            return(propUptk)
           }
       )
   )
 
 
+#' @title Class Boundary_Reaction_Solute_Stream (R6)
+#' A model boundary that calculates solute removal from stream cells
+#' @description Reaction boundary for solute from stream cells
+#' @export
+Boundary_Reaction_Solute_Stream <-
+  R6::R6Class(
+    classname = "Boundary_Reaction_Solute_Stream",
+
+    #' @inherit Boundary_Reaction_Solute
+    inherit = Boundary_Reaction_Solute,
+
+    public =
+      list(
+        #' @description Instantiate a solute reaction boundary in the stream processing domain
+        #' @param ... Parameters inherit from Class \code{\link{Boundary_Reaction_Solute}} and thus \code{\link{Boundary}}
+        #' @param discharge Rate of water discharge (a.k.a. Q)
+        #' @param boundaryIdx String indexing the boundary
+        #' @param currency String naming the currency handled by the boundary as a character e.g., \code{water, NO3}
+        #' @param upstreamCell  Cell (if one exists) upstream of the boundary
+        #' @param timeInterval  Model time step
+        #' @return A model boundary that calculates solute removal from stream cells in the stream processing domain
+        initialize =
+          function(...){
+            super$initialize(...)
+          }, # close initialize
 
 
+        #' @method Method Boundary_Reaction_Solute_Stream$trade
+        #' @description Calculates the trades for reaction boundaries attached
+        #'   to stream cells
+        #' @return Trades for reaction boundaries attached to stream cells
+        trade = function(){
 
+          self$calc_removal_pcnt()
 
+          # Error check: do the fraction of solute removed and remaining from STORAGE sum to one?
+          if( round(sum(self$fractionRemovedStorage, self$fractionRemainingStorage), 3) != 1 ) {
+            msgGeneral <- "The fraction of solute removed and remaining from storage do not sum to one."
+            msgDetail <- paste(
+              msgGeneral,
+              "\nBoundary:", self$boundaryIdx,
+              "\nFraction removed from storage:", self$fractionRemovedStorage,
+              "\nFraction remaining in storage:", self$fractionRemainingStorage
+            )
+            warning(
+              noquote( strsplit (msgDetail, "\n") [[1]])
+            )
+          }
 
+          # Calculate fraction removed and remaining from the cell
+          self$fractionRemaining <- exp(-1 * self$qStorage * self$fractionRemovedStorage * self$timeInterval / self$upstreamCell$channelDepth)
+          self$fractionRemoved <- 1 - self$fractionRemaining
 
+          # Error check: do the fraction of solute removed and remaining from the CELL sum to one?
+          self$mustBeOne <- round(sum(self$fractionRemoved, self$fractionRemaining), 3)
+          if( self$mustBeOne != 1 ) {
+            msgGeneral <- "The fraction of solute removed and remaining in the cell do not sum to one."
+            msgDetail <- paste(
+              msgGeneral,
+              "\nBoundary:", self$boundaryIdx,
+              "\nFraction removed from storage:", self$fractionRemovedStorage,
+              "\nFraction remaining in storage:", self$fractionRemainingStorage
+            )
+            tmp <- data.frame(
+              fracRemnStrg = self$fractionRemainingStorage,
+              fracRemovStrg = self$fractionRemovedStorage,
+              fracRemov = self$fractionRemoved,
+              fracRmn = self$fractionRemaining)
+            warning(
+              noquote( strsplit (msgDetail, "\n") [[1]]),
+              print( tmp )
+            )
+          }
 
+          self$startingAmount <- self$upstreamCell$amount
 
+          self$amountToRemove <- self$startingAmount * self$fractionRemoved
+
+          self$rxnVals <-
+            data.frame(
+              boundary = self$boundaryIdx,
+              removalMethod = self$removalMethod,
+              fracRemoved = self$fractionRemoved,
+              fracRemaning = self$fractionRemaining,
+              fracRemovedFromStrg = self$fractionRemovedStorage,
+              fracRemainingInStrg = self$fractionRemainingStorage,
+              mustBeOne = self$mustBeOne,
+              startingAmount = self$startingAmount,
+              amountToRemove = self$amountToRemove
+            )
+
+          return()
+        }
+      )
+  )
 

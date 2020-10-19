@@ -2,6 +2,7 @@
 
 export(Boundary)
 export(Boundary_Reaction_Solute)
+export(Boundary_Reaction_Solute_Stream)
 export(Boundary_Transport_Solute)
 export(Boundary_Transport_Water)
 export(Boundary_Transport_Water_Stream)
