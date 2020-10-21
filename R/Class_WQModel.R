@@ -480,7 +480,7 @@ WQModel <-
                 tauMin = tbl$tauMin[rowNum],
                 tauMax = tbl$tauMax[rowNum],
                 k = tbl$k[rowNum],
-                processMethod = tbl$processMethod[rowNum]
+                processMethodName = tbl$processMethod[rowNum]
               )
             }
           ) # close llply

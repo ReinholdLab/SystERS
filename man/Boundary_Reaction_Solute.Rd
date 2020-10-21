@@ -85,7 +85,7 @@ Instantiate a reaction boundary for a solute
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Boundary_Reaction_Solute$new(
   ...,
-  processMethod,
+  processMethodName,
   tauMin,
   tauMax,
   alpha,
@@ -98,6 +98,9 @@ Instantiate a reaction boundary for a solute
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
+\item{\code{processMethodName}}{How to process the solute, either \code{pcnt} or
+\code{RT-PL}}
+
 \item{\code{tauMin}}{Minimum residence time to consider}
 
 \item{\code{tauMax}}{Maximum residence time to consider}
@@ -120,9 +123,6 @@ a character e.g., \code{water, NO3}}
 \item{\code{upstreamCell}}{Cell (if one exists) upstream of the boundary}
 
 \item{\code{timeInterval}}{Model time step}
-
-\item{\code{processMethodName}}{How to process the solute, either \code{pcnt} or
-\code{RT-PL}}
 }
 \if{html}{\out{</div>}}
 }
@@ -166,7 +166,9 @@ Calculate fraction of solute removed/remainig from a
   REMAINING; however if remaining = FALSE, then the function
   calculates the fraction of solute REMOVED
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Boundary_Reaction_Solute$calc_fracRemoval_resTimeWtdPowerLaw()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Boundary_Reaction_Solute$calc_fracRemoval_resTimeWtdPowerLaw(
+  remaining = remaining
+)}\if{html}{\out{</div>}}
 }
 
 }

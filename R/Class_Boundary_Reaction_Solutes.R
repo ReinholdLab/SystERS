@@ -75,21 +75,21 @@ Boundary_Reaction_Solute <-
         #'   from storage
         #' @return The ojbect of class \code{Boundary_Reaction_Solute}.
         initialize =
-          function(..., processMethod, tauMin, tauMax, alpha, k, qStorage, pcntToRemove){
+          function(..., processMethodName, tauMin, tauMax, alpha, k, qStorage, pcntToRemove){
             super$initialize(...)
             self$processDomain <- self$upstreamCell$processDomain
             self$processMethodName <- processMethodName
             if(processMethodName == "RT-PL"){
+              self$tauMin <- tauMin
+              self$tauMax <- tauMax
+              self$alpha <- alpha
               self$processMethod <- self$processMethod_RT_PL()
-            } else if(processMethod == "pcnt"){
+            } else if(processMethodName == "pcnt"){
+              self$pcntToRemove <- pcntToRemove
               self$processMethod <- self$processMethod_pcnt()
             }
-            self$tauMin <- tauMin
-            self$tauMax <- tauMax
-            self$alpha <- alpha
             self$k <- k
             self$qStorage <- qStorage
-            self$pcntToRemove <- pcntToRemove
           },
 
 
@@ -121,45 +121,44 @@ Boundary_Reaction_Solute <-
         #'   REMAINING; however if remaining = FALSE, then the function
         #'   calculates the fraction of solute REMOVED
         #' @returns Fraction of solute removed or remaining in the storage zone
-        calc_fracRemoval_resTimeWtdPowerLaw =
-          function(){
+        calc_fracRemoval_resTimeWtdPowerLaw = function(remaining = remaining){
 
-            propUptkFunc <-
-              function(
-                tau,
-                tauMin,
-                tauMax,
-                alpha,
-                k,
-                remaining
-              ){
-                PL_PDF <- hydrogeom::powerLawPDF(tau, tauMin, tauMax, alpha)
-                # in the following line, if the -1  is removed (and this
-                # simply expressed as -k*tau), an "invalid argument to unary
-                # operator" error is thrown
-                minus_k_t <- (-1*k*tau)
+          propUptkFunc <-
+            function(
+              tau,
+              tauMin,
+              tauMax,
+              alpha,
+              k,
+              remaining
+            ){
+              PL_PDF <- hydrogeom::powerLawPDF(tau, tauMin, tauMax, alpha)
+              # in the following line, if the -1  is removed (and this
+              # simply expressed as -k*tau), an "invalid argument to unary
+              # operator" error is thrown
+              minus_k_t <- (-1*k*tau)
 
-                if(remaining){
-                  out <- PL_PDF * exp(minus_k_t)
-                }else{
-                  out <- PL_PDF * (1-exp(minus_k_t))
-                }
-                return(out)
+              if(remaining){
+                out <- PL_PDF * exp(minus_k_t)
+              }else{
+                out <- PL_PDF * (1-exp(minus_k_t))
               }
+              return(out)
+            }
 
-            propUptk <-
-              integrate(
-                propUptkFunc,
-                lower = self$tauMin,
-                upper = self$tauMax,
-                tauMin = self$tauMin,
-                tauMax = self$tauMax,
-                alpha = self$alpha,
-                k = self$k,
-                remaining = remaining
-              )$value
-            return(propUptk)
-          }
+          propUptk <-
+            integrate(
+              propUptkFunc,
+              lower = self$tauMin,
+              upper = self$tauMax,
+              tauMin = self$tauMin,
+              tauMax = self$tauMax,
+              alpha = self$alpha,
+              k = self$k,
+              remaining = remaining
+            )$value
+          return(propUptk)
+        }
       )
   )
 
