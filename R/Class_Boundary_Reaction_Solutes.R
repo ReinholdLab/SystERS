@@ -83,10 +83,10 @@ Boundary_Reaction_Solute <-
               self$tauMin <- tauMin
               self$tauMax <- tauMax
               self$alpha <- alpha
-              self$processMethod <- self$processMethod_RT_PL()
+              self$processMethod <- self$processMethod_RT_PL
             } else if(processMethodName == "pcnt"){
               self$pcntToRemove <- pcntToRemove
-              self$processMethod <- self$processMethod_pcnt()
+              self$processMethod <- self$processMethod_pcnt
             }
             self$k <- k
             self$qStorage <- qStorage
