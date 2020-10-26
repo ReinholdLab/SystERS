@@ -195,17 +195,36 @@ WQModel <-
           bounds_transport_water_ext <- self$initializeExternalWaterTransportBoundaries()
           names(bounds_transport_water_ext) <- self$boundsTableList[["bounds_transport_water_ext"]]$boundaryIdx
 
+          bounds_transport_water_ext <-
+            lapply(
+              bounds_transport_water_ext,
+              function(b) {
+                if("Boundary_Transport_Water_Stream" %in% class(b)) b$populateDependenciesExternalBound()
+                return(b)
+              }
+            )
+
           bounds_transport_water_int <- self$initializeInternalWaterTransportBoundaries()
           names(bounds_transport_water_int) <- self$boundsTableList[["bounds_transport_water_int"]]$boundaryIdx
 
+          bounds_transport_water_int <-
+            lapply(
+              bounds_transport_water_int,
+              function(b) {
+                if("Boundary_Transport_Water_Stream" %in% class(b)) b$populateDependenciesInternalBound()
+                return(b)
+              }
+            )
+
           # populate dependencies
           bounds_transport_water <- c(bounds_transport_water_ext, bounds_transport_water_int)
-          bounds_transport_water <- lapply(
-            bounds_transport_water,
-            function(b) {
-              if("Boundary_Transport_Water_Stream" %in% class(b)) b$populateDependencies()
-            }
-          )
+          # bounds_transport_water <-
+          #   lapply(
+          #     bounds_transport_water,
+          #     function(b) {
+          #       if("Boundary_Transport_Water_Stream" %in% class(b)) b$populateDependencies()
+          #     }
+          #   )
 
           # Add the water bounds to the bounds list
           self$bounds <- bounds_transport_water
@@ -372,24 +391,27 @@ WQModel <-
               }
 
               if(tbl$processDomain[rowNum] == "stream"){
-                Boundary_Transport_Water_Stream$new(
-                  boundaryIdx = tbl$boundaryIdx[rowNum],
-                  currency = tbl$currency[rowNum],
-                  upstreamCell = self$cells[[upstreamCell]],
-                  downstreamCell = self$cells[[downstreamCell]],
-                  discharge = tbl$discharge[rowNum],
-                  timeInterval = self$timeInterval
+                b <-
+                  Boundary_Transport_Water_Stream$new(
+                    boundaryIdx = tbl$boundaryIdx[rowNum],
+                    currency = tbl$currency[rowNum],
+                    upstreamCell = self$cells[[upstreamCell]],
+                    downstreamCell = self$cells[[downstreamCell]],
+                    discharge = tbl$discharge[rowNum],
+                    timeInterval = self$timeInterval
                 )
               } else {
-                Boundary_Transport_Water$new(
-                  boundaryIdx = tbl$boundaryIdx[rowNum],
-                  currency = tbl$currency[rowNum],
-                  upstreamCell = self$cells[[upstreamCell]],
-                  downstreamCell = self$cells[[downstreamCell]],
-                  discharge = tbl$discharge[rowNum],
-                  timeInterval = self$timeInterval
-                )
+                b <-
+                  Boundary_Transport_Water$new(
+                    boundaryIdx = tbl$boundaryIdx[rowNum],
+                    currency = tbl$currency[rowNum],
+                    upstreamCell = self$cells[[upstreamCell]],
+                    downstreamCell = self$cells[[downstreamCell]],
+                    discharge = tbl$discharge[rowNum],
+                    timeInterval = self$timeInterval
+                  )
               }
+              return(b)
 
             }
           ) # close llply
@@ -409,7 +431,7 @@ WQModel <-
             1:nrow(tbl),
             function(rowNum) {
 
-              if(tbl$processDomain[rowNum] == "stream"){
+              if(tbl$processDomainName[rowNum] == "stream"){
                 Boundary_Transport_Water_Stream$new(
                   boundaryIdx = tbl$boundaryIdx[rowNum],
                   currency = tbl$currency[rowNum],
@@ -480,7 +502,7 @@ WQModel <-
                 tauMin = tbl$tauMin[rowNum],
                 tauMax = tbl$tauMax[rowNum],
                 k = tbl$k[rowNum],
-                processMethodName = tbl$processMethod[rowNum]
+                processMethodName = tbl$processMethodName[rowNum]
               )
             }
           ) # close llply

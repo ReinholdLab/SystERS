@@ -81,12 +81,14 @@ Boundary_Transport_Water_Stream <-
 
 
 
-        #' @description Populate boundary dependencies.  Sets the following
+        #' @description Populate boundary dependencies for boundaries with
+        #'   exactly one upstream and one downstream cell.  Sets the following
         #'   \code{channelVelocity, channelResidenceTime, hydraulicLoad} based
         #'   on the \code{discharge}.
-        #' @method Method Boundary_Transport_Water_Stream$populateDependencies
+        #' @method Method
+        #'   Boundary_Transport_Water_Stream$populateDependenciesInternalBound
         #' @return Populates boundary dependencies
-        populateDependencies = function(){
+        populateDependenciesInternalBound = function(){
           # To get velocity, divide Q by the mean of x-sec area of u/s and d/s
           # cell.  Upstream model boundaries (ie, most upstream) will thus
           # have a velocity equal only to the d/s cell (because there is no
@@ -96,29 +98,52 @@ Boundary_Transport_Water_Stream <-
           # channel length defined by the d/s cell because no u/s cell exists
           # and vice versa for d/s model boundaries. Same pattern applies to
           # hydraulic load...
-          if(!any(c(self$usModBound, self$dsModBound))) {
-            depth <- mean(c(self$upstreamCell$channelDepth, self$downstreamCell$channelDepth))
-            widthXdepth <- mean(c(self$upstreamCell$channelWidth * self$upstreamCell$channelDepth, self$downstreamCell$channelWidth * self$downstreamCell$channelDepth))
-            len <- mean(c(self$upstreamCell$channelLength, self$downstreamCell$channelLength))
-          }else{
-            if(self$usModBound) {
-              depth <- self$downstreamCell$channelDepth
-              widthXdepth <- self$downstreamCell$channelWidth * depth
-              len <-self$downstreamCell$channelLength
-            }
-            if(self$dsModBound){
-              depth <- self$upstreamCell$channelDepth
-              widthXdepth <- self$upstreamCell$channelWidth * depth
-              len <-self$upstreamCell$channelLength
-            }
-          }
+
+          depth <- mean(c(self$upstreamCell$channelDepth, self$downstreamCell$channelDepth))
+          widthXdepth <- mean(c(self$upstreamCell$channelWidth * self$upstreamCell$channelDepth, self$downstreamCell$channelWidth * self$downstreamCell$channelDepth))
+          len <- mean(c(self$upstreamCell$channelLength, self$downstreamCell$channelLength))
+
           self$channelVelocity <- self$discharge / widthXdepth
           self$channelResidenceTime <- len / self$channelVelocity
           self$hydraulicLoad <- depth / self$channelResidenceTime
 
-          return()
         },
 
+
+
+        #' @description Populate boundary dependencies for boundaries at the
+        #'   edge of the topology (i.e., with either one upstream or one
+        #'   downstream cell).  Sets the following \code{channelVelocity,
+        #'   channelResidenceTime, hydraulicLoad} based on the \code{discharge}.
+        #' @method Method
+        #'   Boundary_Transport_Water_Stream$populateDependenciesExternalBound
+        #' @return Populates boundary dependencies
+        populateDependenciesExternalBound = function(){
+          # To get velocity, divide Q by the mean of x-sec area of u/s and d/s
+          # cell.  Upstream model boundaries (ie, most upstream) will thus
+          # have a velocity equal only to the d/s cell (because there is no
+          # u/s cell).  The opposite is true for the most d/s boundaries.
+          # Likewise, to get residence time, divide by the mean of u/s and d/s
+          # channel lengths.  Upstream model boundaries will thus have the
+          # channel length defined by the d/s cell because no u/s cell exists
+          # and vice versa for d/s model boundaries. Same pattern applies to
+          # hydraulic load...
+
+          if(self$usModBound) {
+            connectedCell <- self$downstreamCell
+          } else if(self$dsModBound){
+            connectedCell <- self$upstreamCell
+          }
+
+          depth <- connectedCell$channelDepth
+          widthXdepth <- connectedCell$channelWidth * depth
+          len <-connectedCell$channelLength
+
+          self$channelVelocity <- self$discharge / widthXdepth
+          self$channelResidenceTime <- len / self$channelVelocity
+          self$hydraulicLoad <- depth / self$channelResidenceTime
+
+        },
 
 
         #' @description Calculates the trades between the stream water cells

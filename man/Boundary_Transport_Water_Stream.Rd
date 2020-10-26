@@ -25,7 +25,8 @@ Transport boundary for water between stream cells
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{Boundary_Transport_Water_Stream$new()}}
-\item \href{#method-populateDependencies}{\code{Boundary_Transport_Water_Stream$populateDependencies()}}
+\item \href{#method-populateDependenciesInternalBound}{\code{Boundary_Transport_Water_Stream$populateDependenciesInternalBound()}}
+\item \href{#method-populateDependenciesExternalBound}{\code{Boundary_Transport_Water_Stream$populateDependenciesExternalBound()}}
 \item \href{#method-trade_static}{\code{Boundary_Transport_Water_Stream$trade_static()}}
 \item \href{#method-clone}{\code{Boundary_Transport_Water_Stream$clone()}}
 }
@@ -69,14 +70,31 @@ A model boundary that transports water in the stream processing domain
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-populateDependencies"></a>}}
-\if{latex}{\out{\hypertarget{method-populateDependencies}{}}}
-\subsection{Method \code{populateDependencies()}}{
-Populate boundary dependencies.  Sets the following
+\if{html}{\out{<a id="method-populateDependenciesInternalBound"></a>}}
+\if{latex}{\out{\hypertarget{method-populateDependenciesInternalBound}{}}}
+\subsection{Method \code{populateDependenciesInternalBound()}}{
+Populate boundary dependencies for boundaries with
+  exactly one upstream and one downstream cell.  Sets the following
   \code{channelVelocity, channelResidenceTime, hydraulicLoad} based
   on the \code{discharge}.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Boundary_Transport_Water_Stream$populateDependencies()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Boundary_Transport_Water_Stream$populateDependenciesInternalBound()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Populates boundary dependencies
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-populateDependenciesExternalBound"></a>}}
+\if{latex}{\out{\hypertarget{method-populateDependenciesExternalBound}{}}}
+\subsection{Method \code{populateDependenciesExternalBound()}}{
+Populate boundary dependencies for boundaries at the
+  edge of the topology (i.e., with either one upstream or one
+  downstream cell).  Sets the following \code{channelVelocity,
+  channelResidenceTime, hydraulicLoad} based on the \code{discharge}.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Boundary_Transport_Water_Stream$populateDependenciesExternalBound()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
