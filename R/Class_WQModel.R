@@ -311,7 +311,7 @@ WQModel <-
                 names(soluteCells) <- cellIdxs
                 # link the solute cells to the water cells
                 c$linkedSoluteCells <- soluteCells
-                return()
+                return(c)
               }
             ) # close lapply
           }, # close method
