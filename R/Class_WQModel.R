@@ -238,7 +238,7 @@ WQModel <-
 
           # Create solute reaction boundaries
           bounds_react_solute <- self$initializeSoluteReactionBoundaries()
-          names(bounds_react_solute) <- self$boundsTableList[["bounds_react_solute"]]$boundaryIdx
+          names(bounds_react_solute) <- self$boundsTableList[["bounds_reaction_solute_int"]]$boundaryIdx
 
           # Add the solute reaction boundaries to the bounds list
           self$bounds <- c(self$bounds, bounds_react_solute)
