@@ -120,7 +120,7 @@ from storage}
 \item{\code{currency}}{String naming the currency handled by the boundary as
 a character e.g., \code{water, NO3}}
 
-\item{\code{upstreamCell}}{Cell (if one exists) upstream of the boundary}
+\item{\code{upstreamCell}}{Cell to which the reaction boundary is connected}
 
 \item{\code{timeInterval}}{Model time step}
 }

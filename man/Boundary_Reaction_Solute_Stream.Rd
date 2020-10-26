@@ -44,8 +44,6 @@ Instantiate a solute reaction boundary in the stream processing domain
 \describe{
 \item{\code{...}}{Parameters inherit from Class \code{\link{Boundary_Reaction_Solute}} and thus \code{\link{Boundary}}}
 
-\item{\code{discharge}}{Rate of water discharge (a.k.a. Q)}
-
 \item{\code{boundaryIdx}}{String indexing the boundary}
 
 \item{\code{currency}}{String naming the currency handled by the boundary as a character e.g., \code{water, NO3}}

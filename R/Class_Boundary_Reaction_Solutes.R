@@ -61,7 +61,7 @@ Boundary_Reaction_Solute <-
         #' @param boundaryIdx String indexing the boundary
         #' @param currency String naming the currency handled by the boundary as
         #'   a character e.g., \code{water, NO3}
-        #' @param upstreamCell  Cell (if one exists) upstream of the boundary
+        #' @param upstreamCell  Cell to which the reaction boundary is connected
         #' @param timeInterval  Model time step
         #' @param processMethodName How to process the solute, either \code{pcnt} or
         #'   \code{RT-PL}
@@ -178,7 +178,6 @@ Boundary_Reaction_Solute_Stream <-
       list(
         #' @description Instantiate a solute reaction boundary in the stream processing domain
         #' @param ... Parameters inherit from Class \code{\link{Boundary_Reaction_Solute}} and thus \code{\link{Boundary}}
-        #' @param discharge Rate of water discharge (a.k.a. Q)
         #' @param boundaryIdx String indexing the boundary
         #' @param currency String naming the currency handled by the boundary as a character e.g., \code{water, NO3}
         #' @param upstreamCell  Cell (if one exists) upstream of the boundary
