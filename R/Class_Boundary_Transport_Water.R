@@ -148,12 +148,12 @@ Boundary_Transport_Water_Stream <-
 
         #' @description Calculates the trades between the stream water cells
         #'   using the values provided for \code{discharge}.
-        #' @method Method Boundary_Transport_Water_Stream$trade_static
+        #' @method Method Boundary_Transport_Water_Stream$trade
         #' @return Updates the \code{volume} in the cell based on
         #'   \code{discharge}. Returns a list with two elements
         #'   (\code{discharge, volume}).
 
-        trade_static   = function(){
+        trade   = function(){
           # volume of water to trade
         self$volume <- self$discharge * self$timeInterval #L
 

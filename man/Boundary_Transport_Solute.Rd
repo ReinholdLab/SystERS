@@ -28,7 +28,7 @@ advecting the solute in this boundary}
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{Boundary_Transport_Solute$new()}}
-\item \href{#method-trade_static}{\code{Boundary_Transport_Solute$trade_static()}}
+\item \href{#method-trade}{\code{Boundary_Transport_Solute$trade()}}
 \item \href{#method-clone}{\code{Boundary_Transport_Solute$clone()}}
 }
 }
@@ -77,13 +77,13 @@ A transport boundary for solutes between cells
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-trade_static"></a>}}
-\if{latex}{\out{\hypertarget{method-trade_static}{}}}
-\subsection{Method \code{trade_static()}}{
+\if{html}{\out{<a id="method-trade"></a>}}
+\if{latex}{\out{\hypertarget{method-trade}{}}}
+\subsection{Method \code{trade()}}{
 Calculate the amount of solute to pass through the
   boundary.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Boundary_Transport_Solute$trade_static()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Boundary_Transport_Solute$trade()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{

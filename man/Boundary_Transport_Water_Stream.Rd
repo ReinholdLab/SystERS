@@ -27,7 +27,7 @@ Transport boundary for water between stream cells
 \item \href{#method-new}{\code{Boundary_Transport_Water_Stream$new()}}
 \item \href{#method-populateDependenciesInternalBound}{\code{Boundary_Transport_Water_Stream$populateDependenciesInternalBound()}}
 \item \href{#method-populateDependenciesExternalBound}{\code{Boundary_Transport_Water_Stream$populateDependenciesExternalBound()}}
-\item \href{#method-trade_static}{\code{Boundary_Transport_Water_Stream$trade_static()}}
+\item \href{#method-trade}{\code{Boundary_Transport_Water_Stream$trade()}}
 \item \href{#method-clone}{\code{Boundary_Transport_Water_Stream$clone()}}
 }
 }
@@ -102,13 +102,13 @@ Populates boundary dependencies
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-trade_static"></a>}}
-\if{latex}{\out{\hypertarget{method-trade_static}{}}}
-\subsection{Method \code{trade_static()}}{
+\if{html}{\out{<a id="method-trade"></a>}}
+\if{latex}{\out{\hypertarget{method-trade}{}}}
+\subsection{Method \code{trade()}}{
 Calculates the trades between the stream water cells
   using the values provided for \code{discharge}.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Boundary_Transport_Water_Stream$trade_static()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Boundary_Transport_Water_Stream$trade()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
