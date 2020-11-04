@@ -176,7 +176,14 @@ Boundary_Reaction_Solute_Stream <-
 
     public =
       list(
-        #' @description Instantiate a solute reaction boundary in the stream processing domain
+        #' @description Instantiate a solute reaction boundary in the stream
+        #'   processing domain
+        #' @field fractionRemaining Fraction of solute removed from stream cell
+        fractionRemoved = NULL,
+        #' @field fractionRemaining Fraction of solute remaining in
+        #'   stream cell
+        fractionRemaining = NULL,
+        #'
         #' @param ... Parameters inherit from Class \code{\link{Boundary_Reaction_Solute}} and thus \code{\link{Boundary}}
         #' @param boundaryIdx String indexing the boundary
         #' @param currency String naming the currency handled by the boundary as a character e.g., \code{water, NO3}
@@ -195,7 +202,7 @@ Boundary_Reaction_Solute_Stream <-
         #' @return Trades for reaction boundaries attached to stream cells
         trade = function(){
 
-          self$calc_removal_pcnt()
+          self$processMethod()
 
           # Error check: do the fraction of solute removed and remaining from STORAGE sum to one?
           if( round(sum(self$fractionRemovedStorage, self$fractionRemainingStorage), 3) != 1 ) {
@@ -212,7 +219,7 @@ Boundary_Reaction_Solute_Stream <-
           }
 
           # Calculate fraction removed and remaining from the cell
-          self$fractionRemaining <- exp(-1 * self$qStorage * self$fractionRemovedStorage * self$timeInterval / self$upstreamCell$channelDepth)
+          self$fractionRemaining <- exp(-1 * self$qStorage * self$fractionRemovedStorage * self$timeInterval / self$upstreamCell$linkedCell$channelDepth)
           self$fractionRemoved <- 1 - self$fractionRemaining
 
           # Error check: do the fraction of solute removed and remaining from the CELL sum to one?
@@ -239,11 +246,12 @@ Boundary_Reaction_Solute_Stream <-
           self$startingAmount <- self$upstreamCell$amount
 
           self$amountToRemove <- self$startingAmount * self$fractionRemoved
+          self$amountToRemain <- self$startingAmount - self$amountToRemove
 
           self$rxnVals <-
             data.frame(
               boundary = self$boundaryIdx,
-              removalMethod = self$removalMethod,
+              processMethodName = self$processMethodName,
               fracRemoved = self$fractionRemoved,
               fracRemaning = self$fractionRemaining,
               fracRemovedFromStrg = self$fractionRemovedStorage,
@@ -253,7 +261,7 @@ Boundary_Reaction_Solute_Stream <-
               amountToRemove = self$amountToRemove
             )
 
-          return()
+          return(list(amountToRemove = self$amountToRemove, amountToRemain = self$amountToRemain))
         }
       )
   )

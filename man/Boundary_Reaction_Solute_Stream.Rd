@@ -13,6 +13,16 @@ Reaction boundary for solute from stream cells
 \section{Super classes}{
 \code{\link[SoilsToStreams:Boundary]{SoilsToStreams::Boundary}} -> \code{\link[SoilsToStreams:Boundary_Reaction_Solute]{SoilsToStreams::Boundary_Reaction_Solute}} -> \code{Boundary_Reaction_Solute_Stream}
 }
+\section{Public fields}{
+\if{html}{\out{<div class="r6-fields">}}
+\describe{
+\item{\code{fractionRemaining}}{Fraction of solute removed from stream cell}
+
+\item{\code{fractionRemaining}}{Fraction of solute remaining in
+stream cell}
+}
+\if{html}{\out{</div>}}
+}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
@@ -34,7 +44,8 @@ Reaction boundary for solute from stream cells
 \if{html}{\out{<a id="method-new"></a>}}
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
-Instantiate a solute reaction boundary in the stream processing domain
+Instantiate a solute reaction boundary in the stream
+  processing domain
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Boundary_Reaction_Solute_Stream$new(...)}\if{html}{\out{</div>}}
 }
