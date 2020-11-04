@@ -483,14 +483,15 @@ WQModel <-
 
 
         #' @method WQModel$initializeSoluteReactionBoundaries
-        #' @description Instantiate the solute reaction boundaries
+        #' @description Instantiate the solute reaction boundaries.  Current
+        #'   model version only supports stream reaction boundaries.
         #' @return A list of solute reaction boundaries
         initializeSoluteReactionBoundaries = function(){
           tbl <- self$boundsTableList[["bounds_reaction_solute_int"]]
           plyr::llply(
             1:nrow(tbl),
             function(rowNum) {
-              Boundary_Reaction_Solute$new(
+              Boundary_Reaction_Solute_Stream$new(
                 boundaryIdx = tbl$boundaryIdx[rowNum],
                 currency = tbl$currency[rowNum],
                 upstreamCell = self$cells[[ tbl$upstreamCellIdx[rowNum] ]],

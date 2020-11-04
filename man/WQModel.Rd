@@ -259,7 +259,8 @@ Solute transport boundaries
 \if{html}{\out{<a id="method-initializeSoluteReactionBoundaries"></a>}}
 \if{latex}{\out{\hypertarget{method-initializeSoluteReactionBoundaries}{}}}
 \subsection{Method \code{initializeSoluteReactionBoundaries()}}{
-Instantiate the solute reaction boundaries
+Instantiate the solute reaction boundaries.  Current
+  model version only supports stream reaction boundaries.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{WQModel$initializeSoluteReactionBoundaries()}\if{html}{\out{</div>}}
 }
