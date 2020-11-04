@@ -105,7 +105,7 @@ WQModel <-
 
             #### CELLS
 
-            # Create objects for each of the different types of cells
+            # Create objects with specifications for each of the different types of cells
             self$cellsTable_water_stream <- cellsTable_water_stream
             self$cellsTable_solute_stream <- cellsTable_solute_stream
 
@@ -131,7 +131,7 @@ WQModel <-
 
             #### BOUNDARIES
 
-            # Generate the boundaries from the three tables with boundaries info
+            # Tables with boundary specifications
             self$boundsTransportTable_water_int <- boundsTransportTable_water_int
             self$boundsTransportTable_water_ext <- boundsTransportTable_water_ext
 
@@ -157,6 +157,10 @@ WQModel <-
                 self$boundsTableList[["bounds_transport_solute_us"]],
                 self$boundsTableList[["bounds_transport_solute_ds"]]
               )
+
+            #### INSTANTIATE THE CELLS & BOUNDARIES
+            self$cellFactory()
+            self$boundaryFactory()
           },
 
 
