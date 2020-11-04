@@ -76,6 +76,8 @@ Boundary_Transport_Water_Stream <-
         channelResidenceTime = NULL,
         #' @field hydraulicLoad The hydraulic load of water in the channel compartment
         hydraulicLoad = NULL,
+        #' @field populateDependencies Updates channel velocity, residence time, and hydraulic load.
+        populateDependencies = NULL,
 
 
         #' @description Instantiate a water transport boundary in the stream processing domain
@@ -90,6 +92,13 @@ Boundary_Transport_Water_Stream <-
         initialize =
           function(...){
             super$initialize(...)
+
+            if(any(self$usModBound, self$dsModBound )) {
+              self$populateDependencies <- self$populateDependenciesExternalBound
+            } else{
+                self$populateDependencies <- self$populateDependenciesInternalBound
+              }
+
           }, # close initialize
 
 

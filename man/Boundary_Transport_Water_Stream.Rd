@@ -18,6 +18,8 @@ Transport boundary for water between stream cells
 \item{\code{channelResidenceTime}}{Mean residence time of water in the channel compartment}
 
 \item{\code{hydraulicLoad}}{The hydraulic load of water in the channel compartment}
+
+\item{\code{populateDependencies}}{Updates channel velocity, residence time, and hydraulic load.}
 }
 \if{html}{\out{</div>}}
 }

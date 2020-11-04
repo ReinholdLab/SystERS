@@ -554,10 +554,14 @@ WQModel <-
 
         #' @method WQModel$update
         #'
-        #' @description Runs the update method on all cells in the model.
-        #' @return Updates all values in cells based on trades and stores.
+        #' @description Runs the update method on all cells and boundaries in the model.
+        #' @return Updates all values in cells and boundaries based on trades and stores.
         update = function(){
           lapply(self$cells, function(c) c$update())
+          lapply(
+            self$bounds[sapply(self$bounds, function(b) any(class(b) %in% "Boundary_Transport_Water_Stream"))],
+            function(b) b$populateDependencies()
+            )
           return()
         }
 

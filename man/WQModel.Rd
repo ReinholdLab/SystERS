@@ -303,13 +303,13 @@ Updated store values.
 \if{html}{\out{<a id="method-update"></a>}}
 \if{latex}{\out{\hypertarget{method-update}{}}}
 \subsection{Method \code{update()}}{
-Runs the update method on all cells in the model.
+Runs the update method on all cells and boundaries in the model.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{WQModel$update()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-Updates all values in cells based on trades and stores.
+Updates all values in cells and boundaries based on trades and stores.
 }
 }
 \if{html}{\out{<hr>}}
