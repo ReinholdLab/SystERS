@@ -34,8 +34,21 @@ Boundary_Transport_Water <-
 
             self$discharge <- as.numeric(discharge) # as.numeric is here in case reading from sparse table
             self$volume <- self$discharge * self$timeInterval
-          } # close initialize
+          }, # close initialize
+
+
+
+        #' @method Boundary_Transport_Water$store
+        #'
+        #' @description Runs the store method on water cells in the model.
+        #' @return Updated store values.
+        store = function(){
+          self$upstreamCell$waterVolume <- self$upstreamCell$waterVolume - self$volume
+          self$downstreamCell$waterVolume <- self$downstreamCell$waterVolume + self$volume
+          return(c(self$upstreamCell$waterVolume, self$downstreamCell$waterVolume))
+        }
       ) # close public
+
   ) # close R6 class
 
 
@@ -172,5 +185,7 @@ Boundary_Transport_Water_Stream <-
         return(list(discharge = self$discharge, volume = self$volume))
         } # close function def
       ) # close public
+
+
   ) # close R6 class
 

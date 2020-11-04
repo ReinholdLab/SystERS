@@ -37,6 +37,7 @@ stream cell}
 \item \out{<span class="pkg-link" data-pkg="SoilsToStreams" data-topic="Boundary_Reaction_Solute" data-id="calc_fracRemoval_resTimeWtdPowerLaw">}\href{../../SoilsToStreams/html/Boundary_Reaction_Solute.html#method-calc_fracRemoval_resTimeWtdPowerLaw}{\code{SoilsToStreams::Boundary_Reaction_Solute$calc_fracRemoval_resTimeWtdPowerLaw()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="SoilsToStreams" data-topic="Boundary_Reaction_Solute" data-id="processMethod_RT_PL">}\href{../../SoilsToStreams/html/Boundary_Reaction_Solute.html#method-processMethod_RT_PL}{\code{SoilsToStreams::Boundary_Reaction_Solute$processMethod_RT_PL()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="SoilsToStreams" data-topic="Boundary_Reaction_Solute" data-id="processMethod_pcnt">}\href{../../SoilsToStreams/html/Boundary_Reaction_Solute.html#method-processMethod_pcnt}{\code{SoilsToStreams::Boundary_Reaction_Solute$processMethod_pcnt()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="SoilsToStreams" data-topic="Boundary_Reaction_Solute" data-id="store">}\href{../../SoilsToStreams/html/Boundary_Reaction_Solute.html#method-store}{\code{SoilsToStreams::Boundary_Reaction_Solute$store()}}\out{</span>}
 }
 \out{</details>}
 }

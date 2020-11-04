@@ -34,6 +34,7 @@ Transport boundary for water between stream cells
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
+\item \out{<span class="pkg-link" data-pkg="SoilsToStreams" data-topic="Boundary_Transport_Water" data-id="store">}\href{../../SoilsToStreams/html/Boundary_Transport_Water.html#method-store}{\code{SoilsToStreams::Boundary_Transport_Water$store()}}\out{</span>}
 }
 \out{</details>}
 }

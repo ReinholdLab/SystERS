@@ -161,6 +161,25 @@ WQModel <-
             #### INSTANTIATE THE CELLS & BOUNDARIES
             self$cellFactory()
             self$boundaryFactory()
+
+
+            ## Order the boundaries according to the order in which the trades
+            ## should be executed.  For transport boundaries, these just get
+            ## ordered according to their names; their order doesn't matter for
+            ## the current version of the model.  It does, however, matter that
+            ## water transport happens first followed by solute transport.  The
+            ## reaction boundary order is preserved from the input table to
+            ## allow the end user to specify which solutes "react" first.
+            waterTransportBounds <- self$bounds[sapply(self$bounds, function(b) any(class(b) %in% "Boundary_Transport_Water"))]
+            waterTransportBounds <- waterTransportBounds[sort(sapply(waterTransportBounds, "[[", "boundaryIdx"))]
+
+            soluteTransportBounds <- self$bounds[sapply(self$bounds, function(b) any(class(b) %in% "Boundary_Transport_Solute"))]
+            soluteTransportBounds <- soluteTransportBounds[sort(sapply(soluteTransportBounds, "[[", "boundaryIdx"))]
+
+            soluteReactionBounds <- self$bounds[sapply(self$bounds, function(b) any(class(b) %in% "Boundary_Reaction_Solute"))]
+
+            self$bounds <- c(waterTransportBounds, soluteTransportBounds, soluteReactionBounds)
+
           },
 
 
@@ -511,7 +530,26 @@ WQModel <-
               )
             }
           ) # close llply
-        } # close method
+        }, # close method
+
+
+        #' @method WQModel$trade
+        #' @description Runs the trade method on all boundaries in the model in
+        #'   the order in which they occur in the \code{bounds} list.
+        #' @return Updated boundary values.
+        trade = function(){
+          lapply(self$bounds, function(bound) bound$trade())
+          return()
+        },
+
+        #' @method WQModel$store
+        #'
+        #' @description Runs the store method on all cells in the model.
+        #' @return Updated store values.
+        store = function(){
+          lapply(self$bounds, function(bound) bound$store())
+          return()
+        }
 
       ) # closes public list
   ) # closes WQ model

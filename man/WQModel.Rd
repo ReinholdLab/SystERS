@@ -32,6 +32,8 @@ Define and instantiate the WQ model and the network topology of
 \item \href{#method-initializeInternalWaterTransportBoundaries}{\code{WQModel$initializeInternalWaterTransportBoundaries()}}
 \item \href{#method-initializeSoluteTransportBoundaries}{\code{WQModel$initializeSoluteTransportBoundaries()}}
 \item \href{#method-initializeSoluteReactionBoundaries}{\code{WQModel$initializeSoluteReactionBoundaries()}}
+\item \href{#method-trade}{\code{WQModel$trade()}}
+\item \href{#method-store}{\code{WQModel$store()}}
 \item \href{#method-clone}{\code{WQModel$clone()}}
 }
 }
@@ -267,6 +269,33 @@ Instantiate the solute reaction boundaries.  Current
 
 \subsection{Returns}{
 A list of solute reaction boundaries
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-trade"></a>}}
+\if{latex}{\out{\hypertarget{method-trade}{}}}
+\subsection{Method \code{trade()}}{
+Runs the trade method on all boundaries in the model in
+  the order in which they occur in the \code{bounds} list.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{WQModel$trade()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Updated boundary values.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-store"></a>}}
+\if{latex}{\out{\hypertarget{method-store}{}}}
+\subsection{Method \code{store()}}{
+Runs the store method on all cells in the model.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{WQModel$store()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Updated store values.
 }
 }
 \if{html}{\out{<hr>}}

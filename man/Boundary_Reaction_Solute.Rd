@@ -67,6 +67,7 @@ be specified}
 \item \href{#method-processMethod_RT_PL}{\code{Boundary_Reaction_Solute$processMethod_RT_PL()}}
 \item \href{#method-processMethod_pcnt}{\code{Boundary_Reaction_Solute$processMethod_pcnt()}}
 \item \href{#method-calc_fracRemoval_resTimeWtdPowerLaw}{\code{Boundary_Reaction_Solute$calc_fracRemoval_resTimeWtdPowerLaw()}}
+\item \href{#method-store}{\code{Boundary_Reaction_Solute$store()}}
 \item \href{#method-clone}{\code{Boundary_Reaction_Solute$clone()}}
 }
 }
@@ -171,6 +172,20 @@ Calculate fraction of solute removed/remainig from a
 )}\if{html}{\out{</div>}}
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-store"></a>}}
+\if{latex}{\out{\hypertarget{method-store}{}}}
+\subsection{Method \code{store()}}{
+Runs the store method on solute cells in the model for
+  reactions that remove solute from cells.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Boundary_Reaction_Solute$store()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Updated store values.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}

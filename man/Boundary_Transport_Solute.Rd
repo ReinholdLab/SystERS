@@ -29,6 +29,7 @@ advecting the solute in this boundary}
 \itemize{
 \item \href{#method-new}{\code{Boundary_Transport_Solute$new()}}
 \item \href{#method-trade}{\code{Boundary_Transport_Solute$trade()}}
+\item \href{#method-store}{\code{Boundary_Transport_Solute$store()}}
 \item \href{#method-clone}{\code{Boundary_Transport_Solute$clone()}}
 }
 }
@@ -90,6 +91,20 @@ Calculate the amount of solute to pass through the
 Updates the \code{load} and \code{amount} in the boundary.
   Returns a list of length 2 corresponding to both \code{load} and
   \code{amount}.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-store"></a>}}
+\if{latex}{\out{\hypertarget{method-store}{}}}
+\subsection{Method \code{store()}}{
+Runs the store method on solute cells in the model for
+  solute transport boundaries.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Boundary_Transport_Solute$store()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Updated store values.
 }
 }
 \if{html}{\out{<hr>}}

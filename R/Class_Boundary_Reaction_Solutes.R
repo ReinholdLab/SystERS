@@ -158,7 +158,19 @@ Boundary_Reaction_Solute <-
               remaining = remaining
             )$value
           return(propUptk)
+        },
+
+
+        #' @method Method Boundary_Reaction_Solute$store
+        #' @description Runs the store method on solute cells in the model for
+        #'   reactions that remove solute from cells.
+        #' @return Updated store values.
+        store = function(){
+          self$upstreamCell$amount <- self$upstreamCell$amount - self$amountToRemove
+          return(self$upstreamCell$amount)
         }
+
+
       )
   )
 

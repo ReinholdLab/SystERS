@@ -23,6 +23,7 @@ Transport boundary for water between cells
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{Boundary_Transport_Water$new()}}
+\item \href{#method-store}{\code{Boundary_Transport_Water$store()}}
 \item \href{#method-clone}{\code{Boundary_Transport_Water$clone()}}
 }
 }
@@ -62,6 +63,19 @@ Instantiate a water transport boundary
 }
 \subsection{Returns}{
 A model boundary that transports water
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-store"></a>}}
+\if{latex}{\out{\hypertarget{method-store}{}}}
+\subsection{Method \code{store()}}{
+Runs the store method on water cells in the model.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Boundary_Transport_Water$store()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Updated store values.
 }
 }
 \if{html}{\out{<hr>}}

@@ -79,7 +79,19 @@ Boundary_Transport_Solute <-
           }
 
           return(list(load = self$load, amount = self$amount))
-        } # close trade function definition
+        }, # close trade function definition
+
+
+        #' @method Method Boundary_Transport_Solute$store
+        #' @description Runs the store method on solute cells in the model for
+        #'   solute transport boundaries.
+        #' @return Updated store values.
+        store = function(){
+          self$upstreamCell$amount <- self$upstreamCell$amount - self$amount
+          self$downstreamCell$amount <- self$downstreamCell$amount + self$amount
+          return(c(self$upstreamCell$amount, self$downstreamCell$amount))
+        }
+
       ) # close public
   ) # close R6 class
 
