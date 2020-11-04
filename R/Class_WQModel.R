@@ -542,6 +542,7 @@ WQModel <-
           return()
         },
 
+
         #' @method WQModel$store
         #'
         #' @description Runs the store method on all cells in the model.
@@ -549,7 +550,17 @@ WQModel <-
         store = function(){
           lapply(self$bounds, function(bound) bound$store())
           return()
+        },
+
+        #' @method WQModel$update
+        #'
+        #' @description Runs the update method on all cells in the model.
+        #' @return Updates all values in cells based on trades and stores.
+        update = function(){
+          lapply(self$cells, function(c) c$update())
+          return()
         }
+
 
       ) # closes public list
   ) # closes WQ model

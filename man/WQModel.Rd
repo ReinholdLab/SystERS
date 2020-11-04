@@ -34,6 +34,7 @@ Define and instantiate the WQ model and the network topology of
 \item \href{#method-initializeSoluteReactionBoundaries}{\code{WQModel$initializeSoluteReactionBoundaries()}}
 \item \href{#method-trade}{\code{WQModel$trade()}}
 \item \href{#method-store}{\code{WQModel$store()}}
+\item \href{#method-update}{\code{WQModel$update()}}
 \item \href{#method-clone}{\code{WQModel$clone()}}
 }
 }
@@ -296,6 +297,19 @@ Runs the store method on all cells in the model.
 
 \subsection{Returns}{
 Updated store values.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-update"></a>}}
+\if{latex}{\out{\hypertarget{method-update}{}}}
+\subsection{Method \code{update()}}{
+Runs the update method on all cells in the model.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{WQModel$update()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Updates all values in cells based on trades and stores.
 }
 }
 \if{html}{\out{<hr>}}

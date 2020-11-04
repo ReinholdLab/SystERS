@@ -124,7 +124,23 @@ Cell_Water_Stream <-
             self$channelArea <- channelArea
             self$waterVolume <- waterVolume
 
-          }
+          },
+
+
+        #' @method Method Cell_Water_Stream$update
+        #' @description Runs the update method on all cells of class
+        #'   \code{Cell_Water_Stream}.  In this current version of the model,
+        #'   this simply adjusts the height of the water in the stream cell
+        #'   based on the water volume, i.e., it holds the channel area constant
+        #'   with changes in discharge.
+        #' @return Updates cell values based on trades and stores.
+        update = function(){
+
+          self$channelDepth <- self$waterVolume / ( self$channelArea )
+
+          return()
+        }
+
       )
   )
 
@@ -172,7 +188,20 @@ Cell_Solute <-
 
             self$concentration <- concentration
             self$amount <- self$concentration * self$linkedCell$waterVolume
-          }
+          },
+
+        #' @method Method Cell_Solute$update
+        #' @description Runs the update method on all cells of class
+        #'   \code{Cell_Solute}.
+        #' @return Updates cell values based on trades and stores.
+        update = function(){
+
+          self$concentration <- self$amount / self$linkedCell$waterVolume
+
+          return()
+        }
+
+
       )
   )
 

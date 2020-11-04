@@ -27,6 +27,7 @@ user must ensure consistency in units}
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{Cell_Solute$new()}}
+\item \href{#method-update}{\code{Cell_Solute$update()}}
 \item \href{#method-clone}{\code{Cell_Solute$clone()}}
 }
 }
@@ -64,6 +65,20 @@ user must ensure consistency in units}
 }
 \subsection{Returns}{
 The object of class \code{Cell_Solute}.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-update"></a>}}
+\if{latex}{\out{\hypertarget{method-update}{}}}
+\subsection{Method \code{update()}}{
+Runs the update method on all cells of class
+  \code{Cell_Solute}.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Cell_Solute$update()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Updates cell values based on trades and stores.
 }
 }
 \if{html}{\out{<hr>}}

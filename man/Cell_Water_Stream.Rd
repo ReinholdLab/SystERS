@@ -41,6 +41,7 @@ the \code{channelLength, channelArea, and channelDepth} params}
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{Cell_Water_Stream$new()}}
+\item \href{#method-update}{\code{Cell_Water_Stream$update()}}
 \item \href{#method-clone}{\code{Cell_Water_Stream$clone()}}
 }
 }
@@ -87,6 +88,23 @@ cell (soil, groundwater, or stream)}
 }
 \subsection{Returns}{
 The object of class \code{Cell_Water_Stream}.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-update"></a>}}
+\if{latex}{\out{\hypertarget{method-update}{}}}
+\subsection{Method \code{update()}}{
+Runs the update method on all cells of class
+  \code{Cell_Water_Stream}.  In this current version of the model,
+  this simply adjusts the height of the water in the stream cell
+  based on the water volume, i.e., it holds the channel area constant
+  with changes in discharge.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Cell_Water_Stream$update()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Updates cell values based on trades and stores.
 }
 }
 \if{html}{\out{<hr>}}
