@@ -389,7 +389,7 @@ WQModel <-
 
 
 
-        #' @method WQModel$initializeExternalWaterTransportBoundaries
+        #' @method Method WQModel$initializeExternalWaterTransportBoundaries
         #' @description Instantiate the transport boundaries that are on the physical
         #'   edges of the model
         #' @return Water transport boundaries at the upstream and downstream extents of
@@ -442,7 +442,7 @@ WQModel <-
 
 
 
-        #' @method WQModel$initializeInternalWaterTransportBoundaries
+        #' @method Method WQModel$initializeInternalWaterTransportBoundaries
         #' @description Instantiate the transport boundaries that are internal to the
         #'   physical edges of the model
         #' @return Water transport boundaries within the upstream and downstream extents
@@ -479,7 +479,7 @@ WQModel <-
 
 
 
-        #' @method WQModel$initializeSoluteTransportBoundaries
+        #' @method Method WQModel$initializeSoluteTransportBoundaries
         #' @description Instantiate the solute transport boundaries
         #' @return Solute transport boundaries
         #'
@@ -505,7 +505,7 @@ WQModel <-
 
 
 
-        #' @method WQModel$initializeSoluteReactionBoundaries
+        #' @method Method WQModel$initializeSoluteReactionBoundaries
         #' @description Instantiate the solute reaction boundaries.  Current
         #'   model version only supports stream reaction boundaries.
         #' @return A list of solute reaction boundaries
@@ -543,7 +543,7 @@ WQModel <-
         },
 
 
-        #' @method WQModel$store
+        #' @method Method WQModel$store
         #'
         #' @description Runs the store method on all cells in the model.
         #' @return Updated store values.
@@ -552,7 +552,7 @@ WQModel <-
           return()
         },
 
-        #' @method WQModel$update
+        #' @method Method WQModel$update
         #'
         #' @description Runs the update method on all cells and boundaries in the model.
         #' @return Updates all values in cells and boundaries based on trades and stores.
@@ -563,8 +563,19 @@ WQModel <-
             function(b) b$populateDependencies()
             )
           return()
-        }
+        },
 
+        #' @method Method WQModel$iterate
+        #'
+        #' @description Iterates the model by calling all trades, stores, and
+        #'   updates.
+        #' @return All cells and boundaries will values updated to reflect the
+        #'   trades, stores, and updates, that occurred during the time step.
+        iterate = function(){
+          self$trade()
+          self$store()
+          self$update()
+        }
 
       ) # closes public list
   ) # closes WQ model

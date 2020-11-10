@@ -35,6 +35,7 @@ Define and instantiate the WQ model and the network topology of
 \item \href{#method-trade}{\code{WQModel$trade()}}
 \item \href{#method-store}{\code{WQModel$store()}}
 \item \href{#method-update}{\code{WQModel$update()}}
+\item \href{#method-iterate}{\code{WQModel$iterate()}}
 \item \href{#method-clone}{\code{WQModel$clone()}}
 }
 }
@@ -310,6 +311,21 @@ Runs the update method on all cells and boundaries in the model.
 
 \subsection{Returns}{
 Updates all values in cells and boundaries based on trades and stores.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-iterate"></a>}}
+\if{latex}{\out{\hypertarget{method-iterate}{}}}
+\subsection{Method \code{iterate()}}{
+Iterates the model by calling all trades, stores, and
+  updates.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{WQModel$iterate()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+All cells and boundaries will values updated to reflect the
+  trades, stores, and updates, that occurred during the time step.
 }
 }
 \if{html}{\out{<hr>}}
