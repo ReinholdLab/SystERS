@@ -13,6 +13,8 @@ Cell <-
         processDomain = NULL,
         #' @field currency Currency of the cell
         currency = NULL,
+        #' @field linkedBoundsList List of boundaries linked to cell
+        linkedBoundsList = NULL,
 
         #' @description Instantiate a \code{Cell} object.
         #' @param cellIdx Character string denoting the index for the cell
@@ -23,6 +25,7 @@ Cell <-
             self$cellIdx <- cellIdx
             self$processDomain <- processDomain
             self$currency <- currency
+            self$linkedBoundsList <- list(upstreamBounds = list(), downstreamBounds = list())
           }
       )
   )

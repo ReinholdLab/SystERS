@@ -161,6 +161,7 @@ WQModel <-
             #### INSTANTIATE THE CELLS & BOUNDARIES
             self$cellFactory()
             self$boundaryFactory()
+            self$linkBoundsToCells() #must do this after the cells AND boundaries are already instantiated
 
 
             ## Order the boundaries according to the order in which the trades
@@ -483,7 +484,7 @@ WQModel <-
         #' @description Instantiate the solute transport boundaries
         #' @return Solute transport boundaries
         #'
-        initializeSoluteTransportBoundaries=
+        initializeSoluteTransportBoundaries =
           function( ){
             tbl <- self$solute_transport_df
             plyr::llply(
@@ -533,7 +534,27 @@ WQModel <-
         }, # close method
 
 
-        #' @method WQModel$trade
+
+        #' @method Method WQModel$linkBoundsToCells
+        #' @description Creates a list of boundaries attached to each cell and
+        #'   then adds the list of bounds connected to each cell as an attribute
+        #'   of the cell.
+        #' @return Cells with \code{linkedBoundsList} attribute populated
+        linkBoundsToCells = function(){
+
+          lapply(
+            self$bounds, function(bound) {
+              bound$upstreamCell$linkedBoundsList$downstreamBounds <- c(bound$upstreamCell$linkedBoundsList$downstreamBounds, bound)
+              bound$downstreamCell$linkedBoundsList$upstreamBounds <- c(bound$downstreamCell$linkedBoundsList$upstreamBounds, bound)
+            }
+          )
+
+          return()
+        },
+
+
+
+        #' @method Method WQModel$trade
         #' @description Runs the trade method on all boundaries in the model in
         #'   the order in which they occur in the \code{bounds} list.
         #' @return Updated boundary values.

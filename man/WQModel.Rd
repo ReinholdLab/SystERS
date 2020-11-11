@@ -32,6 +32,7 @@ Define and instantiate the WQ model and the network topology of
 \item \href{#method-initializeInternalWaterTransportBoundaries}{\code{WQModel$initializeInternalWaterTransportBoundaries()}}
 \item \href{#method-initializeSoluteTransportBoundaries}{\code{WQModel$initializeSoluteTransportBoundaries()}}
 \item \href{#method-initializeSoluteReactionBoundaries}{\code{WQModel$initializeSoluteReactionBoundaries()}}
+\item \href{#method-linkBoundsToCells}{\code{WQModel$linkBoundsToCells()}}
 \item \href{#method-trade}{\code{WQModel$trade()}}
 \item \href{#method-store}{\code{WQModel$store()}}
 \item \href{#method-update}{\code{WQModel$update()}}
@@ -271,6 +272,21 @@ Instantiate the solute reaction boundaries.  Current
 
 \subsection{Returns}{
 A list of solute reaction boundaries
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-linkBoundsToCells"></a>}}
+\if{latex}{\out{\hypertarget{method-linkBoundsToCells}{}}}
+\subsection{Method \code{linkBoundsToCells()}}{
+Creates a list of boundaries attached to each cell and
+  then adds the list of bounds connected to each cell as an attribute
+  of the cell.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{WQModel$linkBoundsToCells()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Cells with \code{linkedBoundsList} attribute populated
 }
 }
 \if{html}{\out{<hr>}}

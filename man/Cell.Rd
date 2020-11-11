@@ -15,6 +15,8 @@ Instantiate a \code{Cell}.
 \item{\code{processDomain}}{Process domain of the cell}
 
 \item{\code{currency}}{Currency of the cell}
+
+\item{\code{linkedBoundsList}}{List of boundaries linked to cell}
 }
 \if{html}{\out{</div>}}
 }
