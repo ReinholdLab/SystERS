@@ -55,8 +55,6 @@ Boundary_Reaction_Solute <-
         #'   be specified
         pcntToRemove = NULL,
 
-        hydraulicLoad = NULL,
-
         #' @description Instantiate a reaction boundary for a solute
         #' #' @param ... Parameters inherit from Class \code{\link{Boundary}}
         #' @param boundaryIdx String indexing the boundary
@@ -234,12 +232,11 @@ Boundary_Reaction_Solute_Stream <-
           # Calculate fraction removed and remaining from the cell
 
           upstreamWaterBounds <- self$upstreamCell$linkedCell$linkedBoundsList$upstreamBounds
-          upstreamHydraulicLoads <- sapply(upstreamWaterBounds, function(bound) bound$hydraulicLoad)
-          self$hydraulicLoad <- mean(upstreamHydraulicLoads)
+          hydraulicLoad <- self$upstreamCell$linkedCell$hydraulicLoad
 
 
           # self$fractionRemaining <- exp(-1 * self$qStorage * self$fractionRemovedStorage * self$timeInterval / self$upstreamCell$linkedCell$channelDepth)
-          self$fractionRemaining <- exp(-1 * self$qStorage * self$fractionRemovedStorage  / self$hydraulicLoad)
+          self$fractionRemaining <- exp(-1 * self$qStorage * self$fractionRemovedStorage  / hydraulicLoad)
 
           self$fractionRemoved <- 1 - self$fractionRemaining
 

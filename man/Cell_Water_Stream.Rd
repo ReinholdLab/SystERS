@@ -24,16 +24,9 @@ Instantiate a water cell. Inherits from class \code{Cell_Water}.
 \item{\code{waterVolume}}{the volume of water in the cell calculated from
 the \code{channelLength, channelArea, and channelDepth} params}
 
-\item{\code{channelArea}}{the area of the stream channel surface of the
-water in the cell}
-}
-\if{html}{\out{</div>}}
-}
-\section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{waterVolume}}{the volume of water in the cell calculated from
-the \code{channelLength, channelArea, and channelDepth} params}
+\item{\code{channelResidenceTime}}{Mean residence time of water in the channel compartment}
+
+\item{\code{hydraulicLoad}}{The hydraulic load of water in the channel compartment}
 }
 \if{html}{\out{</div>}}
 }
@@ -41,6 +34,7 @@ the \code{channelLength, channelArea, and channelDepth} params}
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{Cell_Water_Stream$new()}}
+\item \href{#method-populateDependencies}{\code{Cell_Water_Stream$populateDependencies()}}
 \item \href{#method-update}{\code{Cell_Water_Stream$update()}}
 \item \href{#method-clone}{\code{Cell_Water_Stream$clone()}}
 }
@@ -88,6 +82,23 @@ cell (soil, groundwater, or stream)}
 }
 \subsection{Returns}{
 The object of class \code{Cell_Water_Stream}.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-populateDependencies"></a>}}
+\if{latex}{\out{\hypertarget{method-populateDependencies}{}}}
+\subsection{Method \code{populateDependencies()}}{
+Populates the fields in the cells that depend on
+  boundaries being instantiated before the trade, store, update
+  sequence can be run.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Cell_Water_Stream$populateDependencies()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Updates cell values for \code{channelResidenceTime,
+  hydraulicLoad} based on cell values (\code{channelLength}) and
+  upstream/downstream boundary values (\code{channelVelocity}).
 }
 }
 \if{html}{\out{<hr>}}

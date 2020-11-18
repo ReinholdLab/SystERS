@@ -72,10 +72,7 @@ Boundary_Transport_Water_Stream <-
 
         #' @field channelVelocity Mean velocity of water in the channel compartment
         channelVelocity = NULL,
-        #' @field channelResidenceTime Mean residence time of water in the channel compartment
-        channelResidenceTime = NULL,
-        #' @field hydraulicLoad The hydraulic load of water in the channel compartment
-        hydraulicLoad = NULL,
+
         #' @field populateDependencies Updates channel velocity, residence time, and hydraulic load.
         populateDependencies = NULL,
 
@@ -104,9 +101,9 @@ Boundary_Transport_Water_Stream <-
 
 
         #' @description Populate boundary dependencies for boundaries with
-        #'   exactly one upstream and one downstream cell.  Sets the following
-        #'   \code{channelVelocity, channelResidenceTime, hydraulicLoad} based
-        #'   on the \code{discharge}.
+        #'   exactly one upstream and one downstream cell.  Sets the
+        #'   \code{channelVelocity} based on the \code{discharge} and the cross
+        #'   sectional area of the boundary.
         #' @method Method
         #'   Boundary_Transport_Water_Stream$populateDependenciesInternalBound
         #' @return Populates boundary dependencies
@@ -123,11 +120,9 @@ Boundary_Transport_Water_Stream <-
 
           depth <- mean(c(self$upstreamCell$channelDepth, self$downstreamCell$channelDepth))
           widthXdepth <- mean(c(self$upstreamCell$channelWidth * self$upstreamCell$channelDepth, self$downstreamCell$channelWidth * self$downstreamCell$channelDepth))
-          len <- mean(c(self$upstreamCell$channelLength, self$downstreamCell$channelLength))
 
           self$channelVelocity <- self$discharge / widthXdepth
-          self$channelResidenceTime <- len / self$channelVelocity
-          self$hydraulicLoad <- depth / self$channelResidenceTime
+
 
         },
 
@@ -135,8 +130,8 @@ Boundary_Transport_Water_Stream <-
 
         #' @description Populate boundary dependencies for boundaries at the
         #'   edge of the topology (i.e., with either one upstream or one
-        #'   downstream cell).  Sets the following \code{channelVelocity,
-        #'   channelResidenceTime, hydraulicLoad} based on the \code{discharge}.
+        #'   downstream cell).  Sets the \code{channelVelocity} based on the
+        #'   \code{discharge} and the cross sectional area of the boundary.
         #' @method Method
         #'   Boundary_Transport_Water_Stream$populateDependenciesExternalBound
         #' @return Populates boundary dependencies
@@ -159,11 +154,8 @@ Boundary_Transport_Water_Stream <-
 
           depth <- connectedCell$channelDepth
           widthXdepth <- connectedCell$channelWidth * depth
-          len <-connectedCell$channelLength
 
           self$channelVelocity <- self$discharge / widthXdepth
-          self$channelResidenceTime <- len / self$channelVelocity
-          self$hydraulicLoad <- depth / self$channelResidenceTime
 
         },
 

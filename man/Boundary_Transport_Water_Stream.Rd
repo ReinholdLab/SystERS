@@ -15,10 +15,6 @@ Transport boundary for water between stream cells
 \describe{
 \item{\code{channelVelocity}}{Mean velocity of water in the channel compartment}
 
-\item{\code{channelResidenceTime}}{Mean residence time of water in the channel compartment}
-
-\item{\code{hydraulicLoad}}{The hydraulic load of water in the channel compartment}
-
 \item{\code{populateDependencies}}{Updates channel velocity, residence time, and hydraulic load.}
 }
 \if{html}{\out{</div>}}
@@ -77,9 +73,9 @@ A model boundary that transports water in the stream processing domain
 \if{latex}{\out{\hypertarget{method-populateDependenciesInternalBound}{}}}
 \subsection{Method \code{populateDependenciesInternalBound()}}{
 Populate boundary dependencies for boundaries with
-  exactly one upstream and one downstream cell.  Sets the following
-  \code{channelVelocity, channelResidenceTime, hydraulicLoad} based
-  on the \code{discharge}.
+  exactly one upstream and one downstream cell.  Sets the
+  \code{channelVelocity} based on the \code{discharge} and the cross
+  sectional area of the boundary.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Boundary_Transport_Water_Stream$populateDependenciesInternalBound()}\if{html}{\out{</div>}}
 }
@@ -94,8 +90,8 @@ Populates boundary dependencies
 \subsection{Method \code{populateDependenciesExternalBound()}}{
 Populate boundary dependencies for boundaries at the
   edge of the topology (i.e., with either one upstream or one
-  downstream cell).  Sets the following \code{channelVelocity,
-  channelResidenceTime, hydraulicLoad} based on the \code{discharge}.
+  downstream cell).  Sets the \code{channelVelocity} based on the
+  \code{discharge} and the cross sectional area of the boundary.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Boundary_Transport_Water_Stream$populateDependenciesExternalBound()}\if{html}{\out{</div>}}
 }

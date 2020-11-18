@@ -89,8 +89,11 @@ Cell_Water_Stream <-
         channelDepth = NULL,
         #' @field waterVolume the volume of water in the cell calculated from
         #'   the \code{channelLength, channelArea, and channelDepth} params
-        #' @field channelArea the area of the stream channel surface of the
-        #'   water in the cell
+        waterVolume = NULL,
+        #' @field channelResidenceTime Mean residence time of water in the channel compartment
+        channelResidenceTime = NULL,
+        #' @field hydraulicLoad The hydraulic load of water in the channel compartment
+        hydraulicLoad = NULL,
 
         #' @description Instantiate a \code{Class Cell_Water_Stream} object.
         #'   Class \code{Class Cell_Water_Stream} inherits from class
@@ -130,6 +133,26 @@ Cell_Water_Stream <-
           },
 
 
+        #' @method Method Cell_Water_Stream$populateDependencies
+        #' @description Populates the fields in the cells that depend on
+        #'   boundaries being instantiated before the trade, store, update
+        #'   sequence can be run.
+        #' @return Updates cell values for \code{channelResidenceTime,
+        #'   hydraulicLoad} based on cell values (\code{channelLength}) and
+        #'   upstream/downstream boundary values (\code{channelVelocity}).
+        populateDependencies = function(){
+
+          browser()
+
+          usChannelVelocity <- mean(sapply(self$linkedBoundsList$upstreamBounds, function(bound) bound$channelVelocity))
+          dsChannelVelocity <- mean(sapply(self$linkedBoundsList$downstreamBounds, function(bound) bound$channelVelocity))
+
+          channelVelocity <- mean(c(usChannelVelocity, dsChannelVelocity))
+
+          self$channelResidenceTime <- self$channelLength / channelVelocity
+          self$hydraulicLoad <- self$channelDepth / self$channelResidenceTime
+        },
+
         #' @method Method Cell_Water_Stream$update
         #' @description Runs the update method on all cells of class
         #'   \code{Cell_Water_Stream}.  In this current version of the model,
@@ -139,7 +162,9 @@ Cell_Water_Stream <-
         #' @return Updates cell values based on trades and stores.
         update = function(){
 
-          self$channelDepth <- self$waterVolume / ( self$channelArea )
+          self$channelDepth <- self$waterVolume / self$channelArea
+
+          self$populateDependencies()
 
           return()
         }
