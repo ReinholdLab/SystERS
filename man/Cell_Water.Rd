@@ -29,6 +29,7 @@ Instantiate a water cell. Inherits from class \code{Cell}.
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
+\item \out{<span class="pkg-link" data-pkg="SoilsToStreams" data-topic="Cell" data-id="populateDependencies">}\href{../../SoilsToStreams/html/Cell.html#method-populateDependencies}{\code{SoilsToStreams::Cell$populateDependencies()}}\out{</span>}
 }
 \out{</details>}
 }
