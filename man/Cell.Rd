@@ -24,6 +24,7 @@ Instantiate a \code{Cell}.
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{Cell$new()}}
+\item \href{#method-populateDependencies}{\code{Cell$populateDependencies()}}
 \item \href{#method-clone}{\code{Cell$clone()}}
 }
 }
@@ -49,6 +50,19 @@ Instantiate a \code{Cell} object.
 }
 \subsection{Returns}{
 The ojbect of class \code{Cell}.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-populateDependencies"></a>}}
+\if{latex}{\out{\hypertarget{method-populateDependencies}{}}}
+\subsection{Method \code{populateDependencies()}}{
+Placeholder for populate dependencies methods.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Cell$populateDependencies()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+NULL
 }
 }
 \if{html}{\out{<hr>}}

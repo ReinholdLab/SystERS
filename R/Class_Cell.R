@@ -26,9 +26,18 @@ Cell <-
             self$processDomain <- processDomain
             self$currency <- currency
             self$linkedBoundsList <- list(upstreamBounds = list(), downstreamBounds = list())
-          }
+          },
+        #' @method Method Cell$populateDependencies
+        #' @description Placeholder for populate dependencies methods.
+        #' @return NULL
+        populateDependencies = function(){
+          NULL
+        }
+
       )
   )
+
+
 
 #' @title Class Cell_Water (R6)
 #' Water cell
@@ -141,8 +150,6 @@ Cell_Water_Stream <-
         #'   hydraulicLoad} based on cell values (\code{channelLength}) and
         #'   upstream/downstream boundary values (\code{channelVelocity}).
         populateDependencies = function(){
-
-          browser()
 
           usChannelVelocity <- mean(sapply(self$linkedBoundsList$upstreamBounds, function(bound) bound$channelVelocity))
           dsChannelVelocity <- mean(sapply(self$linkedBoundsList$downstreamBounds, function(bound) bound$channelVelocity))
