@@ -177,8 +177,7 @@ Boundary_Transport_Water_Stream <-
           if(volumeToRemain < 0) warning(
             paste(
               "You are about to remove more water volume from a cell than it held at the start of the timestep.
-             Boundary is", self$boundaryIdx,
-              "Cell is", self$upstreamCell$cellIdx
+             Boundary is ", print(self$boundaryIdx)
             ) # close paste
           ) # close warning
         } # close if statement
