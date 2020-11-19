@@ -162,6 +162,7 @@ WQModel <-
             self$cellFactory()
             self$boundaryFactory()
             self$linkBoundsToCells() #must do this after the cells AND boundaries are already instantiated
+            lapply(self$cells, function(c) c$populateDependencies()) # populate dependencies of cells that require bounds to be instantiated first
 
 
             ## Order the boundaries according to the order in which the trades
