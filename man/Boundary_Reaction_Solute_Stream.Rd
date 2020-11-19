@@ -20,6 +20,11 @@ Reaction boundary for solute from stream cells
 
 \item{\code{fractionRemaining}}{Fraction of solute remaining in
 stream cell}
+
+\item{\code{damkohlerNum}}{Damkohler number for the boundary}
+
+\item{\code{damkohlerNumStorage}}{Damkohler number for the transient storage
+zone (i.e. hyporheic zone)}
 }
 \if{html}{\out{</div>}}
 }

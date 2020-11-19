@@ -194,6 +194,11 @@ Boundary_Reaction_Solute_Stream <-
         #' @field fractionRemaining Fraction of solute remaining in
         #'   stream cell
         fractionRemaining = NULL,
+        #' @field damkohlerNum Damkohler number for the boundary
+        damkohlerNum = NULL,
+        #' @field damkohlerNumStorage Damkohler number for the transient storage
+        #'   zone (i.e. hyporheic zone)
+        damkohlerNumStorage = NULL,
         #'
         #' @param ... Parameters inherit from Class \code{\link{Boundary_Reaction_Solute}} and thus \code{\link{Boundary}}
         #' @param boundaryIdx String indexing the boundary
@@ -265,6 +270,9 @@ Boundary_Reaction_Solute_Stream <-
 
           self$amountToRemove <- self$startingAmount * self$fractionRemoved
           self$amountToRemain <- self$startingAmount - self$amountToRemove
+
+          self$damkohlerNum <- -1*(log(1-self$fractionRemoved))
+          self$damkohlerNumStorage <- -1*(log(1-self$fractionRemovedStorage))
 
           self$rxnVals <-
             data.frame(
