@@ -14,6 +14,8 @@ Define and instantiate the WQ model and the network topology of
 \item{\code{cells}}{The model cells, stored in a list}
 
 \item{\code{bounds}}{The model boundaries, stored in a list}
+
+\item{\code{iterationNum}}{The number of times the model has been iterated}
 }
 \if{html}{\out{</div>}}
 }

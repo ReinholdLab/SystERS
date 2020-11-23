@@ -42,6 +42,8 @@ WQModel <-
 
         unitsTable = NULL,
 
+        iterationNum = NULL,
+
         #' @param boundsTransportTable_water_int Table with the names of the
         #'   water boundaries and their attributes for water boundaries that are
         #'   internal to the model, i.e., those with exactly one upstream and
@@ -101,6 +103,8 @@ WQModel <-
 
             # store the units table
             self$unitsTable <- unitsTable
+
+            self$iterationNum <- 0
 
 
             #### CELLS
@@ -588,7 +592,7 @@ WQModel <-
         },
 
         #' @method Method WQModel$iterate
-        #'
+        #' @field iterationNum The number of times the model has been iterated
         #' @description Iterates the model by calling all trades, stores, and
         #'   updates.
         #' @return All cells and boundaries will values updated to reflect the
@@ -597,6 +601,8 @@ WQModel <-
           self$trade()
           self$store()
           self$update()
+          self$iterationNum <- self$iterationNum + 1
+
         }
 
       ) # closes public list
