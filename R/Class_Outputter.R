@@ -15,9 +15,12 @@ Outputter <-
         #' @field objectClassName The class of S2S model object to extract
         #'   (either Cells or Bounds)
         objectClassName = NULL,
-        #' @field attributesToReport The attributes of the S2S cells or
-        #'   boundaries to output
+        #' @field attributesToReport The names of objects associated with the
+        #'   S2S cells or boundaries to output
         attributesToReport = NULL,
+        #' @field objectsToReport The values of the S2S cells or
+        #'   boundaries to output
+        objectsToReport = NULL,
         #' @field reportingInterval A number indicating the reporting interval.
         #'   A value of \code{1} will report every timestep whereas a value of
         #'   \code{10} will report every 10th timestep.
@@ -25,6 +28,8 @@ Outputter <-
         #' @field filePath The string pointing to the place where the output
         #'   files will be written.
         filePath = NULL,
+        #' @field destination The string with the full file path and file name.
+        destination = NULL,
 
         #' @description Create an outputter
         #' @param model The S2S model object
@@ -44,14 +49,15 @@ Outputter <-
             filePath
           ){
 
-            browser()
             self$model <- model
+            self$reportingInterval <- reportingInterval
+
             self$objectClassName <- objectClassName
             self$attributesToReport <- attributesToReport
-            self$reportingInterval <- reportingInterval
+
             self$filePath <- filePath
 
-            destination <- paste0(filePath, "/", objectClassName, "_", reportingInterval, "int", ".csv")
+            self$destination <- paste0(filePath, "/", objectClassName, "_", reportingInterval, "int", ".csv")
 
             if(grepl("Cell", objectClassName)){
               s2sObjects <- model$cells
@@ -59,15 +65,39 @@ Outputter <-
               s2sObjects <- model$bounds
             }
 
-            objectsToReport <- self$getCellsOrBoundsByClass(s2sObjects = s2sObjects, objectClassName = self$objectClassName)
-            outList <-
-              lapply(attributesToReport, function(attribute) self$getCellOrBoundAttributes(objectsToReport, attribute) )
-            names(outList) <- attributesToReport
-
-            ############## Stopped here 11/19/2020
-
-
+            self$objectsToReport <- self$getCellsOrBoundsByClass(s2sObjects = s2sObjects, objectClassName = self$objectClassName)
           },
+
+
+        #' @method Method Outputter$report
+        #' @description Report the output
+        #' @return Write output to file
+        report = function(){
+
+          # Should this iteration be reported?  Check by dividing the
+          # iteration number by the reporting interval.  If the remainder is
+          # 0, then we want to output it.  If not, then return NULL.
+          if(self$model$iterationNum %% self$reportingInterval == 0){
+
+            outList <-
+              lapply(self$attributesToReport, function(attribute) self$getCellOrBoundAttributes(self$objectsToReport, attribute) )
+            names(outList) <- self$attributesToReport
+
+            outDf <- as.data.frame(outList)
+            outDf$objectName <- row.names(outDf)
+
+            outDf$timeStepIdx <- self$model$iterationNum
+            outDf$modelTime <- outDf$timeStepIdx * self$model$timeInterval
+
+            writeHeadersBoolean <- ifelse(!file.exists(self$destination), TRUE, FALSE)
+            write.table(outDf, file = self$destination, sep = ",", append = TRUE, quote = FALSE,
+                        col.names = writeHeadersBoolean, row.names = FALSE)
+          } else{
+            NULL
+          }
+        },
+
+
         #' @method Method Outputter$getCellsOrBoundsByClass
         #' @description Gets cells or boundaries in the model by their class
         #' @return Selected cells or boundaries

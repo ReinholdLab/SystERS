@@ -15,7 +15,10 @@ Outputs values from S2S Models
 \item{\code{objectClassName}}{The class of S2S model object to extract
 (either Cells or Bounds)}
 
-\item{\code{attributesToReport}}{The attributes of the S2S cells or
+\item{\code{attributesToReport}}{The names of objects associated with the
+S2S cells or boundaries to output}
+
+\item{\code{objectsToReport}}{The values of the S2S cells or
 boundaries to output}
 
 \item{\code{reportingInterval}}{A number indicating the reporting interval.
@@ -24,6 +27,8 @@ A value of \code{1} will report every timestep whereas a value of
 
 \item{\code{filePath}}{The string pointing to the place where the output
 files will be written.}
+
+\item{\code{destination}}{The string with the full file path and file name.}
 }
 \if{html}{\out{</div>}}
 }
@@ -31,6 +36,7 @@ files will be written.}
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{Outputter$new()}}
+\item \href{#method-report}{\code{Outputter$report()}}
 \item \href{#method-getCellsOrBoundsByClass}{\code{Outputter$getCellsOrBoundsByClass()}}
 \item \href{#method-getCellOrBoundAttributes}{\code{Outputter$getCellOrBoundAttributes()}}
 \item \href{#method-clone}{\code{Outputter$clone()}}
@@ -70,6 +76,19 @@ the attributes to report}
 }
 \subsection{Returns}{
 NULL
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-report"></a>}}
+\if{latex}{\out{\hypertarget{method-report}{}}}
+\subsection{Method \code{report()}}{
+Report the output
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Outputter$report()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Write output to file
 }
 }
 \if{html}{\out{<hr>}}
