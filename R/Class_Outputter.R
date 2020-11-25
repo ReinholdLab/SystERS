@@ -111,7 +111,21 @@ Outputter <-
         getCellOrBoundAttributes = function(s2sObjects, attributeName){
           attribs <- sapply(s2sObjects, "[[", attributeName)
           return(attribs)
+        },
+
+        #' @method Method Outputter$timeSeriesGraph
+        #' @description Creates a of outputs through time.
+        #' @return Graph
+        timeSeriesGraph = function(s2sobject, attributeName, outputFilePathAndName){
+           plotDat <- read.csv(outputFilePathAndName, head = TRUE)
+          theField <- objects(s2sobject)[grepl("(boundaryIdx|cellIdx)", objects(s2sobject))]
+          theFieldName <- s2sobject[[theField]]
+          plotDat <- plotDat[plotDat$objectName == theFieldName, ]
+          yVals <- plotDat[attributeName]
+          xVals <- plotDat["modelTime"]
+          return(plot(x = xVals[,1], y = yVals[,1], type = "l", ylab = attributeName, xlab = "Model time", main = theFieldName))
         }
+
       )
   )
 

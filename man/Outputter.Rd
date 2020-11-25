@@ -39,6 +39,7 @@ files will be written.}
 \item \href{#method-report}{\code{Outputter$report()}}
 \item \href{#method-getCellsOrBoundsByClass}{\code{Outputter$getCellsOrBoundsByClass()}}
 \item \href{#method-getCellOrBoundAttributes}{\code{Outputter$getCellOrBoundAttributes()}}
+\item \href{#method-timeSeriesGraph}{\code{Outputter$timeSeriesGraph()}}
 \item \href{#method-clone}{\code{Outputter$clone()}}
 }
 }
@@ -115,6 +116,19 @@ Gets attributes of cells or boundaries based on the boundary name
 
 \subsection{Returns}{
 Selected attributes of either cells or boundaries
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-timeSeriesGraph"></a>}}
+\if{latex}{\out{\hypertarget{method-timeSeriesGraph}{}}}
+\subsection{Method \code{timeSeriesGraph()}}{
+Creates a of outputs through time.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Outputter$timeSeriesGraph(s2sobject, attributeName, outputFilePathAndName)}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Graph
 }
 }
 \if{html}{\out{<hr>}}
