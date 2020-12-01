@@ -123,7 +123,7 @@ Outputter <-
           plotDat <- plotDat[plotDat$objectName == theFieldName, ]
           yVals <- plotDat[attributeName]
           xVals <- plotDat["modelTime"]
-          return(plot(x = xVals[,1], y = yVals[,1], type = "l", ylab = attributeName, xlab = "Model time", main = theFieldName))
+          return(plot(x = xVals[,1], y = yVals[,1], type = "l", ylab = attributeName, xlab = "Model time", main = theFieldName, log = "y"))
         }
 
       )
