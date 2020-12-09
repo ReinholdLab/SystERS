@@ -48,12 +48,12 @@ Define and instantiate the WQ model and the network topology of
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{WQModel$new(
-  boundsTransportTable_water_int,
-  boundsTransportTable_water_ext,
-  boundsTransportTable_solute_int,
-  boundsTransportTable_solute_us,
-  boundsTransportTable_solute_ds,
-  boundsReactionTable_solute_int,
+  boundsTransportTable_water_int = NULL,
+  boundsTransportTable_water_ext = NULL,
+  boundsTransportTable_solute_int = NULL,
+  boundsTransportTable_solute_us = NULL,
+  boundsTransportTable_solute_ds = NULL,
+  boundsReactionTable_solute_int = NULL,
   cellsTable_water_stream = NULL,
   cellsTable_solute_stream = NULL,
   cellsTable_water_soil = NULL,

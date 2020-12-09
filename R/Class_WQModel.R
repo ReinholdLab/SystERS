@@ -80,12 +80,12 @@ WQModel <-
         #' @return The ojbect of class \code{WQModel}
         initialize =
           function(
-            boundsTransportTable_water_int,
-            boundsTransportTable_water_ext,
-            boundsTransportTable_solute_int,
-            boundsTransportTable_solute_us,
-            boundsTransportTable_solute_ds,
-            boundsReactionTable_solute_int,
+            boundsTransportTable_water_int = NULL,
+            boundsTransportTable_water_ext = NULL,
+            boundsTransportTable_solute_int = NULL,
+            boundsTransportTable_solute_us = NULL,
+            boundsTransportTable_solute_ds = NULL,
+            boundsReactionTable_solute_int = NULL,
             cellsTable_water_stream = NULL,
             cellsTable_solute_stream = NULL,
             cellsTable_water_soil = NULL,
@@ -154,6 +154,8 @@ WQModel <-
                 bounds_transport_solute_ds = self$boundsTransportTable_solute_ds,
                 bounds_reaction_solute_int = self$boundsReactionTable_solute_int
               )
+            boundsTablesToKeep <- sapply(self$boundsTableList, function(df) !is.null(df))
+            self$boundsTableList <- self$boundsTableList[boundsTablesToKeep]
 
             self$solute_transport_df <-
               rbind(
@@ -165,6 +167,7 @@ WQModel <-
             #### INSTANTIATE THE CELLS & BOUNDARIES
             self$cellFactory()
             self$boundaryFactory()
+
             self$linkBoundsToCells() #must do this after the cells AND boundaries are already instantiated
             lapply(self$cells, function(c) c$populateDependencies()) # populate dependencies of cells that require bounds to be instantiated first
 
@@ -233,20 +236,28 @@ WQModel <-
               }
             )
 
-          bounds_transport_water_int <- self$initializeInternalWaterTransportBoundaries()
-          names(bounds_transport_water_int) <- self$boundsTableList[["bounds_transport_water_int"]]$boundaryIdx
+          # note that a single cell model has no internal boundaries, so create
+          # internal boundaries if they are specified, but if they are NOT
+          # specified then the only water boundaries are the external ones
+          if(!is.null(self$boundsTableList[["bounds_transport_water_int"]]$boundaryIdx)){
+            bounds_transport_water_int <- self$initializeInternalWaterTransportBoundaries()
+            names(bounds_transport_water_int) <- self$boundsTableList[["bounds_transport_water_int"]]$boundaryIdx
 
-          bounds_transport_water_int <-
-            lapply(
-              bounds_transport_water_int,
-              function(b) {
-                if("Boundary_Transport_Water_Stream" %in% class(b)) b$populateDependenciesInternalBound()
-                return(b)
-              }
-            )
+            bounds_transport_water_int <-
+              lapply(
+                bounds_transport_water_int,
+                function(b) {
+                  if("Boundary_Transport_Water_Stream" %in% class(b)) b$populateDependenciesInternalBound()
+                  return(b)
+                }
+              )
+            bounds_transport_water <- c(bounds_transport_water_ext, bounds_transport_water_int)
+
+          } else {
+            bounds_transport_water <- bounds_transport_water_ext
+          }
 
           # populate dependencies
-          bounds_transport_water <- c(bounds_transport_water_ext, bounds_transport_water_int)
           # bounds_transport_water <-
           #   lapply(
           #     bounds_transport_water,
@@ -528,6 +539,7 @@ WQModel <-
                 timeInterval = self$timeInterval,
                 pcntToRemove = tbl$pcntToRemove[rowNum],
                 qStorage = tbl$qStorage[rowNum],
+                volWaterInStorage = tbl$volWaterInStorage[rowNum],
                 alpha = tbl$alpha[rowNum],
                 tauMin = tbl$tauMin[rowNum],
                 tauMax = tbl$tauMax[rowNum],
