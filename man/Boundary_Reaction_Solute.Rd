@@ -49,7 +49,10 @@ typically between -1.2 and -1.9}
 
 \item{\code{k}}{Uptake constant for solute in units of T-1}
 
-\item{\code{qStorage}}{Volumeteric rate of water entering the storage zone}
+\item{\code{qStorage}}{Volumetric rate of water entering the storage zone}
+
+\item{\code{volWaterInStorage}}{Volume of water in the transient storage
+zone (equal to the volume of the alluvial aquifer X porosity)}
 
 \item{\code{rxnVals}}{A data frame storing the key reaction boundary inputs
 and outputs}
@@ -92,7 +95,8 @@ Instantiate a reaction boundary for a solute
   alpha,
   k,
   qStorage,
-  pcntToRemove
+  pcntToRemove,
+  volWaterInStorage
 )}\if{html}{\out{</div>}}
 }
 

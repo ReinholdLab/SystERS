@@ -45,8 +45,11 @@ Boundary_Reaction_Solute <-
         alpha = NULL,
         #' @field k Uptake constant for solute in units of T-1
         k = NULL,
-        #' @field qStorage Volumeteric rate of water entering the storage zone
+        #' @field qStorage Volumetric rate of water entering the storage zone
         qStorage = NULL,
+        #' @field volWaterInStorage Volume of water in the transient storage
+        #'   zone (equal to the volume of the alluvial aquifer X porosity)
+        volWaterInStorage = NULL,
         #' @field rxnVals A data frame storing the key reaction boundary inputs
         #'   and outputs
         rxnVals = NULL,
@@ -74,7 +77,7 @@ Boundary_Reaction_Solute <-
         #'   from storage
         #' @return The ojbect of class \code{Boundary_Reaction_Solute}.
         initialize =
-          function(..., processMethodName, tauMin, tauMax, alpha, k, qStorage, pcntToRemove){
+          function(..., processMethodName, tauMin, tauMax, alpha, k, qStorage, pcntToRemove, volWaterInStorage){
             super$initialize(...)
             self$processDomain <- self$upstreamCell$processDomain
             self$processMethodName <- processMethodName
@@ -88,7 +91,18 @@ Boundary_Reaction_Solute <-
               self$processMethod <- self$processMethod_pcnt
             }
             self$k <- k
-            self$qStorage <- qStorage
+            self$volWaterInStorage <- volWaterInStorage
+
+            if(!is.numeric(qStorage)){
+
+              # I have set tau_a = tauMin and tau_b = tauMax because we want the
+              # entire integral from tauMin to tauMax...
+              ccdfIntegrated <- hydrogeom::powerLawIntCCDF(self$tauMin, self$tauMax, self$tauMin, self$tauMax, self$alpha)
+              storage.1d <- self$volWaterInStorage / self$upstreamCell$linkedCell$channelArea
+              self$qStorage <-  storage.1d / ccdfIntegrated
+            } else {
+              self$qStorage <- qStorage
+            }
           },
 
 
@@ -239,8 +253,6 @@ Boundary_Reaction_Solute_Stream <-
           upstreamWaterBounds <- self$upstreamCell$linkedCell$linkedBoundsList$upstreamBounds
           hydraulicLoad <- self$upstreamCell$linkedCell$hydraulicLoad
 
-
-          # self$fractionRemaining <- exp(-1 * self$qStorage * self$fractionRemovedStorage * self$timeInterval / self$upstreamCell$linkedCell$channelDepth)
           self$fractionRemaining <- exp(-1 * self$qStorage * self$fractionRemovedStorage  / hydraulicLoad)
 
           self$fractionRemoved <- 1 - self$fractionRemaining
