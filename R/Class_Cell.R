@@ -1,105 +1,242 @@
 #' @title Class Cell (R6)
-#'
-#' @description Instantiate a \code{Cell} object.
-#'
-#' @param cellIdx is the index for the cell
-#'
+#' Model cell
+#' @description Instantiate a \code{Cell}.
 #' @export
-#'
-#' @return The ojbect of class \code{Cell}.
-#'
-
 Cell <-
   R6::R6Class(
     classname = "Cell",
     public =
       list(
+        #' @field cellIdx Cell index
         cellIdx = NULL,
-        initialize =
-          function(cellIdx){
+        #' @field processDomain Process domain of the cell
+        processDomain = NULL,
+        #' @field currency Currency of the cell
+        currency = NULL,
+        #' @field linkedBoundsList List of boundaries linked to cell
+        linkedBoundsList = NULL,
+
+        #' @description Instantiate a \code{Cell} object.
+        #' @param cellIdx Character string denoting the index for the cell
+        #' @param processDomain Character string indicating process domain of cell (soil, groundwater, or stream)
+        #' @param currency Character string with either water or name of solute
+        #' @return The ojbect of class \code{Cell}.
+        initialize = function(cellIdx, processDomain, currency){
             self$cellIdx <- cellIdx
-          }
+            self$processDomain <- processDomain
+            self$currency <- currency
+            self$linkedBoundsList <- list(upstreamBounds = list(), downstreamBounds = list())
+          },
+        #' @method Method Cell$populateDependencies
+        #' @description Placeholder for populate dependencies methods.
+        #' @return NULL
+        populateDependencies = function(){
+          NULL
+        }
+
       )
   )
 
-#' @title Class StreamCell (R6)
-#'
-#' @description Instantiate a \code{StreamCell} object. Class \code{StreamCell}
-#'   inherits from class \code{Cell}. The following parameters will be
-#'   calculated on the fly from the remaining parameters if they are not
-#'   specified directly by the user: \code{channelArea, channelVelocity,
-#'   channelResidenceTime, qStorage, hydraulicLoad}.
-#'
-#' @param soluteConcentration is the concentration of the solute in user
-#'   specified units.
-#' @param discharge is the water discharge, Q, in user specified units.
-#' @param aquiferVolume is the volume of the stream aquifer/hyporheic zone.
-#' @param porosity is the porosity of the streambed and hyporheic zone.
-#' @param channelWidth is the width of the stream channel surface.
-#' @param channelLength is the length of the stream channel surface for the
-#'   given reach represented by the \code{StreamCell} specified herein.
-#' @param channelArea is the area of the stream channel surface for the given
-#'   \code{StreamCell}.
-#' @param channelDepth is the height of the water surface above the streambed.
-#' @param channelVelocity is the mean velocity of the water in the stream
-#'   channel.
-#' @param channelResidenceTime is the mean residence time of the reach
-#'   represented by the \code{StreamCell} specified herein.
-#' @param qStorage is the total hyporheic exchange rate, i.e., the rate at which
-#'   water is downwelling into and - since this model assumes steady state -
-#'   upwelling up from the hyporheic zone.
-#' @param hydraulicLoad is the hydraulic load for the reach represented by the
-#'   \code{StreamCell} specified herein.
 
-#'
+
+#' @title Class Cell_Water (R6)
+#' Water cell
+#' @description Instantiate a water cell. Inherits from class \code{Cell}.
 #' @export
-#'
-#' @return The object of class \code{Cell}.
-#'
-StreamCell <-
+
+Cell_Water <-
   R6::R6Class(
-    classname = "StreamCell",
+    classname = "Cell_Water",
+
+    #' @inherit Cell
     inherit = Cell,
+
     public =
       list(
-        soluteConcentration = NULL,
-        soluteMass = NULL,
-        channelWidth = NULL,
-        channelLength = NULL,
-        channelArea = NULL,
-        channelDepth = NULL,
+        #' @field waterVolume volume of water stored in cell
+        waterVolume = NULL,
+        #' @field linkedSoluteCells solute cells that are linked to the water cell
+        linkedSoluteCells = NULL,
 
-
-        channelVolume_L = NULL,
-        channelVolume_m3 = NULL,
+        #' @description Create a new water cell
+        #' @param waterVolume the volume of water in the cell
+        #' @param cellIdx Character string denoting the index for the cell
+        #' @param processDomain Character string indicating process domain of cell (soil, groundwater, or stream)
+        #' @param currency Character string with either water or name of solute
+        #' @return The ojbect of class \code{Cell}.
 
         initialize =
-          function(...,
-                   soluteConcentration,
-                   channelWidth,
-                   channelLength,
-                   channelDepth
+          function(..., waterVolume = NULL){
+            super$initialize(...)
+
+            self$waterVolume <- waterVolume
+          }
+      )
+)
+
+
+#' @title Class Cell_Water_Stream (R6)
+#' A water cell in the stream processing domain
+#' @description Instantiate a water cell. Inherits from class \code{Cell_Water}.
+#' @export
+
+Cell_Water_Stream <-
+  R6::R6Class(
+    classname = "Cell_Water_Stream",
+
+    #' @inherit Cell_Water
+    inherit = Cell_Water,
+    public =
+      list(
+        #' @field channelWidth Average width of stream channel in cell
+        channelWidth = NULL,
+        #' @field channelLength Average length of channel in stream cell
+        channelLength = NULL,
+        #' @field channelArea Area of surface water in stream cell
+        channelArea = NULL,
+        #' @field channelDepth Average depth of channel in stream cell
+        channelDepth = NULL,
+        #' @field waterVolume the volume of water in the cell calculated from
+        #'   the \code{channelLength, channelArea, and channelDepth} params
+        waterVolume = NULL,
+        #' @field channelResidenceTime Mean residence time of water in the channel compartment
+        channelResidenceTime = NULL,
+        #' @field hydraulicLoad The hydraulic load of water in the channel compartment
+        hydraulicLoad = NULL,
+
+        #' @description Instantiate a \code{Class Cell_Water_Stream} object.
+        #'   Class \code{Class Cell_Water_Stream} inherits from class
+        #'   \code{Cell}.
+        #' @param ... Parameters inherit from Class \code{\link{Cell_Water}} and
+        #'   thus \code{\link{Cell}}
+        #' @param cellIdx Character string denoting the index for the cell
+        #' @param processDomain Character string indicating process domain of
+        #'   cell (soil, groundwater, or stream)
+        #' @param currency Character string with either water or name of solute
+        #' @param channelWidth the width of the stream channel surface (distance
+        #'   from left bank to right bank)
+        #' @param channelLength is the length of the stream channel surface for
+        #'   the cell (distance of cell from upstream to downstream)
+        #' @param channelDepth  the height of the water surface above the
+        #'   streambed
+        #' @return The object of class \code{Cell_Water_Stream}.
+        #'
+        initialize =
+          function(
+            ...,
+            channelWidth,
+            channelLength,
+            channelDepth
           ){
+            channelArea <- channelWidth * channelLength
+            waterVolume <- channelArea * channelDepth
 
             super$initialize(...)
 
             self$channelWidth <- channelWidth
             self$channelLength <- channelLength
             self$channelDepth <- channelDepth
-            self$channelArea <- self$channelWidth * self$channelLength
-            self$channelVolume_m3 <- self$channelArea * self$channelDepth
-            self$channelVolume_L <- 1000 *  self$channelVolume_m3
+            self$channelArea <- channelArea
+            self$waterVolume <- waterVolume
 
-            self$soluteConcentration <- soluteConcentration
-            # have to multiply by 1000 because units of concentration are ug/L
-            # but cell volume is m3 --- will need to decide how we want to
-            # handle this in time as hardcoding it this way is clearly a bad
-            # idea...anyhow, this gives units of ug NO3-N
-            self$soluteMass <- self$soluteConcentration * self$channelVolume_L
+          },
 
-          }
+
+        #' @method Method Cell_Water_Stream$populateDependencies
+        #' @description Populates the fields in the cells that depend on
+        #'   boundaries being instantiated before the trade, store, update
+        #'   sequence can be run.
+        #' @return Updates cell values for \code{channelResidenceTime,
+        #'   hydraulicLoad} based on cell values (\code{channelLength}) and
+        #'   upstream/downstream boundary values (\code{channelVelocity}).
+        populateDependencies = function(){
+
+          usChannelVelocity <- mean(sapply(self$linkedBoundsList$upstreamBounds, function(bound) bound$channelVelocity))
+          dsChannelVelocity <- mean(sapply(self$linkedBoundsList$downstreamBounds, function(bound) bound$channelVelocity))
+
+          channelVelocity <- mean(c(usChannelVelocity, dsChannelVelocity))
+
+          self$channelResidenceTime <- self$channelLength / channelVelocity
+          self$hydraulicLoad <- self$channelDepth / self$channelResidenceTime
+        },
+
+        #' @method Method Cell_Water_Stream$update
+        #' @description Runs the update method on all cells of class
+        #'   \code{Cell_Water_Stream}.  In this current version of the model,
+        #'   this simply adjusts the height of the water in the stream cell
+        #'   based on the water volume, i.e., it holds the channel area constant
+        #'   with changes in discharge.
+        #' @return Updates cell values based on trades and stores.
+        update = function(){
+
+          self$channelDepth <- self$waterVolume / self$channelArea
+
+          self$populateDependencies()
+
+          return()
+        }
+
       )
   )
 
 
+#' @title Class Cell_Solute (R6)
+#' A cell containing a solute.  Must be linked to a water cell.
+#' @description Instantiate a \code{Cell_Solute} object. Class
+#'   \code{Cell_Solute} inherits from class \code{Cell}.
+#' @export
+
+Cell_Solute <-
+  R6::R6Class(
+    classname = "Cell_Solute",
+
+    #' @inherit Cell
+    inherit = Cell,
+    public =
+      list(
+        #' @field concentration Solute concentration in user specified units;
+        #'   user must ensure consistency in units
+        concentration = NULL,
+        #' @field amount Solute amount in user specified units (mass or mols)
+        amount = NULL,
+        #' @field linkedCell The water cell to which the solute cell is linked
+        linkedCell = NULL,
+
+        #' @param ... Parameters inherit from Class \code{\link{Cell}}
+        #' @param cellIdx Character string denoting the index for the cell
+        #' @param processDomain Character string indicating process domain of cell (soil, groundwater, or stream)
+        #' @param currency Character string with either water or name of solute
+        #' @param concentration the concentration of the solute in user specified units
+        #'   (mass or mols per unit volume)
+        #' @param linkedCell the cell containing the water in which this solute is located
+        #' @return The object of class \code{Cell_Solute}.
+
+        initialize =
+          function(
+            ...,
+            linkedCell,
+            concentration
+          ){
+            super$initialize(...)
+
+            self$linkedCell <- linkedCell
+
+            self$concentration <- concentration
+            self$amount <- self$concentration * self$linkedCell$waterVolume
+          },
+
+        #' @method Method Cell_Solute$update
+        #' @description Runs the update method on all cells of class
+        #'   \code{Cell_Solute}.
+        #' @return Updates cell values based on trades and stores.
+        update = function(){
+
+          self$concentration <- self$amount / self$linkedCell$waterVolume
+
+          return()
+        }
+
+
+      )
+  )
 

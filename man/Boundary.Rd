@@ -2,80 +2,70 @@
 % Please edit documentation in R/Class_Boundary.R
 \name{Boundary}
 \alias{Boundary}
-\title{Boundary}
+\title{Class Boundary (R6)
+Boundary that connects to cells.}
 \description{
-Boundary superclass
+Instantiate a boundary
+}
+\section{Public fields}{
+\if{html}{\out{<div class="r6-fields">}}
+\describe{
+\item{\code{boundaryIdx}}{Character string naming the boundary}
+
+\item{\code{currency}}{Character string naming the currency}
+
+\item{\code{timeInterval}}{Model time step}
+
+\item{\code{upstreamCell}}{The cell upstream of the boundary (\code{NA} if
+the boundary is at the upstream edge of the model)}
+
+\item{\code{downstreamCell}}{The cell downstream of the boundary (\code{NA} if
+the boundary is at the downstream edge of the model)}
+
+\item{\code{usModBound}}{Topologically, is the boundary at the upstream edge of the model? (TRUE/FALSE)}
+
+\item{\code{dsModBound}}{Topologically, is the boundary at the downstream edge of the model? (TRUE/FALSE)}
+}
+\if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{Boundary$new()}}
-\item \href{#method-populateDependencies}{\code{Boundary$populateDependencies()}}
 \item \href{#method-clone}{\code{Boundary$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
+Instantiate a boundary
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Boundary$new(
-  boundaryIdx,
-  currency,
-  boundarySuperClass,
-  calculateOrder,
-  upstreamCell,
-  downstreamCell,
-  discharge,
-  channelVelocity,
-  channelResidenceTime,
-  hydraulicLoad,
-  pcntToRemove,
-  k,
-  qStorage,
-  alpha,
-  tauMin,
-  tauMax,
-  soluteLoad,
-  linkedTo
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Boundary$new(boundaryIdx, currency, timeInterval, upstreamCell, downstreamCell)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{boundaryIdx}}{the name of the boundary.}
+\item{\code{boundaryIdx}}{String indexing the boundary}
 
-\item{\code{currency}}{the name of the currency handled by the boundary as a character e.g., \code{H20}}
+\item{\code{currency}}{String naming the currency handled by the boundary as a character e.g., \code{water, NO3}}
 
-\item{\code{boundarySuperClass}}{the super class of the boundary, e.g., \code{transport} or \code{reaction}}
+\item{\code{timeInterval}}{Model time step}
 
-\item{\code{upstreamCell}}{the upstream cell}
+\item{\code{upstreamCell}}{Cell (if one exists) upstream of the boundary}
 
-\item{\code{downstreamCell}}{the downstream cell}
-
-\item{\code{pcntToRemove}}{is the percent of the solute to remove fom a cell by the
-reaction boundary IF the removal method is set to \code{pcnt}}
-
-\item{\code{alpha}}{is the exponent of the power law used to represent the shape of
-the residence time distribution of the hyporheic zone.}
-
-\item{\code{tauMin}}{is the minimum residence time for the hyporheic zone.}
-
-\item{\code{tauMax}}{is the maximum residence time for the hyporheic zone.}
+\item{\code{downstreamCell}}{Cell (if one exists) downstream of the boundary}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Returns}{
+A model boundary
 }
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-populateDependencies"></a>}}
-\subsection{Method \code{populateDependencies()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Boundary$populateDependencies(boundary)}\if{html}{\out{</div>}}
-}
-
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

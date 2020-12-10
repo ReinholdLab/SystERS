@@ -1,26 +1,8 @@
 #' @title Class WQModel (R6)
-#'
-#' @description Define the WQ model and the network topology of cells and
-#'   boundaries
-#'
+#' A water quality model
+#' @description Define and instantiate the WQ model and the network topology of
+#'   cells and boundaries
 #' @export
-#'
-#' @return The ojbect of class \code{WQModel}.  Boundaries and cells are stored
-#'   in lists called \code{bounds} and \code{cells}, respectively.  **Importantly,
-#'   as of 06/07/2020, the subsequent calculations done by the model will only
-#'   return correct trade values for topologies that are linear or have convergent
-#'   flow.  Calculations will be wrong for models with divergent transport
-#'   boundaries.***
-#'
-#' @param boundsTable At this point, \code{booundsTable} needs to be a table
-#'   specifying the currency, type of boundary (reaction or transport), the
-#'   boundaryIdx (name as character), the upstreamCellIdx, the
-#'   downstreamCellIdx, and the calculateOrder.
-#' @param cellsTable must contain the processDomain, cellIdx (as character) and
-#'   all other neccessary values to have a cell representing a process domain.
-#' @param unitsTable is a reference table for the end user, containing the units
-#'   of their input parameters.  At this time, the model doesn't do anything
-#'   with this table.  It is only for reference.
 
 WQModel <-
   R6::R6Class(
@@ -28,278 +10,612 @@ WQModel <-
 
     public =
       list(
-        modelName = NULL,
-        boundsTable = NULL,
-        cellsTable = NULL,
-        unitsTable = NULL,
+        #' @field cells The model cells, stored in a list
         cells = NULL,
+        #' @field bounds The model boundaries, stored in a list
         bounds = NULL,
-        soluteRemovalMethod = NULL,
-        pcntToRemove = NULL,
-        k = NULL,
-        timeInterval = NULL,
-        storeData = NULL,
 
+        timeInterval = NULL,
+
+        boundsTransportTable_water_int = NULL,
+        boundsTransportTable_water_ext = NULL,
+
+        boundsTransportTable_solute_int = NULL,
+        boundsTransportTable_solute_us = NULL,
+        boundsTransportTable_solute_ds = NULL,
+
+        boundsReactionTable_solute_int = NULL,
+
+        cellsTable_water_stream = NULL,
+        cellsTable_solute_stream = NULL,
+
+        cellsTable_water_soil = NULL,
+        cellsTable_solute_soil = NULL,
+
+        cellsTable_water_groundwater = NULL,
+        cellsTable_solute_groundwater = NULL,
+
+        cellsTableList = NULL,
+        boundsTableList = NULL,
+
+        solute_transport_df = NULL,
+
+        unitsTable = NULL,
+
+        iterationNum = NULL,
+
+        #' @param boundsTransportTable_water_int Table with the names of the
+        #'   water boundaries and their attributes for water boundaries that are
+        #'   internal to the model, i.e., those with exactly one upstream and
+        #'   one downstream cell
+        #' @param boundsTransportTable_water_ext Table with the names of the
+        #'   water boundaries and their attributes for water boundaries at the
+        #'   most upstream and most downstream extent of the model topology
+        #' @param boundsTransportTable_solute_int Table with the names of the
+        #'   solute boundaries and their attributes for solute boundaries that
+        #'   are internal to the model, i.e., those with exactly one upstream
+        #'   and one downstream cell
+        #' @param boundsTransportTable_solute_us Table with the names of the
+        #'   solute boundaries and their attributes for solute boundaries at the
+        #'   most upstream extent of the model topology
+        #' @param boundsTransportTable_solute_ds Table with the names of the
+        #'   solute boundaries and their attributes for solute boundaries at the
+        #'   most downstream extent of the model topology
+        #' @param boundsReactionTable_solute_int Table with the names of the
+        #'   solute reaction boundaries and their attributes
+        #' @param cellsTable_water_stream Table with the names of the water
+        #'   cells and their attributes in the stream processing domain
+        #' @param cellsTable_solute_stream Table with the names of the solute
+        #'   cells and their attributes in the stream processing domain
+        #' @param cellsTable_water_soil Table with the names of the water
+        #'   cells and their attributes in the soil processing domain
+        #' @param cellsTable_solute_soil Table with the names of the solute
+        #'   cells and their attributes in the soil processing domain
+        #' @param cellsTable_water_groundwater Table with the names of the water
+        #'   cells and their attributes in the groundwater processing domain
+        #' @param cellsTable_solute_groundwater Table with the names of the solute
+        #'   cells and their attributes in the groundwater processing domain
+        #' @param unitsTable Table of units for model parameters and outputs
+        #' @param timeInterval Model time step
+        #' @return The ojbect of class \code{WQModel}
         initialize =
-          function(modelName, boundsTable, cellsTable, unitsTable, soluteRemovalMethod, k, timeInterval, ...) {
+          function(
+            boundsTransportTable_water_int = NULL,
+            boundsTransportTable_water_ext = NULL,
+            boundsTransportTable_solute_int = NULL,
+            boundsTransportTable_solute_us = NULL,
+            boundsTransportTable_solute_ds = NULL,
+            boundsReactionTable_solute_int = NULL,
+            cellsTable_water_stream = NULL,
+            cellsTable_solute_stream = NULL,
+            cellsTable_water_soil = NULL,
+            cellsTable_solute_soil = NULL,
+            cellsTable_water_groundwater = NULL,
+            cellsTable_solute_groundwater = NULL,
+            unitsTable,
+            timeInterval
+          ) {
+
+            #### GENERAL
+
             # set duration of each time step
             self$timeInterval <- timeInterval
 
-            self$modelName <- modelName
-            self$cellsTable <- cellsTable
-
-            # A series of error checks:
-            if( any( duplicated(self$cellsTable) ) ){
-              stop("At least one specification for a cell is duplicated in the cellsTable.")
-            }
-            if(length(cellsTable$cellIdx) != length(unique(cellsTable$cellIdx))) {
-              stop("A cell name was duplicated in the cellsTable.  All cell names must be unique.")
-            }
-
+            # store the units table
             self$unitsTable <- unitsTable
 
-            self$soluteRemovalMethod <- soluteRemovalMethod
+            self$iterationNum <- 0
 
-            self$k <- k
 
-            # generate the stream cells from the cellsTable
-            self$cells <-
-              plyr::llply(
-                1:nrow(cellsTable),
-                function(rowNum){
-                  StreamCell$new(
-                    cellIdx = cellsTable$cellIdx[rowNum],
+            #### CELLS
 
-                    soluteConcentration = cellsTable$initConcNO3[rowNum],
+            # Create objects with specifications for each of the different types of cells
+            self$cellsTable_water_stream <- cellsTable_water_stream
+            self$cellsTable_solute_stream <- cellsTable_solute_stream
 
-                    channelWidth = cellsTable$channelWidth[rowNum],
-                    channelLength = cellsTable$channelLength[rowNum],
-                    channelDepth = cellsTable$channelDepth[rowNum]
+            self$cellsTable_water_soil <- cellsTable_water_soil
+            self$cellsTable_solute_soil <- cellsTable_solute_soil
+
+            self$cellsTable_water_groundwater <- cellsTable_water_groundwater
+            self$cellsTable_solute_groundwater <- cellsTable_solute_groundwater
+
+            # Store these cell table objects in a list
+            cellsTableList <-
+              list(
+                cells_water_stream = self$cellsTable_water_stream,
+                cells_solute_stream = self$cellsTable_solute_stream,
+                cells_water_soil = self$cellsTable_water_soil,
+                cells_solute_soil = self$cellsTable_solute_soil,
+                cells_water_groundwater = self$cellsTable_water_groundwater,
+                cells_solute_groundwater = self$cellsTable_solute_groundwater
+              )
+            # Delete any tables for types of cells that are not specified
+            cellTablesToKeep <- sapply(cellsTableList, function(df) !is.null(df))
+            self$cellsTableList <- cellsTableList[cellTablesToKeep]
+
+            #### BOUNDARIES
+
+            # Tables with boundary specifications
+            self$boundsTransportTable_water_int <- boundsTransportTable_water_int
+            self$boundsTransportTable_water_ext <- boundsTransportTable_water_ext
+
+            self$boundsTransportTable_solute_int <- boundsTransportTable_solute_int
+            self$boundsTransportTable_solute_us <- boundsTransportTable_solute_us
+            self$boundsTransportTable_solute_ds <- boundsTransportTable_solute_ds
+
+            self$boundsReactionTable_solute_int <- boundsReactionTable_solute_int
+
+            self$boundsTableList <-
+              list(
+                bounds_transport_water_int = self$boundsTransportTable_water_int,
+                bounds_transport_water_ext = self$boundsTransportTable_water_ext,
+                bounds_transport_solute_int = self$boundsTransportTable_solute_int,
+                bounds_transport_solute_us = self$boundsTransportTable_solute_us,
+                bounds_transport_solute_ds = self$boundsTransportTable_solute_ds,
+                bounds_reaction_solute_int = self$boundsReactionTable_solute_int
+              )
+            boundsTablesToKeep <- sapply(self$boundsTableList, function(df) !is.null(df))
+            self$boundsTableList <- self$boundsTableList[boundsTablesToKeep]
+
+            self$solute_transport_df <-
+              rbind(
+                self$boundsTableList[["bounds_transport_solute_int"]],
+                self$boundsTableList[["bounds_transport_solute_us"]],
+                self$boundsTableList[["bounds_transport_solute_ds"]]
+              )
+
+            #### INSTANTIATE THE CELLS & BOUNDARIES
+            self$cellFactory()
+            self$boundaryFactory()
+
+            self$linkBoundsToCells() #must do this after the cells AND boundaries are already instantiated
+            lapply(self$cells, function(c) c$populateDependencies()) # populate dependencies of cells that require bounds to be instantiated first
+
+
+            ## Order the boundaries according to the order in which the trades
+            ## should be executed.  For transport boundaries, these just get
+            ## ordered according to their names; their order doesn't matter for
+            ## the current version of the model.  It does, however, matter that
+            ## water transport happens first followed by solute transport.  The
+            ## reaction boundary order is preserved from the input table to
+            ## allow the end user to specify which solutes "react" first.
+            waterTransportBounds <- self$bounds[sapply(self$bounds, function(b) any(class(b) %in% "Boundary_Transport_Water"))]
+            waterTransportBounds <- waterTransportBounds[sort(sapply(waterTransportBounds, "[[", "boundaryIdx"))]
+
+            soluteTransportBounds <- self$bounds[sapply(self$bounds, function(b) any(class(b) %in% "Boundary_Transport_Solute"))]
+            soluteTransportBounds <- soluteTransportBounds[sort(sapply(soluteTransportBounds, "[[", "boundaryIdx"))]
+
+            soluteReactionBounds <- self$bounds[sapply(self$bounds, function(b) any(class(b) %in% "Boundary_Reaction_Solute"))]
+
+            self$bounds <- c(waterTransportBounds, soluteTransportBounds, soluteReactionBounds)
+
+          },
+
+
+        #' @method Method WQModel$cellFactory
+        #' @description Create a list of the model cells
+        #' @return A list of model cells
+        cellFactory = function(){
+
+          # Error check to see if any cell specifications are duplicated
+          self$errorCheckCellInputs()
+
+          # generate the cells from the cells tables
+          cells_water_stream <- self$initializeWaterCells_stream()
+          names(cells_water_stream) <- self$cellsTable_water_stream$cellIdx
+          self$cells <- cells_water_stream
+
+          cells_solute_stream <- self$initializeSoluteCells_stream()
+          names(cells_solute_stream) <- self$cellsTable_solute_stream$cellIdx
+          self$cells <- c(self$cells, cells_solute_stream)
+
+          self$linkSoluteCellsToWaterCells_stream()
+          return()
+
+        }, # closes cellFactory
+
+
+        #' @method Method WQModel$boundaryFactory
+        #' @description Create a list of the model boundaries
+        #' @return A list of model boundaries
+        boundaryFactory = function(){
+
+          # Run a few checks on the boundary inputs
+          self$errorCheckBoundaryInputs()
+
+          # First, create the water transport boundaries
+          bounds_transport_water_ext <- self$initializeExternalWaterTransportBoundaries()
+          names(bounds_transport_water_ext) <- self$boundsTableList[["bounds_transport_water_ext"]]$boundaryIdx
+
+          bounds_transport_water_ext <-
+            lapply(
+              bounds_transport_water_ext,
+              function(b) {
+                if("Boundary_Transport_Water_Stream" %in% class(b)) b$populateDependenciesExternalBound()
+                return(b)
+              }
+            )
+
+          # note that a single cell model has no internal boundaries, so create
+          # internal boundaries if they are specified, but if they are NOT
+          # specified then the only water boundaries are the external ones
+          if(!is.null(self$boundsTableList[["bounds_transport_water_int"]]$boundaryIdx)){
+            bounds_transport_water_int <- self$initializeInternalWaterTransportBoundaries()
+            names(bounds_transport_water_int) <- self$boundsTableList[["bounds_transport_water_int"]]$boundaryIdx
+
+            bounds_transport_water_int <-
+              lapply(
+                bounds_transport_water_int,
+                function(b) {
+                  if("Boundary_Transport_Water_Stream" %in% class(b)) b$populateDependenciesInternalBound()
+                  return(b)
+                }
+              )
+            bounds_transport_water <- c(bounds_transport_water_ext, bounds_transport_water_int)
+
+          } else {
+            bounds_transport_water <- bounds_transport_water_ext
+          }
+
+          # populate dependencies
+          # bounds_transport_water <-
+          #   lapply(
+          #     bounds_transport_water,
+          #     function(b) {
+          #       if("Boundary_Transport_Water_Stream" %in% class(b)) b$populateDependencies()
+          #     }
+          #   )
+
+          # Add the water bounds to the bounds list
+          self$bounds <- bounds_transport_water
+
+          # create the solute transport bounds (references self$bounds)
+          bounds_transport_solute <- self$initializeSoluteTransportBoundaries()
+          names(bounds_transport_solute) <- self$solute_transport_df$boundaryIdx
+
+          # Add the solute transport bounds to the bounds list
+          self$bounds <- c(self$bounds, bounds_transport_solute)
+
+          # Create solute reaction boundaries
+          bounds_react_solute <- self$initializeSoluteReactionBoundaries()
+          names(bounds_react_solute) <- self$boundsTableList[["bounds_reaction_solute_int"]]$boundaryIdx
+
+          # Add the solute reaction boundaries to the bounds list
+          self$bounds <- c(self$bounds, bounds_react_solute)
+
+        }, # closes boundaryFactory
+
+
+        #' @method Method WQModel$errorCheckCellInputs
+        #' @description Error check to see if any cell specifications are
+        #'   duplicated
+        #' @return Nothing if no error is detected.  An error message is
+        #'   returned if an error is detected.
+        errorCheckCellInputs = function(){
+          lapply(
+            self$cellsTableList,
+            function(t) {
+              # A series of error checks:
+              if( any( duplicated(t) ) ){
+                stop("At least one specification for a cell is duplicated in one of the cell tables.")
+              }
+              if(length(t$cellIdx) != length(unique(t$cellIdx))) {
+                stop("A cell name was duplicated in one of the cell tables.  All cell names must be unique.")
+              }
+            }
+          ) # close lapply
+        }, # close method
+
+
+        #' @method Method WQModel$initializeWaterCells_stream
+        #' @description Instantiate the water cells in the stream process domain
+        #' @return List of stream water cells
+        initializeWaterCells_stream = function(){
+          if("cells_water_stream" %in% names(self$cellsTableList)){
+            tbl <- self$cellsTable_water_stream
+            plyr::llply(
+              1:nrow(tbl),
+              function(rowNum){
+                Cell_Water_Stream$new(
+                  cellIdx = tbl$cellIdx[rowNum],
+                  currency = tbl$currency[rowNum],
+                  processDomain = tbl$processDomain[rowNum],
+
+                  channelWidth = tbl$channelWidth[rowNum],
+                  channelLength = tbl$channelLength[rowNum],
+                  channelDepth = tbl$channelDepth[rowNum]
+                )
+              }
+            ) # close llply
+          } # close if
+        }, # close method
+
+        #' @method Method WQModel$initializeSoluteCells_stream
+        #' @description Instantiate the solute cells in the stream process domain
+        #' @return List of stream solute cells
+        initializeSoluteCells_stream = function(){
+          if("cells_solute_stream" %in% names(self$cellsTableList)){
+            tbl <- self$cellsTable_solute_stream
+            plyr::llply(
+              1:nrow(tbl),
+              function(rowNum){
+                Cell_Solute$new(
+                  cellIdx = tbl$cellIdx[rowNum],
+                  processDomain = tbl$processDomain[rowNum],
+                  currency = tbl$currency[rowNum],
+
+                  concentration = tbl$concentration[rowNum],
+                  linkedCell = self$cells[[ tbl$linkedCell[rowNum] ]]
+                )
+              }
+            ) # close llply
+          } # close if
+        }, # close method
+
+
+        #' @method Method WQModel$linkSoluteCellsToWaterCells_stream
+        #' @description Link the solute cells to the water cells in the stream process
+        #'   domain
+        #' @return Water cells with their \code{linkedSoluteCells} attribute populated
+        #'   with a list of solute cells that are linked to the water cell
+        linkSoluteCellsToWaterCells_stream =
+          function(){
+            streamWaterCells <- self$cells[sapply(self$cells, function(c) "Cell_Water_Stream" %in% class(c))]
+            lapply(
+              streamWaterCells,
+              function(c) {
+                # identify the water cells to which the solute cells are connected
+                cellIdxs <- self$cellsTable_solute_stream$cellIdx[self$cellsTable_solute_stream$linkedCell == c$cellIdx]
+                soluteCells <- self$cells[cellIdxs]
+                names(soluteCells) <- cellIdxs
+                # link the solute cells to the water cells
+                c$linkedSoluteCells <- soluteCells
+                return(c)
+              }
+            ) # close lapply
+          }, # close method
+
+
+        #' @method Method WQModel$errorCheckBoundaryInputs
+        #' @description Error check to see if any boundary specifications are duplicated
+        #'   or have references to cells that do not exist.
+        #' @return Nothing if no error is detected.  If an error is detected, a message
+        #'   is thrown.
+        errorCheckBoundaryInputs =
+          function(){
+            lapply(
+              1:length(self$boundsTableList),
+              function(i) {
+                tblName <- names(self$boundsTableList)[i]
+                tbl <- self$boundsTableList[[i]]
+                if( any( duplicated(tbl$boundsTable) ) ){
+                  stop(paste0("At least one specification for a boundary is duplicated in the table", tblName, "."))
+                }
+                if(length(tbl$boundaryIdx) != length(unique(tbl$boundaryIdx))) {
+                  stop(paste0("A boundary name was duplicated in the table:", tblName, ".  All boundary names must be unique."))
+                }
+                if( any(!(unique(tbl$downstreamCellIdx[!is.na(tbl$downstreamCellIdx)]) %in% unique(sapply(self$cells, function(cell) cell$cellIdx)))) ){
+                  stop(paste0("In the table ", tblName, ", a name of a downstream cell was provided that refers to a cell that has not been instantiated."))
+                }
+                if( any(!(unique(tbl$upstreamCellIdx[!is.na(tbl$upstreamCellIdx)]) %in% unique(sapply(self$cells, function(cell) cell$cellIdx)))) ){
+                  stop(paste0("In the table ", tblName, ", a name of a upstream cell was provided that refers to a cell that has not been instantiated."))
+                }
+              }
+            ) # close lapply
+          }, # close method
+
+
+
+        #' @method Method WQModel$initializeExternalWaterTransportBoundaries
+        #' @description Instantiate the transport boundaries that are on the physical
+        #'   edges of the model
+        #' @return Water transport boundaries at the upstream and downstream extents of
+        #'   the model topology
+        #'
+        initializeExternalWaterTransportBoundaries = function(){
+          tbl <- self$boundsTableList[["bounds_transport_water_ext"]]
+          plyr::llply(
+            1:nrow(tbl),
+            function(rowNum) {
+
+              locationOfBoundInNetwork <- tbl$locationOfBoundInNetwork[rowNum]
+
+              if(!(locationOfBoundInNetwork %in% c("upstream", "downstream"))) stop("External model boundaries must have a 'locationOfBoundInNetwork' with a value of either 'upstream' or 'downstream'.")
+              if(locationOfBoundInNetwork == "upstream") {
+                upstreamCell <- NA
+                downstreamCell <- tbl$cellIdx[rowNum]
+              }
+              if(locationOfBoundInNetwork == "downstream") {
+                upstreamCell <- tbl$cellIdx[rowNum]
+                downstreamCell <- NA
+              }
+
+              if(tbl$processDomain[rowNum] == "stream"){
+                b <-
+                  Boundary_Transport_Water_Stream$new(
+                    boundaryIdx = tbl$boundaryIdx[rowNum],
+                    currency = tbl$currency[rowNum],
+                    upstreamCell = self$cells[[upstreamCell]],
+                    downstreamCell = self$cells[[downstreamCell]],
+                    discharge = tbl$discharge[rowNum],
+                    timeInterval = self$timeInterval
+                )
+              } else {
+                b <-
+                  Boundary_Transport_Water$new(
+                    boundaryIdx = tbl$boundaryIdx[rowNum],
+                    currency = tbl$currency[rowNum],
+                    upstreamCell = self$cells[[upstreamCell]],
+                    downstreamCell = self$cells[[downstreamCell]],
+                    discharge = tbl$discharge[rowNum],
+                    timeInterval = self$timeInterval
                   )
-                }
+              }
+              return(b)
+
+            }
+          ) # close llply
+        }, # close method
+
+
+
+        #' @method Method WQModel$initializeInternalWaterTransportBoundaries
+        #' @description Instantiate the transport boundaries that are internal to the
+        #'   physical edges of the model
+        #' @return Water transport boundaries within the upstream and downstream extents
+        #'   of the model topology; i.e., those having exactly one upstream and one
+        #'   downstream cell
+        initializeInternalWaterTransportBoundaries = function(){
+          tbl <- self$boundsTableList[["bounds_transport_water_int"]]
+          plyr::llply(
+            1:nrow(tbl),
+            function(rowNum) {
+
+              if(tbl$processDomainName[rowNum] == "stream"){
+                Boundary_Transport_Water_Stream$new(
+                  boundaryIdx = tbl$boundaryIdx[rowNum],
+                  currency = tbl$currency[rowNum],
+                  upstreamCell = self$cells[[  tbl$upstreamCellIdx[rowNum] ]],
+                  downstreamCell = self$cells[[ tbl$downstreamCellIdx[rowNum] ]],
+                  discharge = tbl$discharge[rowNum],
+                  timeInterval = self$timeInterval
+                )
+              } else {
+                Boundary_Transport_Water$new(
+                  boundaryIdx = tbl$boundaryIdx[rowNum],
+                  currency = tbl$currency[rowNum],
+                  upstreamCell = self$cells[[  tbl$upstreamCellIdx[rowNum] ]],
+                  downstreamCell = self$cells[[ tbl$downstreamCellIdx[rowNum] ]],
+                  discharge = tbl$discharge[rowNum],
+                  timeInterval = self$timeInterval
+                )
+              } # close else
+            }
+          ) # close llply
+        }, # close method
+
+
+
+        #' @method Method WQModel$initializeSoluteTransportBoundaries
+        #' @description Instantiate the solute transport boundaries
+        #' @return Solute transport boundaries
+        #'
+        initializeSoluteTransportBoundaries =
+          function( ){
+            tbl <- self$solute_transport_df
+            plyr::llply(
+              1:nrow(tbl),
+              function(rowNum) {
+                Boundary_Transport_Solute$new(
+                  boundaryIdx = tbl$boundaryIdx[rowNum],
+                  currency = tbl$currency[rowNum],
+                  linkedBound = self$bounds[[ tbl$linkedBound[rowNum] ]],
+                  # concentration = tbl$concentration[rowNum],
+                  load = tbl$load[rowNum],
+                  upstreamCell = self$cells[[  tbl$upstreamCellIdx[rowNum] ]],
+                  downstreamCell = self$cells[[ tbl$downstreamCellIdx[rowNum] ]],
+                  timeInterval = self$timeInterval
+                )
+              }
+            )
+          }, # close method
+
+
+
+        #' @method Method WQModel$initializeSoluteReactionBoundaries
+        #' @description Instantiate the solute reaction boundaries.  Current
+        #'   model version only supports stream reaction boundaries.
+        #' @return A list of solute reaction boundaries
+        initializeSoluteReactionBoundaries = function(){
+          tbl <- self$boundsTableList[["bounds_reaction_solute_int"]]
+          plyr::llply(
+            1:nrow(tbl),
+            function(rowNum) {
+              Boundary_Reaction_Solute_Stream$new(
+                boundaryIdx = tbl$boundaryIdx[rowNum],
+                currency = tbl$currency[rowNum],
+                upstreamCell = self$cells[[ tbl$upstreamCellIdx[rowNum] ]],
+                downstreamCell = NULL,
+                timeInterval = self$timeInterval,
+                pcntToRemove = tbl$pcntToRemove[rowNum],
+                qStorage = tbl$qStorage[rowNum],
+                volWaterInStorage = tbl$volWaterInStorage[rowNum],
+                alpha = tbl$alpha[rowNum],
+                tauMin = tbl$tauMin[rowNum],
+                tauMax = tbl$tauMax[rowNum],
+                k = tbl$k[rowNum],
+                processMethodName = tbl$processMethodName[rowNum]
               )
-            names(self$cells) <- cellsTable$cellIdx
-
-            # Generate the boundaries from the boundsTable in the model
-
-            # First, order the bounds table by the calculate order column. This
-            # ordering makes it so that you can call the boundaries in the the
-            # correct order simply by looping through the list of bounds.
-            boundsTable <- boundsTable[order(boundsTable$calculateOrder), ]
-            self$boundsTable <- boundsTable
-
-            # A series of error checks:
-            if( any( duplicated(self$boundsTable) ) ){
-              stop("At least one specification for a boundary is duplicated.")
             }
-            if(length(boundsTable$boundaryIdx) != length(unique(boundsTable$boundaryIdx))) {
-              stop("A boundary name was duplicated in the boundsTable.  All boundary names must be unique.")
+          ) # close llply
+        }, # close method
+
+
+
+        #' @method Method WQModel$linkBoundsToCells
+        #' @description Creates a list of boundaries attached to each cell and
+        #'   then adds the list of bounds connected to each cell as an attribute
+        #'   of the cell.
+        #' @return Cells with \code{linkedBoundsList} attribute populated
+        linkBoundsToCells = function(){
+
+          lapply(
+            self$bounds, function(bound) {
+              bound$upstreamCell$linkedBoundsList$downstreamBounds <- c(bound$upstreamCell$linkedBoundsList$downstreamBounds, bound)
+              bound$downstreamCell$linkedBoundsList$upstreamBounds <- c(bound$downstreamCell$linkedBoundsList$upstreamBounds, bound)
             }
-            if( any(!(unique(boundsTable$downstreamCellIdx[!is.na(boundsTable$downstreamCellIdx)]) %in% unique(sapply(self$cells, function(cell) cell$cellIdx)))) ){
-              stop("In the boundsTable, a name of a downstream cell was provided that refers to a cell that has not been instantiated.")
-            }
-            if( any(!(unique(boundsTable$upstreamCellIdx[!is.na(boundsTable$upstreamCellIdx)]) %in% unique(sapply(self$cells, function(cell) cell$cellIdx)))) ){
-              stop("In the boundsTable, a name of an upstream cell was provided that refers to a cell that has not been instantiated.")
-            }
+          )
+
+          return()
+        },
 
 
-            self$bounds <-
-              plyr::llply(
-                1:nrow(boundsTable),
-                function(rowNum) {
 
-                  usCrit <- self$boundsTable$upstreamCellIdx[rowNum]
-                  dsCrit <- self$boundsTable$downstreamCellIdx[rowNum]
+        #' @method Method WQModel$trade
+        #' @description Runs the trade method on all boundaries in the model in
+        #'   the order in which they occur in the \code{bounds} list.
+        #' @return Updated boundary values.
+        trade = function(){
+          lapply(self$bounds, function(bound) bound$trade())
+          return()
+        },
 
-                  if(is.na(usCrit)){
-                    usCell <- NA
-                  } else{
-                    usCell <- self$cells[[ which(names(self$cells) ==  usCrit) ]]
-                  }
 
-                  if(is.na(dsCrit)){
-                    dsCell <- NA
-                  } else{
-                    dsCell <- self$cells[[ which(names(self$cells) ==  dsCrit) ]]
-                  }
+        #' @method Method WQModel$store
+        #'
+        #' @description Runs the store method on all cells in the model.
+        #' @return Updated store values.
+        store = function(){
+          lapply(self$bounds, function(bound) bound$store())
+          return()
+        },
 
-                  # print(paste("bound:", boundsTable$boundaryIdx[rowNum] , ";   u/s cell:", usCellIdx, ";   d/s cell:", dsCellIdx, sep = ""))
+        #' @method Method WQModel$update
+        #'
+        #' @description Runs the update method on all cells and boundaries in the model.
+        #' @return Updates all values in cells and boundaries based on trades and stores.
+        update = function(){
+          lapply(self$cells, function(c) c$update())
+          lapply(
+            self$bounds[sapply(self$bounds, function(b) any(class(b) %in% "Boundary_Transport_Water_Stream"))],
+            function(b) b$populateDependencies()
+            )
+          return()
+        },
 
-                    Boundary$new(
-                      boundaryIdx = boundsTable$boundaryIdx[rowNum],
-                      currency = boundsTable$currency[rowNum],
-                      boundarySuperClass = boundsTable$boundarySuperClass[rowNum],
-                      upstreamCell = usCell,
-                        # self$cells[[ usCellIdx ]],
-                      downstreamCell = dsCell,
-                        # self$cells[[ dsCellIdx ]],
-                      calculateOrder = boundsTable$calculateOrder[rowNum],
-                      pcntToRemove = boundsTable$pcntToRemove[rowNum],
-                      discharge = boundsTable$discharge[rowNum],
-                      k = self$k,
-                      alpha = boundsTable$alpha[rowNum],
-                      tauMin = boundsTable$tauMin[rowNum],
-                      tauMax = boundsTable$tauMax[rowNum],
-                      soluteLoad = boundsTable$soluteLoad[rowNum],
-                      qStorage = boundsTable$qStorage[rowNum],
-                      linkedTo = boundsTable$linkedTo[rowNum]
-                    )
+        #' @method Method WQModel$iterate
+        #' @field iterationNum The number of times the model has been iterated
+        #' @description Iterates the model by calling all trades, stores, and
+        #'   updates.
+        #' @return All cells and boundaries will values updated to reflect the
+        #'   trades, stores, and updates, that occurred during the time step.
+        iterate = function(){
+          self$trade()
+          self$store()
+          self$update()
+          self$iterationNum <- self$iterationNum + 1
 
-                }
-              )
-            names(self$bounds) <- boundsTable$boundaryIdx
+        }
 
-            # bounds with links...link 'em up...
-            linkedBounds <- self$bounds[ unlist(plyr::llply(self$bounds, function(bound) !is.na( bound$linkedTo))) ]
-            for(bound in linkedBounds){
-              bound$linkedTo <- self$bounds[[which(sapply(self$bounds, function(b) b$boundaryIdx) == bound$linkedTo)]]
-            }
-
-            # populate dependencies
-            lapply(self$bounds, function(b) Boundary$public_methods$populateDependencies(b) )
-
-            # initialize store info
-            self$storeData <- self$initializeStores()
-
-          } # closes initialize function
       ) # closes public list
   ) # closes WQ model
-
-
-#' @method WQModel$trade
-#'
-#' @description Calculates all the trades for the model
-#'
-WQModel$set(
-  which = "public",
-  name = "trade",
-  value = function(...){
-    # empty vectors to populate
-    boundIdx <- rep(NA, length(self$bounds))
-    tradeVals <- rep(NA, length(self$bounds))
-    tradeCurrency <- rep(NA, length(self$bounds))
-    rxnVals <- NULL
-    valName <- rep(NA, length(self$bounds))
-    usCell <- as.list(rep(NA, length(self$bounds)))
-    dsCell <- as.list(rep(NA, length(self$bounds)))
-    usCellIdx <- rep(NA, length(self$bounds))
-    dsCellIdx <- rep(NA, length(self$bounds))
-    tradeType <- rep(NA, length(self$bounds))
-    valIdx <- rep(NA, length(self$bounds))
-    trades <- list()
-
-    # print(length(self$bounds))
-
-    for(i in 1:length(self$bounds) ){
-
-      tradeCurrency[i] <- self$bounds[[i]]$currency
-      boundIdx[i] <- self$bounds[[i]]$boundaryIdx
-      if(! self$bounds[[i]]$usModBound){
-        usCell[[i]] <- self$bounds[[i]]$upstreamCell
-        usCellIdx[i] <- usCell[[i]]$cellIdx
-
-      }
-      # else{
-      #   usCellIdx[i] <- NA
-      # }
-      if(! self$bounds[[i]]$dsModBound) {
-        dsCell[[i]] <- self$bounds[[i]]$downstreamCell
-        dsCellIdx[i]  <- dsCell[[i]]$cellIdx
-      }
-      # else {
-      #   dsCellIdx[i] <- NA
-      # }
-
-      if(self$bounds[[i]]$currency == "H2O" & self$bounds[[i]]$boundarySuperClass == "transport"){
-        newCalc <- WaterTransportPerTime$new(self$bounds[[i]], self$timeInterval)
-        trades[[i]]<- newCalc
-        tradeVals[i] <- newCalc$volumeToTrade
-        valIdx[i] <- "volumeToTrade"
-        valName[i] <- "water volume  (L)"
-        tradeType[i] <- newCalc$tradeType
-      }
-
-      if(self$bounds[[i]]$currency == "NO3" & self$bounds[[i]]$boundarySuperClass == "transport"){
-        newCalc <- SoluteTransportPerTime$new(self$bounds[[i]], self$timeInterval)
-        trades[[i]] <- newCalc
-        tradeVals[i] <- newCalc$soluteToTrade
-        valIdx[i] <- "soluteToTrade"
-        valName[i] <- "solute mass (ug)"
-        tradeType[i] <- newCalc$tradeType
-      }
-
-      if(self$bounds[[i]]$currency == "NO3" & self$bounds[[i]]$boundarySuperClass == "reaction"){
-        newCalc <- CalcFractionalSoluteDynams$new(boundary = self$bounds[[i]], removalMethod = self$soluteRemovalMethod, timeInterval = self$timeInterval)
-        trades[[i]] <- newCalc
-        tradeVals[i] <- newCalc$massToRemove
-        valIdx[i] <- "massToRemove"
-        valName[i] <- "solute mass (ug)"
-        tradeType[i] <- newCalc$tradeType
-
-        # Output the key values from the reactions occuring in the timestep
-        newVals <- newCalc$rxnVals
-        if(is.null(rxnVals) ) {
-          rxnVals <- newVals
-        } else {
-          rxnVals <- rbind(rxnVals, newVals)
-          }
-      }
-
-    } # close for loop
-
-    # tradeList <- list(trades = I(trades), boundIdx = boundIdx, tradeCurrency = tradeCurrency, tradeVals = tradeVals, valIdx = valIdx, valName = valName, usCellIdx = usCellIdx, dsCellIdx = dsCellIdx, tradeType = tradeType, usCell = I(usCell), dsCell = I(dsCell))
-    tradeDf <- data.frame(trades = I(trades), boundIdx, tradeCurrency, tradeVals, valIdx, valName, usCellIdx, dsCellIdx, tradeType, usCell = I(usCell), dsCell = I(dsCell))
-    class(tradeDf$trades) <- "list"
-    class(tradeDf$usCell) <- "list"
-    class(tradeDf$dsCell) <- "list"
-    rxnValDf <- rxnVals
-    return(list(tradeDf, rxnValDf))
-  }
-)
-
-#' @method WQModel$initializeStores
-#'
-#' @description Structured info for storing all the stores for the model
-#'
-WQModel$set(
-  which = "public",
-  name = "initializeStores",
-  value = function(...){
-
-    return(CalcStores$new(cells = self$cells, bounds = self$bounds))
-  }
-)
-
-#' @method WQModel$store
-#'
-#' @description Calculates all the stores for the model
-#'
-WQModel$set(
-  which = "public",
-  name = "store",
-  value = function(...){
-    tradeTable <- self$trade()[[1]]
-    # initStores <- self$storeData
-
-    # return( CalcStores$public_methods$doCalc( tradeTable = tradeTable, initStores = initStores ) )
-    return( self$storeData$doCalc( tradeTable = tradeTable ) )
-
-  }
-)
-
-#' @method WQModel$update
-#'
-#' @description Does all the updates for the model
-#'
-WQModel$set(
-  which = "public",
-  name = "update",
-  value = function(...){
-    cells <- self$cells
-    tradeTable <- self$trade()[[1]]
-    timeInterval <- self$timeInterval
-
-    return( c(UpdateCells$new(cells), UpdateBounds$new(tradeDf = tradeTable, timeInterval = timeInterval)) )
-  }
-)
-
