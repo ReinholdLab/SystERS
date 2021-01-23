@@ -36,10 +36,16 @@ Boundary_Reaction_Solute <-
         processMethodName = NULL,
         #' @field processMethod Call to the Method  \code{pcnt} or \code{RT-PL}
         processMethod = NULL,
-        #' @field tauMin Minimum residence time to consider
+        #' @field tauMin Smallest residence time when solute processing is possible; must be >= tauMinWater
         tauMin = NULL,
-        #' @field tauMax Maximum residence time to consider
+        #' @field tauMax Largest residence time when solute processing is possible; must be <= tauMaxWater
         tauMax = NULL,
+        #' @field tauMinWater Minimum residence time of water to consider; lower bound of power law describing the residence time
+        #'   distribution of water in the hyporheic zone
+        tauMinWater = NULL,
+        #' @field tauMaxWater Maximum residence time of water to consider; upper bound of power law describing the residence time
+        #'   distribution of water in the hyporheic zone
+        tauMaxWater = NULL,
         #' @field alpha Power law exponent describing the shape of the curve,
         #'   typically between -1.2 and -1.9
         alpha = NULL,
@@ -58,26 +64,36 @@ Boundary_Reaction_Solute <-
         #'   be specified
         pcntToRemove = NULL,
 
-        #' @description Instantiate a reaction boundary for a solute
-        #' #' @param ... Parameters inherit from Class \code{\link{Boundary}}
+        #' @description Instantiate a reaction boundary for a solute #' @param
+        #'   ... Parameters inherit from Class \code{\link{Boundary}}
         #' @param boundaryIdx String indexing the boundary
         #' @param currency String naming the currency handled by the boundary as
         #'   a character e.g., \code{water, NO3}
         #' @param upstreamCell  Cell to which the reaction boundary is connected
         #' @param timeInterval  Model time step
-        #' @param processMethodName How to process the solute, either \code{pcnt} or
-        #'   \code{RT-PL}
-        #' @param tauMin Minimum residence time to consider
-        #' @param tauMax Maximum residence time to consider
+        #' @param processMethodName How to process the solute, either
+        #'   \code{pcnt} or \code{RT-PL}
+        #' @param tauMin Minimum residence time of solute to consider (residence
+        #'   time at which solute reactions begin having the potential to
+        #'   occur);must be >= than \code{tauMinWater}
+        #' @param tauMax Maximum residence time of solute to consider (residence
+        #'   time at which solute reactions stop having the potential to occur);
+        #'   must be <= \code{tauMaxWater}
+        #' @param tauMinWater Minimum residence time of water to consider; bound
+        #'   on lower end of power law describing the residence time
+        #'   distribution
+        #' @param tauMaxWater Maximum residence time of water to consider; bound
+        #'   on upper end of power law describing the residence time
+        #'   distribution
         #' @param alpha Power law exponent describing the shape of the curve,
         #'   typically between -1.2 and -1.9
         #' @param k Uptake constant for solute in units of T-1
-        #' @param qStorage Volumeteric rate of water entering the storage zone
+        #' @param qStorage Volumetric rate of water entering the storage zone
         #' @param pcntToRemove Percent of solute amount (mass or mols) to remove
         #'   from storage
-        #' @return The ojbect of class \code{Boundary_Reaction_Solute}.
+        #' @return The object of class \code{Boundary_Reaction_Solute}.
         initialize =
-          function(..., processMethodName, tauMin, tauMax, alpha, k, qStorage, pcntToRemove, volWaterInStorage){
+          function(..., processMethodName, tauMin, tauMax, tauMinWater, tauMaxWater, alpha, k, qStorage, pcntToRemove, volWaterInStorage){
             super$initialize(...)
             self$processDomain <- self$upstreamCell$processDomain
             self$processMethodName <- processMethodName
@@ -85,6 +101,8 @@ Boundary_Reaction_Solute <-
               self$tauMin <- tauMin
               self$tauMax <- tauMax
               self$alpha <- alpha
+              self$tauMinWater <- tauMinWater
+              self$tauMaxWater <- tauMaxwater
               self$processMethod <- self$processMethod_RT_PL
             } else if(processMethodName == "pcnt"){
               self$pcntToRemove <- pcntToRemove
@@ -95,9 +113,9 @@ Boundary_Reaction_Solute <-
 
             if(!is.numeric(qStorage)){
 
-              # I have set tau_a = tauMin and tau_b = tauMax because we want the
+              # I have set tau_a = tauMinWater and tau_b = tauMaxWater because we want the
               # entire integral from tauMin to tauMax...
-              ccdfIntegrated <- hydrogeom::powerLawIntCCDF(self$tauMin, self$tauMax, self$tauMin, self$tauMax, self$alpha)
+              ccdfIntegrated <- hydrogeom::powerLawIntCCDF(self$tauMinWater, self$tauMaxWater, self$tauMinWater, self$tauMaxWater, self$alpha)
               storage.1d <- self$volWaterInStorage / self$upstreamCell$linkedCell$channelArea
               self$qStorage <-  storage.1d / ccdfIntegrated
             } else {
