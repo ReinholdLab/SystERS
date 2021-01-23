@@ -163,31 +163,41 @@ Boundary_Reaction_Solute <-
               k,
               remaining
             ){
-              PL_PDF <- hydrogeom::powerLawPDF(tau, tauMin, tauMax, alpha)
-              # in the following line, if the -1  is removed (and this
-              # simply expressed as -k*tau), an "invalid argument to unary
-              # operator" error is thrown
-              minus_k_t <- (-1*k*tau)
 
-              if(remaining){
-                out <- PL_PDF * exp(minus_k_t)
-              }else{
-                out <- PL_PDF * (1-exp(minus_k_t))
+              if(tauMin == tauMax){
+                if(remaining) {
+                  propUptk <- 1
+                } else {
+                  propUptk <- 0
+                }
+              } else {
+
+                PL_PDF <- hydrogeom::powerLawPDF(tau, tauMin, tauMax, alpha)
+                # in the following line, if the -1  is removed (and this
+                # simply expressed as -k*tau), an "invalid argument to unary
+                # operator" error is thrown
+                minus_k_t <- (-1*k*tau)
+
+                if(remaining){
+                  out <- PL_PDF * exp(minus_k_t)
+                }else{
+                  out <- PL_PDF * (1-exp(minus_k_t))
+                }
+                return(out)
               }
-              return(out)
-            }
 
-          propUptk <-
-            integrate(
-              propUptkFunc,
-              lower = self$tauMin,
-              upper = self$tauMax,
-              tauMin = self$tauMin,
-              tauMax = self$tauMax,
-              alpha = self$alpha,
-              k = self$k,
-              remaining = remaining
-            )$value
+              propUptk <-
+                integrate(
+                  propUptkFunc,
+                  lower = self$tauMin,
+                  upper = self$tauMax,
+                  tauMin = self$tauMin,
+                  tauMax = self$tauMax,
+                  alpha = self$alpha,
+                  k = self$k,
+                  remaining = remaining
+                )$value
+            }
           return(propUptk)
         },
 
