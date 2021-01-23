@@ -40,9 +40,15 @@ boundary is interacting}
 
 \item{\code{processMethod}}{Call to the Method  \code{pcnt} or \code{RT-PL}}
 
-\item{\code{tauMin}}{Minimum residence time to consider}
+\item{\code{tauMin}}{Smallest residence time when solute processing is possible; must be >= tauMinWater}
 
-\item{\code{tauMax}}{Maximum residence time to consider}
+\item{\code{tauMax}}{Largest residence time when solute processing is possible; must be <= tauMaxWater}
+
+\item{\code{tauMinWater}}{Minimum residence time of water to consider; lower bound of power law describing the residence time
+distribution of water in the hyporheic zone}
+
+\item{\code{tauMaxWater}}{Maximum residence time of water to consider; upper bound of power law describing the residence time
+distribution of water in the hyporheic zone}
 
 \item{\code{alpha}}{Power law exponent describing the shape of the curve,
 typically between -1.2 and -1.9}
@@ -84,14 +90,16 @@ be specified}
 \if{html}{\out{<a id="method-new"></a>}}
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
-Instantiate a reaction boundary for a solute
-#' @param ... Parameters inherit from Class \code{\link{Boundary}}
+Instantiate a reaction boundary for a solute #' @param
+  ... Parameters inherit from Class \code{\link{Boundary}}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Boundary_Reaction_Solute$new(
   ...,
   processMethodName,
   tauMin,
   tauMax,
+  tauMinWater,
+  tauMaxWater,
   alpha,
   k,
   qStorage,
@@ -103,19 +111,31 @@ Instantiate a reaction boundary for a solute
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{processMethodName}}{How to process the solute, either \code{pcnt} or
-\code{RT-PL}}
+\item{\code{processMethodName}}{How to process the solute, either
+\code{pcnt} or \code{RT-PL}}
 
-\item{\code{tauMin}}{Minimum residence time to consider}
+\item{\code{tauMin}}{Minimum residence time of solute to consider (residence
+time at which solute reactions begin having the potential to
+occur);must be >= than \code{tauMinWater}}
 
-\item{\code{tauMax}}{Maximum residence time to consider}
+\item{\code{tauMax}}{Maximum residence time of solute to consider (residence
+time at which solute reactions stop having the potential to occur);
+must be <= \code{tauMaxWater}}
+
+\item{\code{tauMinWater}}{Minimum residence time of water to consider; bound
+on lower end of power law describing the residence time
+distribution}
+
+\item{\code{tauMaxWater}}{Maximum residence time of water to consider; bound
+on upper end of power law describing the residence time
+distribution}
 
 \item{\code{alpha}}{Power law exponent describing the shape of the curve,
 typically between -1.2 and -1.9}
 
 \item{\code{k}}{Uptake constant for solute in units of T-1}
 
-\item{\code{qStorage}}{Volumeteric rate of water entering the storage zone}
+\item{\code{qStorage}}{Volumetric rate of water entering the storage zone}
 
 \item{\code{pcntToRemove}}{Percent of solute amount (mass or mols) to remove
 from storage}
@@ -132,7 +152,7 @@ a character e.g., \code{water, NO3}}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-The ojbect of class \code{Boundary_Reaction_Solute}.
+The object of class \code{Boundary_Reaction_Solute}.
 }
 }
 \if{html}{\out{<hr>}}

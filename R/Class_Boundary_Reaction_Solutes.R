@@ -102,7 +102,7 @@ Boundary_Reaction_Solute <-
               self$tauMax <- tauMax
               self$alpha <- alpha
               self$tauMinWater <- tauMinWater
-              self$tauMaxWater <- tauMaxwater
+              self$tauMaxWater <- tauMaxWater
               self$processMethod <- self$processMethod_RT_PL
             } else if(processMethodName == "pcnt"){
               self$pcntToRemove <- pcntToRemove
