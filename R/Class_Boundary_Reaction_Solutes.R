@@ -153,7 +153,7 @@ Boundary_Reaction_Solute <-
         #'   calculates the fraction of solute REMOVED
         #' @returns Fraction of solute removed or remaining in the storage zone
         calc_fracRemoval_resTimeWtdPowerLaw = function(remaining = remaining){
-          if(self$tauMin == self$tauMax){
+          if(is.null(self$tauMin)){
             if(remaining) {
               propUptk <- 1
             } else {
