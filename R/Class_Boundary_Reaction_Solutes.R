@@ -153,8 +153,16 @@ Boundary_Reaction_Solute <-
         #'   calculates the fraction of solute REMOVED
         #' @returns Fraction of solute removed or remaining in the storage zone
         calc_fracRemoval_resTimeWtdPowerLaw = function(remaining = remaining){
+          if(self$tauMin == self$tauMax){
+            if(remaining) {
+              propUptk <- 1
+            } else {
+              propUptk <- 0
+            }
+            return(propUptk)
+          } else {
 
-          propUptkFunc <-
+            propUptkFunc <-
             function(
               tau,
               tauMin,
@@ -163,42 +171,34 @@ Boundary_Reaction_Solute <-
               k,
               remaining
             ){
+              PL_PDF <- hydrogeom::powerLawPDF(tau, tauMin, tauMax, alpha)
+              # in the following line, if the -1  is removed (and this
+              # simply expressed as -k*tau), an "invalid argument to unary
+              # operator" error is thrown
+              minus_k_t <- (-1*k*tau)
 
-              if(tauMin == tauMax){
-                if(remaining) {
-                  propUptk <- 1
-                } else {
-                  propUptk <- 0
-                }
-              } else {
-
-                PL_PDF <- hydrogeom::powerLawPDF(tau, tauMin, tauMax, alpha)
-                # in the following line, if the -1  is removed (and this
-                # simply expressed as -k*tau), an "invalid argument to unary
-                # operator" error is thrown
-                minus_k_t <- (-1*k*tau)
-
-                if(remaining){
-                  out <- PL_PDF * exp(minus_k_t)
-                }else{
-                  out <- PL_PDF * (1-exp(minus_k_t))
-                }
-                return(out)
+              if(remaining){
+                out <- PL_PDF * exp(minus_k_t)
+              }else{
+                out <- PL_PDF * (1-exp(minus_k_t))
               }
-
-              propUptk <-
-                integrate(
-                  propUptkFunc,
-                  lower = self$tauMin,
-                  upper = self$tauMax,
-                  tauMin = self$tauMin,
-                  tauMax = self$tauMax,
-                  alpha = self$alpha,
-                  k = self$k,
-                  remaining = remaining
-                )$value
+              return(out)
             }
-          return(propUptk)
+
+            propUptk <-
+              integrate(
+                propUptkFunc,
+                lower = self$tauMin,
+                upper = self$tauMax,
+                tauMin = self$tauMin,
+                tauMax = self$tauMax,
+                alpha = self$alpha,
+                k = self$k,
+                remaining = remaining
+              )$value
+
+            return(propUptk)
+          }
         },
 
 
@@ -241,6 +241,8 @@ Boundary_Reaction_Solute_Stream <-
         #' @field damkohlerNumStorage Damkohler number for the transient storage
         #'   zone (i.e. hyporheic zone)
         damkohlerNumStorage = NULL,
+        #' @field concentrationStorage Concentration of solute in storage
+        concentrationStorage = NULL,
         #'
         #' @param ... Parameters inherit from Class \code{\link{Boundary_Reaction_Solute}} and thus \code{\link{Boundary}}
         #' @param boundaryIdx String indexing the boundary
@@ -261,7 +263,6 @@ Boundary_Reaction_Solute_Stream <-
         trade = function(){
 
           self$processMethod()
-
           # Error check: do the fraction of solute removed and remaining from STORAGE sum to one?
           if( round(sum(self$fractionRemovedStorage, self$fractionRemainingStorage), 3) != 1 ) {
             msgGeneral <- "The fraction of solute removed and remaining from storage do not sum to one."
@@ -314,6 +315,11 @@ Boundary_Reaction_Solute_Stream <-
           self$damkohlerNum <- -1*(log(1-self$fractionRemoved))
           self$damkohlerNumStorage <- -1*(log(1-self$fractionRemovedStorage))
 
+
+          startingAmountInStorage <- self$upstreamCell$concentration * self$volWaterInStorage
+          remainingAmountInStorage <- startingAmountInStorage * self$fractionRemainingStorage
+          self$concentrationStorage <- remainingAmountInStorage / self$volWaterInStorage
+
           self$rxnVals <-
             data.frame(
               boundary = self$boundaryIdx,
@@ -324,7 +330,8 @@ Boundary_Reaction_Solute_Stream <-
               fracRemainingInStrg = self$fractionRemainingStorage,
               mustBeOne = self$mustBeOne,
               startingAmount = self$startingAmount,
-              amountToRemove = self$amountToRemove
+              amountToRemove = self$amountToRemove,
+              concentrationStorage = self$concentrationStorage
             )
 
           return(list(amountToRemove = self$amountToRemove, amountToRemain = self$amountToRemain))

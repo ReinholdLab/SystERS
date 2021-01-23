@@ -25,6 +25,8 @@ stream cell}
 
 \item{\code{damkohlerNumStorage}}{Damkohler number for the transient storage
 zone (i.e. hyporheic zone)}
+
+\item{\code{concentrationStorage}}{Concentration of solute in storage}
 }
 \if{html}{\out{</div>}}
 }
