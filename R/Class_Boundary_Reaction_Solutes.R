@@ -112,7 +112,6 @@ Boundary_Reaction_Solute <-
             self$volWaterInStorage <- volWaterInStorage
 
             if(!is.numeric(qStorage)){
-
               # I have set tau_a = tauMinWater and tau_b = tauMaxWater because we want the
               # entire integral from tauMin to tauMax...
               ccdfIntegrated <- hydrogeom::powerLawIntCCDF(self$tauMinWater, self$tauMaxWater, self$tauMinWater, self$tauMaxWater, self$alpha)
@@ -163,37 +162,37 @@ Boundary_Reaction_Solute <-
           } else {
 
             propUptkFunc <-
-            function(
-              tau,
-              tauMin,
-              tauMax,
-              alpha,
-              k,
-              remaining
-            ){
-              PL_PDF <- hydrogeom::powerLawPDF(tau, tauMin, tauMax, alpha)
-              # in the following line, if the -1  is removed (and this
-              # simply expressed as -k*tau), an "invalid argument to unary
-              # operator" error is thrown
-              minus_k_t <- (-1*k*tau)
+              function(
+                tau,
+                tauMin,
+                tauMax,
+                alpha,
+                k,
+                remaining
+              ){
+                PL_PDF <- hydrogeom::powerLawPDF(tau, tauMin, tauMax, alpha)
+                # in the following line, if the -1  is removed (and this
+                # simply expressed as -k*tau), an "invalid argument to unary
+                # operator" error is thrown
+                minus_k_t <- (-1*k*tau)
 
-              if(remaining){
-                out <- PL_PDF * exp(minus_k_t)
-              }else{
-                out <- PL_PDF * (1-exp(minus_k_t))
+                if(remaining){
+                  out <- PL_PDF * exp(minus_k_t)
+                }else{
+                  out <- PL_PDF * (1-exp(minus_k_t))
+                }
+                return(out)
               }
-              return(out)
-            }
 
             propUptk_part1 <-
               integrate(
                 propUptkFunc,
-                lower = tauMin,
-                upper = tauMax/100000,
-                tauMin = tauMin,
-                tauMax = tauMax,
-                alpha = alpha,
-                k = k,
+                lower = self$tauMin,
+                upper = self$tauMax/100000,
+                tauMin = self$tauMin,
+                tauMax = self$tauMax,
+                alpha = self$alpha,
+                k = self$k,
                 remaining = remaining,
                 abs.tol = 0,
                 subdivisions = 10000
@@ -202,12 +201,12 @@ Boundary_Reaction_Solute <-
             propUptk_part2 <-
               integrate(
                 propUptkFunc,
-                lower = tauMax/100000,
-                upper = tauMax/1000,
-                tauMin = tauMin,
-                tauMax = tauMax,
-                alpha = alpha,
-                k = k,
+                lower = self$tauMax/100000,
+                upper = self$tauMax/1000,
+                tauMin = self$tauMin,
+                tauMax = self$tauMax,
+                alpha = self$alpha,
+                k = self$k,
                 remaining = remaining,
                 abs.tol = 0,
                 subdivisions = 10000
@@ -216,11 +215,11 @@ Boundary_Reaction_Solute <-
             propUptk_part3 <-
               integrate(
                 propUptkFunc,
-                lower = tauMax/1000,
-                upper = tauMax,
-                tauMin = tauMin,
-                tauMax = tauMax,
-                alpha = alpha,
+                lower = self$tauMax/1000,
+                upper = self$tauMax,
+                tauMin = self$tauMin,
+                tauMax = self$tauMax,
+                alpha = self$alpha,
                 k = k,
                 remaining = remaining,
                 abs.tol = 0,
