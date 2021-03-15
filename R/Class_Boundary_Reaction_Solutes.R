@@ -185,17 +185,49 @@ Boundary_Reaction_Solute <-
               return(out)
             }
 
-            propUptk <-
+            propUptk_part1 <-
               integrate(
                 propUptkFunc,
-                lower = self$tauMin,
-                upper = self$tauMax,
-                tauMin = self$tauMin,
-                tauMax = self$tauMax,
-                alpha = self$alpha,
-                k = self$k,
-                remaining = remaining
+                lower = tauMin,
+                upper = tauMax/100000,
+                tauMin = tauMin,
+                tauMax = tauMax,
+                alpha = alpha,
+                k = k,
+                remaining = remaining,
+                abs.tol = 0,
+                subdivisions = 10000
               )$value
+
+            propUptk_part2 <-
+              integrate(
+                propUptkFunc,
+                lower = tauMax/100000,
+                upper = tauMax/1000,
+                tauMin = tauMin,
+                tauMax = tauMax,
+                alpha = alpha,
+                k = k,
+                remaining = remaining,
+                abs.tol = 0,
+                subdivisions = 10000
+              )$value
+
+            propUptk_part3 <-
+              integrate(
+                propUptkFunc,
+                lower = tauMax/1000,
+                upper = tauMax,
+                tauMin = tauMin,
+                tauMax = tauMax,
+                alpha = alpha,
+                k = k,
+                remaining = remaining,
+                abs.tol = 0,
+                subdivisions = 10000
+              )$value
+
+            propUptk <- propUptk_part1 + propUptk_part2 + propUptk_part3
 
             return(propUptk)
           }
