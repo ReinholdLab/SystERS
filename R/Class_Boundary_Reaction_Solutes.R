@@ -338,18 +338,13 @@ Boundary_Reaction_Solute_Stream <-
             )
           }
 
-          self$startingAmount <- self$upstreamCell$amount
+          self$startingAmount <- self$upstreamCell$amount # mols or mass of solute in primary flow field at start of time step
 
           self$amountToRemove <- self$startingAmount * self$fractionRemoved
           self$amountToRemain <- self$startingAmount - self$amountToRemove
 
           self$damkohlerNum <- -1*(log(1-self$fractionRemoved))
           self$damkohlerNumStorage <- -1*(log(1-self$fractionRemovedStorage))
-
-
-          startingAmountInStorage <- self$upstreamCell$concentration * self$volWaterInStorage
-          remainingAmountInStorage <- startingAmountInStorage * self$fractionRemainingStorage
-          self$concentrationStorage <- remainingAmountInStorage / self$volWaterInStorage
 
           self$rxnVals <-
             data.frame(
@@ -361,8 +356,7 @@ Boundary_Reaction_Solute_Stream <-
               fracRemainingInStrg = self$fractionRemainingStorage,
               mustBeOne = self$mustBeOne,
               startingAmount = self$startingAmount,
-              amountToRemove = self$amountToRemove,
-              concentrationStorage = self$concentrationStorage
+              amountToRemove = self$amountToRemove
             )
 
           return(list(amountToRemove = self$amountToRemove, amountToRemain = self$amountToRemain))
