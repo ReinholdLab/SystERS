@@ -174,7 +174,7 @@ Boundary_Reaction_Solute <-
                 # in the following line, if the -1  is removed (and this
                 # simply expressed as -k*tau), an "invalid argument to unary
                 # operator" error is thrown
-                minus_k_t <- (-1*k*tau)
+                minus_k_t <- (-1*k*(tau-self$tauMin))
 
                 if(remaining){
                   out <- PL_PDF * exp(minus_k_t)
