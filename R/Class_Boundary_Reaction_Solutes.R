@@ -186,7 +186,6 @@ Boundary_Reaction_Solute <-
                 tauRxn,
                 remaining
               ){
-                browser()
                 PL_PDF <- hydrogeom::powerLawPDF(tau, tauMin, tauMax, alpha)
 
                 d_tau_proc <- pmax(0, tau - self$tauRxn)
