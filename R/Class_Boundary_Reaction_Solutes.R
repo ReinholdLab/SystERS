@@ -36,21 +36,29 @@ Boundary_Reaction_Solute <-
         processMethodName = NULL,
         #' @field processMethod Call to the Method  \code{pcnt} or \code{RT-PL}
         processMethod = NULL,
-        #' @field tauMin Smallest residence time when solute processing is possible; must be >= tauMinWater
+        #' @field tauMin Smallest residence time when solute processing is
+        #'   possible; must be >= tauMinWater
         tauMin = NULL,
-        #' @field tauMax Largest residence time when solute processing is possible; must be <= tauMaxWater
+        #' @field tauMax Largest residence time when solute processing is
+        #'   possible; must be <= tauMaxWater
         tauMax = NULL,
-        #' @field tauMinWater Minimum residence time of water to consider; lower bound of power law describing the residence time
-        #'   distribution of water in the hyporheic zone
+        #' @field tauMinWater Minimum residence time of water to consider; lower
+        #'   bound of power law describing the residence time distribution of
+        #'   water in the hyporheic zone
         tauMinWater = NULL,
-        #' @field tauMaxWater Maximum residence time of water to consider; upper bound of power law describing the residence time
-        #'   distribution of water in the hyporheic zone
+        #' @field tauMaxWater Maximum residence time of water to consider; upper
+        #'   bound of power law describing the residence time distribution of
+        #'   water in the hyporheic zone
         tauMaxWater = NULL,
         #' @field alpha Power law exponent describing the shape of the curve,
         #'   typically between -1.2 and -1.9
         alpha = NULL,
         #' @field k Uptake constant for solute in units of T-1
         k = NULL,
+        #' @field tauRxn The minimum residence time when reaction can occur,
+        #'   i.e., a value that specifies how long solute must be in the
+        #'   reactive storage zone before it has the capacity to react.
+        tauRxn = NULL,
         #' @field qStorage Volumetric rate of water entering the storage zone
         qStorage = NULL,
         #' @field volWaterInStorage Volume of water in the transient storage
@@ -88,12 +96,19 @@ Boundary_Reaction_Solute <-
         #' @param alpha Power law exponent describing the shape of the curve,
         #'   typically between -1.2 and -1.9
         #' @param k Uptake constant for solute in units of T-1
+        #' @param tauRxn A lag value that specifies how long solute must be in
+        #'   the reactive storage zone before it has the capacity to react,
+        #'   i.e., this is the minimum residence time when reaction can occur.
+        #'   This parameter is only passed to the \code{RT-PL} Method and cannot
+        #'   be applied to the \code{pcnt} Method.  The default value is
+        #'   \code{0}.
+        tauRxn = NULL,
         #' @param qStorage Volumetric rate of water entering the storage zone
         #' @param pcntToRemove Percent of solute amount (mass or mols) to remove
         #'   from storage
         #' @return The object of class \code{Boundary_Reaction_Solute}.
         initialize =
-          function(..., processMethodName, tauMin, tauMax, tauMinWater, tauMaxWater, alpha, k, qStorage, pcntToRemove, volWaterInStorage){
+          function(..., processMethodName, tauMin, tauMax, tauMinWater, tauMaxWater, alpha, k, tauRxn = 0, qStorage, pcntToRemove, volWaterInStorage){
             super$initialize(...)
             self$processDomain <- self$upstreamCell$processDomain
             self$processMethodName <- processMethodName
@@ -109,6 +124,7 @@ Boundary_Reaction_Solute <-
               self$processMethod <- self$processMethod_pcnt
             }
             self$k <- k
+            self$tauRxn <- tauRxn
             self$volWaterInStorage <- volWaterInStorage
 
             if(!is.numeric(qStorage)){
@@ -168,20 +184,21 @@ Boundary_Reaction_Solute <-
                 tauMax,
                 alpha,
                 k,
+                tauRxn,
                 remaining
               ){
                 PL_PDF <- hydrogeom::powerLawPDF(tau, tauMin, tauMax, alpha)
-                # in the following line, if the -1  is removed (and this
-                # simply expressed as -k*tau), an "invalid argument to unary
-                # operator" error is thrown
-                minus_k_t <- (-1*k*(tau-self$tauMin))
 
-                if(remaining){
-                  out <- PL_PDF * exp(minus_k_t)
-                }else{
-                  out <- PL_PDF * (1-exp(minus_k_t))
+                d_tau_proc <- pmax(0, tau - tauRxn)
+
+                #if remaining, this is the solute fraction
+                soluteFraction <- exp(-k * d_tau_proc)
+
+                #if calculating removal, this is the solute fraction
+                if(!remaining){
+                  soluteFraction <- 1 - soluteFraction
                 }
-                return(out)
+                return(PL_PDF * soluteFraction)
               }
 
             propUptk_part1 <-
