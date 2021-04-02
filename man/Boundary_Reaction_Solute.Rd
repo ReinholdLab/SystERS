@@ -40,20 +40,28 @@ boundary is interacting}
 
 \item{\code{processMethod}}{Call to the Method  \code{pcnt} or \code{RT-PL}}
 
-\item{\code{tauMin}}{Smallest residence time when solute processing is possible; must be >= tauMinWater}
+\item{\code{tauMin}}{Smallest residence time when solute processing is
+possible; must be >= tauMinWater}
 
-\item{\code{tauMax}}{Largest residence time when solute processing is possible; must be <= tauMaxWater}
+\item{\code{tauMax}}{Largest residence time when solute processing is
+possible; must be <= tauMaxWater}
 
-\item{\code{tauMinWater}}{Minimum residence time of water to consider; lower bound of power law describing the residence time
-distribution of water in the hyporheic zone}
+\item{\code{tauMinWater}}{Minimum residence time of water to consider; lower
+bound of power law describing the residence time distribution of
+water in the hyporheic zone}
 
-\item{\code{tauMaxWater}}{Maximum residence time of water to consider; upper bound of power law describing the residence time
-distribution of water in the hyporheic zone}
+\item{\code{tauMaxWater}}{Maximum residence time of water to consider; upper
+bound of power law describing the residence time distribution of
+water in the hyporheic zone}
 
 \item{\code{alpha}}{Power law exponent describing the shape of the curve,
 typically between -1.2 and -1.9}
 
 \item{\code{k}}{Uptake constant for solute in units of T-1}
+
+\item{\code{tauRxn}}{The minimum residence time when reaction can occur,
+i.e., a value that specifies how long solute must be in the
+reactive storage zone before it has the capacity to react.}
 
 \item{\code{qStorage}}{Volumetric rate of water entering the storage zone}
 
@@ -102,6 +110,7 @@ Instantiate a reaction boundary for a solute #' @param
   tauMaxWater,
   alpha,
   k,
+  tauRxn = 0,
   qStorage,
   pcntToRemove,
   volWaterInStorage
@@ -134,6 +143,13 @@ distribution}
 typically between -1.2 and -1.9}
 
 \item{\code{k}}{Uptake constant for solute in units of T-1}
+
+\item{\code{tauRxn}}{A lag value that specifies how long solute must be in
+the reactive storage zone before it has the capacity to react,
+i.e., this is the minimum residence time when reaction can occur.
+This parameter is only passed to the \code{RT-PL} Method and cannot
+be applied to the \code{pcnt} Method.  The default value is
+\code{0}.}
 
 \item{\code{qStorage}}{Volumetric rate of water entering the storage zone}
 

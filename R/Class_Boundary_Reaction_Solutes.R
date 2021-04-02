@@ -102,7 +102,6 @@ Boundary_Reaction_Solute <-
         #'   This parameter is only passed to the \code{RT-PL} Method and cannot
         #'   be applied to the \code{pcnt} Method.  The default value is
         #'   \code{0}.
-        tauRxn = NULL,
         #' @param qStorage Volumetric rate of water entering the storage zone
         #' @param pcntToRemove Percent of solute amount (mass or mols) to remove
         #'   from storage
@@ -187,9 +186,10 @@ Boundary_Reaction_Solute <-
                 tauRxn,
                 remaining
               ){
+                browser()
                 PL_PDF <- hydrogeom::powerLawPDF(tau, tauMin, tauMax, alpha)
 
-                d_tau_proc <- pmax(0, tau - tauRxn)
+                d_tau_proc <- pmax(0, tau - self$tauRxn)
 
                 #if remaining, this is the solute fraction
                 soluteFraction <- exp(-k * d_tau_proc)
