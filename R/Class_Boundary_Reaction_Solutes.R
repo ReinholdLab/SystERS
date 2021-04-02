@@ -117,13 +117,13 @@ Boundary_Reaction_Solute <-
               self$alpha <- alpha
               self$tauMinWater <- tauMinWater
               self$tauMaxWater <- tauMaxWater
+              self$tauRxn <- tauRxn
               self$processMethod <- self$processMethod_RT_PL
             } else if(processMethodName == "pcnt"){
               self$pcntToRemove <- pcntToRemove
               self$processMethod <- self$processMethod_pcnt
             }
             self$k <- k
-            self$tauRxn <- tauRxn
             self$volWaterInStorage <- volWaterInStorage
 
             if(!is.numeric(qStorage)){

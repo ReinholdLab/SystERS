@@ -110,7 +110,7 @@ Instantiate a reaction boundary for a solute #' @param
   tauMaxWater,
   alpha,
   k,
-  tauRxn = 0,
+  tauRxn,
   qStorage,
   pcntToRemove,
   volWaterInStorage
