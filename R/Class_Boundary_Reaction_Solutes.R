@@ -107,7 +107,7 @@ Boundary_Reaction_Solute <-
         #'   from storage
         #' @return The object of class \code{Boundary_Reaction_Solute}.
         initialize =
-          function(..., processMethodName, tauMin, tauMax, tauMinWater, tauMaxWater, alpha, k, tauRxn = 0, qStorage, pcntToRemove, volWaterInStorage){
+          function(..., processMethodName, tauMin, tauMax, tauMinWater, tauMaxWater, alpha, k, tauRxn, qStorage, pcntToRemove, volWaterInStorage){
             super$initialize(...)
             self$processDomain <- self$upstreamCell$processDomain
             self$processMethodName <- processMethodName
