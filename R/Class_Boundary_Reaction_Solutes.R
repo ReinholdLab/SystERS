@@ -188,7 +188,7 @@ Boundary_Reaction_Solute <-
               ){
                 PL_PDF <- hydrogeom::powerLawPDF(tau, tauMin, tauMax, alpha)
 
-                d_tau_proc <- pmax(0, tau - self$tauRxn)
+                d_tau_proc <- pmax(0, tau - tauRxn)
 
                 #if remaining, this is the solute fraction
                 soluteFraction <- exp(-k * d_tau_proc)
@@ -209,6 +209,7 @@ Boundary_Reaction_Solute <-
                 tauMax = self$tauMax,
                 alpha = self$alpha,
                 k = self$k,
+                tauRxn = self$tauRxn,
                 remaining = remaining,
                 abs.tol = 0,
                 subdivisions = 10000
@@ -223,6 +224,7 @@ Boundary_Reaction_Solute <-
                 tauMax = self$tauMax,
                 alpha = self$alpha,
                 k = self$k,
+                tauRxn = self$tauRxn,
                 remaining = remaining,
                 abs.tol = 0,
                 subdivisions = 10000
@@ -236,7 +238,8 @@ Boundary_Reaction_Solute <-
                 tauMin = self$tauMin,
                 tauMax = self$tauMax,
                 alpha = self$alpha,
-                k = k,
+                k = self$k,
+                tauRxn = self$tauRxn,
                 remaining = remaining,
                 abs.tol = 0,
                 subdivisions = 10000
