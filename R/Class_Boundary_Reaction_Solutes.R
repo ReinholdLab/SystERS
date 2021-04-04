@@ -247,7 +247,7 @@ Boundary_Reaction_Solute <-
 
             propUptk <- propUptk_part1 + propUptk_part2 + propUptk_part3
 
-            return(propUptk)
+            return(propUptk/self$timeInterval)
           }
         },
 
