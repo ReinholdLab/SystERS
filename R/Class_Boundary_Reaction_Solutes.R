@@ -329,10 +329,14 @@ Boundary_Reaction_Solute_Stream <-
 
           # Calculate fraction removed and remaining from the cell
 
-          upstreamWaterBounds <- self$upstreamCell$linkedCell$linkedBoundsList$upstreamBounds
-          hydraulicLoad <- self$upstreamCell$linkedCell$hydraulicLoad
+          # upstreamWaterBounds <- self$upstreamCell$linkedCell$linkedBoundsList$upstreamBounds
+          # hydraulicLoad <- self$upstreamCell$linkedCell$hydraulicLoad
 
-          self$fractionRemaining <- exp(-1 * self$qStorage * self$fractionRemovedStorage  / hydraulicLoad)
+          channelDepth <- self$upstreamCell$linkedCell$channelDepth
+
+          k_s <- self$qStorage * self$fractionRemovedStorage / channelDepth
+
+          self$fractionRemaining <- exp(-1 * k_s  * self$timeInterval)
 
           self$fractionRemoved <- 1 - self$fractionRemaining
 
