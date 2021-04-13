@@ -176,6 +176,37 @@ Boundary_Reaction_Solute <-
             return(propUptk)
           } else {
 
+            # list containing a series of vectors with the lower and upper limits of the integration
+            integTauBins <-
+              list(
+                bin1 =
+                  c(
+                    lowerB = self$tauMin,
+                    upperB = self$tauMin + ((self$tauMax - self$tauMin) / 1E10) ),
+                bin2 =
+                  c(
+                    lowerB =  self$tauMin + ((self$tauMax - self$tauMin) / 1E10),
+                    upperB =  self$tauMin + ((self$tauMax - self$tauMin) / 1E8)
+                  ),
+                bin3 =
+                  c(
+                    lowerB =  self$tauMin + ((self$tauMax - self$tauMin) / 1E8),
+                    upperB =  self$tauMin + ((self$tauMax - self$tauMin) / 1E5)
+                  ),
+                bin4 =
+                  c(
+                    lowerB =  self$tauMin + ((self$tauMax - self$tauMin) / 1E5),
+                    upperB = self$tauMin + ((self$tauMax - self$tauMin) / 1E2)
+                  ),
+                bin5 =
+                  c(
+                    lowerB =  self$tauMin + ((self$tauMax - self$tauMin) / 1E2),
+                    upperB = self$tauMax
+                  )
+              )
+
+
+          # specify the function that does the integration
             propUptkFunc <-
               function(
                 tau,
@@ -200,52 +231,77 @@ Boundary_Reaction_Solute <-
                 return(PL_PDF * soluteFraction)
               }
 
-            propUptk_part1 <-
-              integrate(
-                propUptkFunc,
-                lower = self$tauMin,
-                upper = self$tauMin + ((self$tauMax - self$tauMin)/100000),
-                tauMin = self$tauMin,
-                tauMax = self$tauMax,
-                alpha = self$alpha,
-                k = self$k,
-                tauRxn = self$tauRxn,
-                remaining = remaining,
-                abs.tol = 0,
-                subdivisions = 10000
-              )$value
+            # do the integration for each bin set
+            propUptkIntList <-
+              plyr::llply(
+                integTauBins,
+                function(binSet){
+                  integrate(
+                    propUptkFunc,
+                    lower = binSet[1],
+                    upper = binSet[2],
+                    tauMin = self$tauMin,
+                    tauMax = self$tauMax,
+                    alpha = self$alpha,
+                    k = self$k,
+                    tauRxn = self$tauRxn,
+                    remaining = remaining,
+                    abs.tol = 0,
+                    subdivisions = 10000
+                  )$value
+                }
+              )
 
-            propUptk_part2 <-
-              integrate(
-                propUptkFunc,
-                lower = self$tauMin + ((self$tauMax - self$tauMin)/100000),
-                upper = self$tauMin + ((self$tauMax - self$tauMin)/1000),
-                tauMin = self$tauMin,
-                tauMax = self$tauMax,
-                alpha = self$alpha,
-                k = self$k,
-                tauRxn = self$tauRxn,
-                remaining = remaining,
-                abs.tol = 0,
-                subdivisions = 10000
-              )$value
+            # sum the results
+            propUptk <- do.call(sum, propUptkIntList)
 
-            propUptk_part3 <-
-              integrate(
-                propUptkFunc,
-                lower = self$tauMin + ((self$tauMax - self$tauMin)/1000),
-                upper = self$tauMax,
-                tauMin = self$tauMin,
-                tauMax = self$tauMax,
-                alpha = self$alpha,
-                k = self$k,
-                tauRxn = self$tauRxn,
-                remaining = remaining,
-                abs.tol = 0,
-                subdivisions = 10000
-              )$value
 
-            propUptk <- propUptk_part1 + propUptk_part2 + propUptk_part3
+            # propUptk_part1 <-
+            #   integrate(
+            #     propUptkFunc,
+            #     lower = self$tauMin,
+            #     upper = self$tauMin + ((self$tauMax - self$tauMin)/100000),
+            #     tauMin = self$tauMin,
+            #     tauMax = self$tauMax,
+            #     alpha = self$alpha,
+            #     k = self$k,
+            #     tauRxn = self$tauRxn,
+            #     remaining = remaining,
+            #     abs.tol = 0,
+            #     subdivisions = 10000
+            #   )$value
+            #
+            # propUptk_part2 <-
+            #   integrate(
+            #     propUptkFunc,
+            #     lower = self$tauMin + ((self$tauMax - self$tauMin)/100000),
+            #     upper = self$tauMin + ((self$tauMax - self$tauMin)/1000),
+            #     tauMin = self$tauMin,
+            #     tauMax = self$tauMax,
+            #     alpha = self$alpha,
+            #     k = self$k,
+            #     tauRxn = self$tauRxn,
+            #     remaining = remaining,
+            #     abs.tol = 0,
+            #     subdivisions = 10000
+            #   )$value
+            #
+            # propUptk_part3 <-
+            #   integrate(
+            #     propUptkFunc,
+            #     lower = self$tauMin + ((self$tauMax - self$tauMin)/1000),
+            #     upper = self$tauMax,
+            #     tauMin = self$tauMin,
+            #     tauMax = self$tauMax,
+            #     alpha = self$alpha,
+            #     k = self$k,
+            #     tauRxn = self$tauRxn,
+            #     remaining = remaining,
+            #     abs.tol = 0,
+            #     subdivisions = 10000
+            #   )$value
+
+            # propUptk <- propUptk_part1 + propUptk_part2 + propUptk_part3
 
             return(propUptk)
           }
