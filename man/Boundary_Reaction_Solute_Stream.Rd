@@ -21,10 +21,20 @@ Reaction boundary for solute from stream cells
 \item{\code{fractionRemaining}}{Fraction of solute remaining in
 stream cell}
 
-\item{\code{damkohlerNum}}{Damkohler number for the boundary}
+\item{\code{damkohlerNum}}{Damkohler number for the boundary.  This
+Damkohler represents the change over the entire stream reach, such
+that the same answer would be returned if timestep was set to be
+the mean residence time of the surface water in the reach.  Recall
+that hydraulic load is equal to channel depth over the mean
+residence time of water in the channel and it follows that this
+Damkohler is equal to uptake velocity over hydraulic load,
+\code{v_f / HL}.}
 
 \item{\code{damkohlerNumStorage}}{Damkohler number for the transient storage
 zone (i.e. hyporheic zone)}
+
+\item{\code{damkohlerNumScaledToTimeStep}}{A Damkohler for the reach, scaled
+to the timestep}
 
 \item{\code{concentrationStorage}}{Concentration of solute in storage}
 }
@@ -61,11 +71,14 @@ Instantiate a solute reaction boundary in the stream
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{...}}{Parameters inherit from Class \code{\link{Boundary_Reaction_Solute}} and thus \code{\link{Boundary}}}
+\item{\code{...}}{Parameters inherit from Class
+\code{\link{Boundary_Reaction_Solute}} and thus
+\code{\link{Boundary}}}
 
 \item{\code{boundaryIdx}}{String indexing the boundary}
 
-\item{\code{currency}}{String naming the currency handled by the boundary as a character e.g., \code{water, NO3}}
+\item{\code{currency}}{String naming the currency handled by the boundary as
+a character e.g., \code{water, NO3}}
 
 \item{\code{upstreamCell}}{Cell (if one exists) upstream of the boundary}
 
@@ -74,7 +87,8 @@ Instantiate a solute reaction boundary in the stream
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A model boundary that calculates solute removal from stream cells in the stream processing domain
+A model boundary that calculates solute removal from stream
+  cells in the stream processing domain
 }
 }
 \if{html}{\out{<hr>}}

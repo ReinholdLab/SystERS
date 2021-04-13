@@ -255,54 +255,6 @@ Boundary_Reaction_Solute <-
             # sum the results
             propUptk <- do.call(sum, propUptkIntList)
 
-
-            # propUptk_part1 <-
-            #   integrate(
-            #     propUptkFunc,
-            #     lower = self$tauMin,
-            #     upper = self$tauMin + ((self$tauMax - self$tauMin)/100000),
-            #     tauMin = self$tauMin,
-            #     tauMax = self$tauMax,
-            #     alpha = self$alpha,
-            #     k = self$k,
-            #     tauRxn = self$tauRxn,
-            #     remaining = remaining,
-            #     abs.tol = 0,
-            #     subdivisions = 10000
-            #   )$value
-            #
-            # propUptk_part2 <-
-            #   integrate(
-            #     propUptkFunc,
-            #     lower = self$tauMin + ((self$tauMax - self$tauMin)/100000),
-            #     upper = self$tauMin + ((self$tauMax - self$tauMin)/1000),
-            #     tauMin = self$tauMin,
-            #     tauMax = self$tauMax,
-            #     alpha = self$alpha,
-            #     k = self$k,
-            #     tauRxn = self$tauRxn,
-            #     remaining = remaining,
-            #     abs.tol = 0,
-            #     subdivisions = 10000
-            #   )$value
-            #
-            # propUptk_part3 <-
-            #   integrate(
-            #     propUptkFunc,
-            #     lower = self$tauMin + ((self$tauMax - self$tauMin)/1000),
-            #     upper = self$tauMax,
-            #     tauMin = self$tauMin,
-            #     tauMax = self$tauMax,
-            #     alpha = self$alpha,
-            #     k = self$k,
-            #     tauRxn = self$tauRxn,
-            #     remaining = remaining,
-            #     abs.tol = 0,
-            #     subdivisions = 10000
-            #   )$value
-
-            # propUptk <- propUptk_part1 + propUptk_part2 + propUptk_part3
-
             return(propUptk)
           }
         },
@@ -342,20 +294,34 @@ Boundary_Reaction_Solute_Stream <-
         #' @field fractionRemaining Fraction of solute remaining in
         #'   stream cell
         fractionRemaining = NULL,
-        #' @field damkohlerNum Damkohler number for the boundary
+        #' @field damkohlerNum Damkohler number for the boundary.  This
+        #'   Damkohler represents the change over the entire stream reach, such
+        #'   that the same answer would be returned if timestep was set to be
+        #'   the mean residence time of the surface water in the reach.  Recall
+        #'   that hydraulic load is equal to channel depth over the mean
+        #'   residence time of water in the channel and it follows that this
+        #'   Damkohler is equal to uptake velocity over hydraulic load,
+        #'   \code{v_f / HL}.
         damkohlerNum = NULL,
         #' @field damkohlerNumStorage Damkohler number for the transient storage
         #'   zone (i.e. hyporheic zone)
         damkohlerNumStorage = NULL,
+        #' @field damkohlerNumScaledToTimeStep A Damkohler for the reach, scaled
+        #'   to the timestep
+        damkohlerNumScaledToTimeStep = NULL,
         #' @field concentrationStorage Concentration of solute in storage
         concentrationStorage = NULL,
         #'
-        #' @param ... Parameters inherit from Class \code{\link{Boundary_Reaction_Solute}} and thus \code{\link{Boundary}}
+        #' @param ... Parameters inherit from Class
+        #'   \code{\link{Boundary_Reaction_Solute}} and thus
+        #'   \code{\link{Boundary}}
         #' @param boundaryIdx String indexing the boundary
-        #' @param currency String naming the currency handled by the boundary as a character e.g., \code{water, NO3}
+        #' @param currency String naming the currency handled by the boundary as
+        #'   a character e.g., \code{water, NO3}
         #' @param upstreamCell  Cell (if one exists) upstream of the boundary
         #' @param timeInterval  Model time step
-        #' @return A model boundary that calculates solute removal from stream cells in the stream processing domain
+        #' @return A model boundary that calculates solute removal from stream
+        #'   cells in the stream processing domain
         initialize =
           function(...){
             super$initialize(...)
@@ -422,7 +388,13 @@ Boundary_Reaction_Solute_Stream <-
           self$amountToRemove <- self$startingAmount * self$fractionRemoved
           self$amountToRemain <- self$startingAmount - self$amountToRemove
 
-          self$damkohlerNum <- -1*(log(1-self$fractionRemoved))
+
+          hydraulicLoad <- self$upstreamCell$linkedCell$hydraulicLoad
+          steadyStateFracRemaining <- exp(-1 * self$qStorage * self$fractionRemovedStorage  / hydraulicLoad)
+          steadyStateFracRemoved <- 1 - steadyStateFracRemaining
+
+          self$damkohlerNum <- -1*(log(1-steadyStateFracRemoved))
+          self$damkohlerNumScaledToTimeStep <- -1*(log(1-self$fractionRemoved))
           self$damkohlerNumStorage <- -1*(log(1-self$fractionRemovedStorage))
 
           self$rxnVals <-
