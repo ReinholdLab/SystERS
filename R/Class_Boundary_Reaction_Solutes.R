@@ -412,6 +412,6 @@ Boundary_Reaction_Solute_Stream <-
 
           return(list(amountToRemove = self$amountToRemove, amountToRemain = self$amountToRemain))
         }
-      )
-  )
+      ) # close public
+  ) # close class
 
