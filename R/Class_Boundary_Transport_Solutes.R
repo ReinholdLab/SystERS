@@ -70,8 +70,8 @@ Boundary_Transport_Solute <-
           if(!self$usModBound){
             # solute mass to remain
             soluteToRemain <- self$upstreamCell$amount - self$amount
-            if(soluteToRemain < 0) warning(
-              paste("You are about to remove more solute from a cell than it held at the start of the timestep.
+            if(soluteToRemain < 0) stop(
+              paste("You are trying to remove more solute from a cell than it held at the start of the timestep.
                       Boundary is ",
               print(self$boundaryIdx)
               )
