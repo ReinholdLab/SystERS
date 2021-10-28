@@ -377,7 +377,7 @@ Boundary_Reaction_Solute_Stream <-
               fracRemovStrg = self$fractionRemovedStorage,
               fracRemov = self$fractionRemoved,
               fracRmn = self$fractionRemaining)
-            warning(
+            stop(
               noquote( strsplit (msgDetail, "\n") [[1]]),
               print( tmp )
             )
@@ -387,6 +387,16 @@ Boundary_Reaction_Solute_Stream <-
 
           self$amountToRemove <- self$startingAmount * self$fractionRemoved
           self$amountToRemain <- self$startingAmount - self$amountToRemove
+
+          # throw error if you are removing more solute than is available
+          if(self$amountToRemain < 0){
+            stop(
+              paste("You are trying to remove more solute from a cell than it held at the start of the timestep.
+                      Boundary is ",
+                    print(self$boundaryIdx)
+              )
+            )
+          }
 
 
           hydraulicLoad <- self$upstreamCell$linkedCell$hydraulicLoad
