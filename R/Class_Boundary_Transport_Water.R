@@ -174,7 +174,7 @@ Boundary_Transport_Water_Stream <-
         if(!self$usModBound){
           # volume of water to remain
           volumeToRemain <- self$upstreamCell$waterVolume - self$volume
-          if(volumeToRemain < 0) warning(
+          if(volumeToRemain < 0) stop(
             paste(
               "You are about to remove more water volume from a cell than it held at the start of the timestep.
              Boundary is ", print(self$boundaryIdx)
