@@ -92,10 +92,9 @@ WQModel <-
             cellsTable_solute_soil = NULL,
             cellsTable_water_groundwater = NULL,
             cellsTable_solute_groundwater = NULL,
-            unitsTable,
+            unitsTable = NULL,
             timeInterval
           ) {
-
             #### GENERAL
 
             # set duration of each time step
@@ -165,6 +164,7 @@ WQModel <-
               )
 
             #### INSTANTIATE THE CELLS & BOUNDARIES
+
             self$cellFactory()
             self$boundaryFactory()
 
@@ -311,45 +311,49 @@ WQModel <-
         #' @description Instantiate the water cells in the stream process domain
         #' @return List of stream water cells
         initializeWaterCells_stream = function(){
-          if("cells_water_stream" %in% names(self$cellsTableList)){
-            tbl <- self$cellsTable_water_stream
-            plyr::llply(
-              1:nrow(tbl),
-              function(rowNum){
-                Cell_Water_Stream$new(
-                  cellIdx = tbl$cellIdx[rowNum],
-                  currency = tbl$currency[rowNum],
-                  processDomain = tbl$processDomain[rowNum],
+          tbl <- self$cellsTableList$cells_water_stream
+          if(!is.null(tbl)){
+            return(
+              plyr::llply(
+                1:nrow(tbl),
+                function(rowNum){
+                  Cell_Water_Stream$new(
+                    cellIdx = tbl$cellIdx[rowNum],
+                    currency = tbl$currency[rowNum],
+                    processDomain = tbl$processDomain[rowNum],
 
-                  channelWidth = tbl$channelWidth[rowNum],
-                  channelLength = tbl$channelLength[rowNum],
-                  channelDepth = tbl$channelDepth[rowNum]
-                )
-              }
-            ) # close llply
-          } # close if
+                    channelWidth = tbl$channelWidth[rowNum],
+                    channelLength = tbl$channelLength[rowNum],
+                    channelDepth = tbl$channelDepth[rowNum]
+                  )
+                }
+              ) # close llply
+            ) # close return
+          } else {return(NULL)} # close if
         }, # close method
 
         #' @method Method WQModel$initializeSoluteCells_stream
         #' @description Instantiate the solute cells in the stream process domain
         #' @return List of stream solute cells
         initializeSoluteCells_stream = function(){
-          if("cells_solute_stream" %in% names(self$cellsTableList)){
-            tbl <- self$cellsTable_solute_stream
-            plyr::llply(
-              1:nrow(tbl),
-              function(rowNum){
-                Cell_Solute$new(
-                  cellIdx = tbl$cellIdx[rowNum],
-                  processDomain = tbl$processDomain[rowNum],
-                  currency = tbl$currency[rowNum],
+          tbl <- self$cellsTable_solute_stream
+          if(!is.null(tbl)){
+            return(
+              plyr::llply(
+                1:nrow(tbl),
+                function(rowNum){
+                  Cell_Solute$new(
+                    cellIdx = tbl$cellIdx[rowNum],
+                    processDomain = tbl$processDomain[rowNum],
+                    currency = tbl$currency[rowNum],
 
-                  concentration = tbl$concentration[rowNum],
-                  linkedCell = self$cells[[ tbl$linkedCell[rowNum] ]]
-                )
-              }
-            ) # close llply
-          } # close if
+                    concentration = tbl$concentration[rowNum],
+                    linkedCell = self$cells[[ tbl$linkedCell[rowNum] ]]
+                  )
+                }
+              ) # close llply
+            ) # close return
+          } else{ return(NULL) } # close if
         }, # close method
 
 
@@ -388,7 +392,7 @@ WQModel <-
               function(i) {
                 tblName <- names(self$boundsTableList)[i]
                 tbl <- self$boundsTableList[[i]]
-                if( any( duplicated(tbl$boundsTable) ) ){
+                if( any( duplicated(tbl) ) ){
                   stop(paste0("At least one specification for a boundary is duplicated in the table", tblName, "."))
                 }
                 if(length(tbl$boundaryIdx) != length(unique(tbl$boundaryIdx))) {
