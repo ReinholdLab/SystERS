@@ -11,4 +11,4 @@ LazyData: true
 Imports: 
     R6,
     plyr
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2

@@ -41,18 +41,10 @@ boundary is interacting}
 \item{\code{processMethod}}{Call to the Method  \code{pcnt} or \code{RT-PL}}
 
 \item{\code{tauMin}}{Smallest residence time when solute processing is
-possible; must be >= tauMinWater}
+possible; must be >= tauMin}
 
 \item{\code{tauMax}}{Largest residence time when solute processing is
-possible; must be <= tauMaxWater}
-
-\item{\code{tauMinWater}}{Minimum residence time of water to consider; lower
-bound of power law describing the residence time distribution of
-water in the hyporheic zone}
-
-\item{\code{tauMaxWater}}{Maximum residence time of water to consider; upper
-bound of power law describing the residence time distribution of
-water in the hyporheic zone}
+possible; must be <= tauMax}
 
 \item{\code{alpha}}{Power law exponent describing the shape of the curve,
 typically between -1.2 and -1.9}
@@ -106,8 +98,6 @@ Instantiate a reaction boundary for a solute #' @param
   processMethodName,
   tauMin,
   tauMax,
-  tauMinWater,
-  tauMaxWater,
   alpha,
   k,
   tauRxn,
@@ -123,19 +113,11 @@ Instantiate a reaction boundary for a solute #' @param
 \item{\code{processMethodName}}{How to process the solute, either
 \code{pcnt} or \code{RT-PL}}
 
-\item{\code{tauMin}}{Minimum residence time of solute to consider (residence
-time at which solute reactions begin having the potential to
-occur);must be >= than \code{tauMinWater}}
-
-\item{\code{tauMax}}{Maximum residence time of solute to consider (residence
-time at which solute reactions stop having the potential to occur);
-must be <= \code{tauMaxWater}}
-
-\item{\code{tauMinWater}}{Minimum residence time of water to consider; bound
+\item{\code{tauMin}}{Minimum residence time of water to consider; bound
 on lower end of power law describing the residence time
 distribution}
 
-\item{\code{tauMaxWater}}{Maximum residence time of water to consider; bound
+\item{\code{tauMax}}{Maximum residence time of water to consider; bound
 on upper end of power law describing the residence time
 distribution}
 

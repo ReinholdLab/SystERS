@@ -60,7 +60,7 @@ Define and instantiate the WQ model and the network topology of
   cellsTable_solute_soil = NULL,
   cellsTable_water_groundwater = NULL,
   cellsTable_solute_groundwater = NULL,
-  unitsTable,
+  unitsTable = NULL,
   timeInterval
 )}\if{html}{\out{</div>}}
 }

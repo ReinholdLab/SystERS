@@ -547,8 +547,6 @@ WQModel <-
                 alpha = tbl$alpha[rowNum],
                 tauMin = tbl$tauMin[rowNum],
                 tauMax = tbl$tauMax[rowNum],
-                tauMinWater = tbl$tauMinWater[rowNum],
-                tauMaxWater = tbl$tauMaxWater[rowNum],
                 tauRxn = tbl$tauRxn[rowNum],
                 k = tbl$k[rowNum],
                 processMethodName = tbl$processMethodName[rowNum]
