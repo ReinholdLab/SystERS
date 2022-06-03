@@ -2,7 +2,7 @@ Package: SoilsToStreams
 Type: Package
 Title: Simulate Solute Reactivity and Transport
 Version: 0.1.0
-Author: Ann Marie Reinhold
+Author: Ann Marie Reinhold, Robert A. Payn, and Stephanie A. Ewing
 Maintainer: Ann Marie Reinhold <annmarie.reinhold@montana.edu>
 Description: Simulates solute reactivity and transport through a network of soil, groundwater, and stream cells.
 License: MIT
@@ -11,4 +11,4 @@ LazyData: true
 Imports: 
     R6,
     plyr
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0
