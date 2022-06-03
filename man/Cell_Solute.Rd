@@ -26,21 +26,21 @@ user must ensure consistency in units}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{Cell_Solute$new()}}
-\item \href{#method-update}{\code{Cell_Solute$update()}}
-\item \href{#method-clone}{\code{Cell_Solute$clone()}}
+\item \href{#method-Cell_Solute-new}{\code{Cell_Solute$new()}}
+\item \href{#method-Cell_Solute-update}{\code{Cell_Solute$update()}}
+\item \href{#method-Cell_Solute-clone}{\code{Cell_Solute$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="SoilsToStreams" data-topic="Cell" data-id="populateDependencies">}\href{../../SoilsToStreams/html/Cell.html#method-populateDependencies}{\code{SoilsToStreams::Cell$populateDependencies()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="SoilsToStreams" data-topic="Cell" data-id="populateDependencies"><a href='../../SoilsToStreams/html/Cell.html#method-Cell-populateDependencies'><code>SoilsToStreams::Cell$populateDependencies()</code></a></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-Cell_Solute-new"></a>}}
+\if{latex}{\out{\hypertarget{method-Cell_Solute-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Cell_Solute$new(..., linkedCell, concentration)}\if{html}{\out{</div>}}
@@ -69,8 +69,8 @@ The object of class \code{Cell_Solute}.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-update"></a>}}
-\if{latex}{\out{\hypertarget{method-update}{}}}
+\if{html}{\out{<a id="method-Cell_Solute-update"></a>}}
+\if{latex}{\out{\hypertarget{method-Cell_Solute-update}{}}}
 \subsection{Method \code{update()}}{
 Runs the update method on all cells of class
   \code{Cell_Solute}.
@@ -83,8 +83,8 @@ Updates cell values based on trades and stores.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-Cell_Solute-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-Cell_Solute-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

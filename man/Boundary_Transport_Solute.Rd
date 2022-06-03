@@ -27,21 +27,21 @@ advecting the solute in this boundary}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{Boundary_Transport_Solute$new()}}
-\item \href{#method-trade}{\code{Boundary_Transport_Solute$trade()}}
-\item \href{#method-store}{\code{Boundary_Transport_Solute$store()}}
-\item \href{#method-clone}{\code{Boundary_Transport_Solute$clone()}}
+\item \href{#method-Boundary_Transport_Solute-new}{\code{Boundary_Transport_Solute$new()}}
+\item \href{#method-Boundary_Transport_Solute-trade}{\code{Boundary_Transport_Solute$trade()}}
+\item \href{#method-Boundary_Transport_Solute-store}{\code{Boundary_Transport_Solute$store()}}
+\item \href{#method-Boundary_Transport_Solute-clone}{\code{Boundary_Transport_Solute$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-Boundary_Transport_Solute-new"></a>}}
+\if{latex}{\out{\hypertarget{method-Boundary_Transport_Solute-new}{}}}
 \subsection{Method \code{new()}}{
 Instantiate a transport boundary for solutes between
   cells
@@ -78,8 +78,8 @@ A transport boundary for solutes between cells
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-trade"></a>}}
-\if{latex}{\out{\hypertarget{method-trade}{}}}
+\if{html}{\out{<a id="method-Boundary_Transport_Solute-trade"></a>}}
+\if{latex}{\out{\hypertarget{method-Boundary_Transport_Solute-trade}{}}}
 \subsection{Method \code{trade()}}{
 Calculate the amount of solute to pass through the
   boundary.
@@ -94,8 +94,8 @@ Updates the \code{load} and \code{amount} in the boundary.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-store"></a>}}
-\if{latex}{\out{\hypertarget{method-store}{}}}
+\if{html}{\out{<a id="method-Boundary_Transport_Solute-store"></a>}}
+\if{latex}{\out{\hypertarget{method-Boundary_Transport_Solute-store}{}}}
 \subsection{Method \code{store()}}{
 Runs the store method on solute cells in the model for
   solute transport boundaries.
@@ -108,8 +108,8 @@ Updated store values.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-Boundary_Transport_Solute-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-Boundary_Transport_Solute-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

@@ -22,23 +22,23 @@ Transport boundary for water between stream cells
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{Boundary_Transport_Water_Stream$new()}}
-\item \href{#method-populateDependenciesInternalBound}{\code{Boundary_Transport_Water_Stream$populateDependenciesInternalBound()}}
-\item \href{#method-populateDependenciesExternalBound}{\code{Boundary_Transport_Water_Stream$populateDependenciesExternalBound()}}
-\item \href{#method-trade}{\code{Boundary_Transport_Water_Stream$trade()}}
-\item \href{#method-clone}{\code{Boundary_Transport_Water_Stream$clone()}}
+\item \href{#method-Boundary_Transport_Water_Stream-new}{\code{Boundary_Transport_Water_Stream$new()}}
+\item \href{#method-Boundary_Transport_Water_Stream-populateDependenciesInternalBound}{\code{Boundary_Transport_Water_Stream$populateDependenciesInternalBound()}}
+\item \href{#method-Boundary_Transport_Water_Stream-populateDependenciesExternalBound}{\code{Boundary_Transport_Water_Stream$populateDependenciesExternalBound()}}
+\item \href{#method-Boundary_Transport_Water_Stream-trade}{\code{Boundary_Transport_Water_Stream$trade()}}
+\item \href{#method-Boundary_Transport_Water_Stream-clone}{\code{Boundary_Transport_Water_Stream$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="SoilsToStreams" data-topic="Boundary_Transport_Water" data-id="store">}\href{../../SoilsToStreams/html/Boundary_Transport_Water.html#method-store}{\code{SoilsToStreams::Boundary_Transport_Water$store()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="SoilsToStreams" data-topic="Boundary_Transport_Water" data-id="store"><a href='../../SoilsToStreams/html/Boundary_Transport_Water.html#method-Boundary_Transport_Water-store'><code>SoilsToStreams::Boundary_Transport_Water$store()</code></a></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-Boundary_Transport_Water_Stream-new"></a>}}
+\if{latex}{\out{\hypertarget{method-Boundary_Transport_Water_Stream-new}{}}}
 \subsection{Method \code{new()}}{
 Instantiate a water transport boundary in the stream processing domain
 \subsection{Usage}{
@@ -69,8 +69,8 @@ A model boundary that transports water in the stream processing domain
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-populateDependenciesInternalBound"></a>}}
-\if{latex}{\out{\hypertarget{method-populateDependenciesInternalBound}{}}}
+\if{html}{\out{<a id="method-Boundary_Transport_Water_Stream-populateDependenciesInternalBound"></a>}}
+\if{latex}{\out{\hypertarget{method-Boundary_Transport_Water_Stream-populateDependenciesInternalBound}{}}}
 \subsection{Method \code{populateDependenciesInternalBound()}}{
 Populate boundary dependencies for boundaries with
   exactly one upstream and one downstream cell.  Sets the
@@ -85,8 +85,8 @@ Populates boundary dependencies
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-populateDependenciesExternalBound"></a>}}
-\if{latex}{\out{\hypertarget{method-populateDependenciesExternalBound}{}}}
+\if{html}{\out{<a id="method-Boundary_Transport_Water_Stream-populateDependenciesExternalBound"></a>}}
+\if{latex}{\out{\hypertarget{method-Boundary_Transport_Water_Stream-populateDependenciesExternalBound}{}}}
 \subsection{Method \code{populateDependenciesExternalBound()}}{
 Populate boundary dependencies for boundaries at the
   edge of the topology (i.e., with either one upstream or one
@@ -101,8 +101,8 @@ Populates boundary dependencies
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-trade"></a>}}
-\if{latex}{\out{\hypertarget{method-trade}{}}}
+\if{html}{\out{<a id="method-Boundary_Transport_Water_Stream-trade"></a>}}
+\if{latex}{\out{\hypertarget{method-Boundary_Transport_Water_Stream-trade}{}}}
 \subsection{Method \code{trade()}}{
 Calculates the trades between the stream water cells
   using the values provided for \code{discharge}.
@@ -117,8 +117,8 @@ Updates the \code{volume} in the cell based on
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-Boundary_Transport_Water_Stream-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-Boundary_Transport_Water_Stream-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

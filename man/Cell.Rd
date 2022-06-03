@@ -23,14 +23,14 @@ Instantiate a \code{Cell}.
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{Cell$new()}}
-\item \href{#method-populateDependencies}{\code{Cell$populateDependencies()}}
-\item \href{#method-clone}{\code{Cell$clone()}}
+\item \href{#method-Cell-new}{\code{Cell$new()}}
+\item \href{#method-Cell-populateDependencies}{\code{Cell$populateDependencies()}}
+\item \href{#method-Cell-clone}{\code{Cell$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-Cell-new"></a>}}
+\if{latex}{\out{\hypertarget{method-Cell-new}{}}}
 \subsection{Method \code{new()}}{
 Instantiate a \code{Cell} object.
 \subsection{Usage}{
@@ -53,8 +53,8 @@ The ojbect of class \code{Cell}.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-populateDependencies"></a>}}
-\if{latex}{\out{\hypertarget{method-populateDependencies}{}}}
+\if{html}{\out{<a id="method-Cell-populateDependencies"></a>}}
+\if{latex}{\out{\hypertarget{method-Cell-populateDependencies}{}}}
 \subsection{Method \code{populateDependencies()}}{
 Placeholder for populate dependencies methods.
 \subsection{Usage}{
@@ -66,8 +66,8 @@ NULL
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-Cell-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-Cell-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

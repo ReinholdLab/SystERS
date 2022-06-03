@@ -64,21 +64,21 @@ Boundary_Reaction_Solute <-
         #'   be specified
         pcntToRemove = NULL,
 
-        #' @description Instantiate a reaction boundary for a solute #' @param
-        #'   ... Parameters inherit from Class \code{\link{Boundary}}
+        #' @description Instantiate a reaction boundary for a solute #'
+        #' @param ... Parameters inherit from Class \code{\link{Boundary}}
         #' @param boundaryIdx String indexing the boundary
         #' @param currency String naming the currency handled by the boundary as
         #'   a character e.g., \code{water, NO3}
         #' @param upstreamCell  Cell to which the reaction boundary is connected
         #' @param timeInterval  Model time step
+        #' @param volWaterInStorage The volume of water in the reactive storage
+        #'   zone
         #' @param processMethodName How to process the solute, either
         #'   \code{pcnt} or \code{RT-PL}
-        #' @param tauMin Minimum residence time of water to consider; bound
-        #'   on lower end of power law describing the residence time
-        #'   distribution
-        #' @param tauMax Maximum residence time of water to consider; bound
-        #'   on upper end of power law describing the residence time
-        #'   distribution
+        #' @param tauMin Minimum residence time of water to consider; bound on
+        #'   lower end of power law describing the residence time distribution
+        #' @param tauMax Maximum residence time of water to consider; bound on
+        #'   upper end of power law describing the residence time distribution
         #' @param alpha Power law exponent describing the shape of the curve,
         #'   typically between -1.2 and -1.9
         #' @param k Uptake constant for solute in units of T-1
@@ -127,19 +127,24 @@ Boundary_Reaction_Solute <-
         #' @method Method Boundary_Reaction_Solute$processMethod_RT_PL
         #' @description Calculates the fraction solute to remove from storage
         #'   based on a power law residence time weighted approach
+        #' @param remaining If \code{TRUE}, returns solute remaining.  If
+        #'   \code{FALSE}, returns solute removed.
+        #' @return Value of fraction removed and remaining in storage
         processMethod_RT_PL = function(){
           self$fractionRemovedStorage <- self$calc_fracRemoval_resTimeWtdPowerLaw(remaining = FALSE)
           self$fractionRemainingStorage <- self$calc_fracRemoval_resTimeWtdPowerLaw(remaining = TRUE)
+          return(c(removed = self$fractionRemovedStorage, remaining = self$fractionRemainingStorage))
         },
 
 
         #' @method Method Boundary_Reaction_Solute$processMethod_pcnt
         #' @description Calculates the fraction solute to remove from storage
         #'   based on  a user specified percent
-        #' @return
+        #' @return Value of fraction removed and remaining in storage
         processMethod_pcnt = function(){
           self$fractionRemovedStorage <- self$pcntToRemove/100
           self$fractionRemainingStorage <- 1 - self$fractionRemovedStorage
+          return(c(removed = self$fractionRemovedStorage, remaining = self$fractionRemainingStorage))
         },
 
 
@@ -147,10 +152,9 @@ Boundary_Reaction_Solute <-
         #'   Boundary_Reaction_Solute$calc_fracRemoval_resTimeWtdPowerLaw
         #' @description Calculate fraction of solute removed/remainig from a
         #'   fully saturated storage zone using a residence-time weighted
-        #'   removal function assuming a power law residence time.  If remaining
-        #'   = TRUE, then the function calculates the fraction of the solute
-        #'   REMAINING; however if remaining = FALSE, then the function
-        #'   calculates the fraction of solute REMOVED
+        #'   removal function assuming a power law residence time.
+        #' @param remaining If \code{TRUE}, returns fraction of solute remaining.  If
+        #'   \code{FALSE}, returns fraction of solute removed.
         #' @returns Fraction of solute removed or remaining in the storage zone
         calc_fracRemoval_resTimeWtdPowerLaw = function(remaining = remaining){
           if(is.na(self$tauMin)){
@@ -275,7 +279,7 @@ Boundary_Reaction_Solute_Stream <-
       list(
         #' @description Instantiate a solute reaction boundary in the stream
         #'   processing domain
-        #' @field fractionRemaining Fraction of solute removed from stream cell
+        #' @field fractionRemoved Fraction of solute removed from stream cell
         fractionRemoved = NULL,
         #' @field fractionRemaining Fraction of solute remaining in
         #'   stream cell

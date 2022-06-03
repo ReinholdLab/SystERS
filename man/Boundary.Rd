@@ -31,13 +31,13 @@ the boundary is at the downstream edge of the model)}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{Boundary$new()}}
-\item \href{#method-clone}{\code{Boundary$clone()}}
+\item \href{#method-Boundary-new}{\code{Boundary$new()}}
+\item \href{#method-Boundary-clone}{\code{Boundary$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-Boundary-new"></a>}}
+\if{latex}{\out{\hypertarget{method-Boundary-new}{}}}
 \subsection{Method \code{new()}}{
 Instantiate a boundary
 \subsection{Usage}{
@@ -64,8 +64,8 @@ A model boundary
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-Boundary-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-Boundary-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

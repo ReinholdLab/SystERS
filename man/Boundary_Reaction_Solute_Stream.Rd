@@ -16,7 +16,7 @@ Reaction boundary for solute from stream cells
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{fractionRemaining}}{Fraction of solute removed from stream cell}
+\item{\code{fractionRemoved}}{Fraction of solute removed from stream cell}
 
 \item{\code{fractionRemaining}}{Fraction of solute remaining in
 stream cell}
@@ -43,24 +43,24 @@ to the timestep}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{Boundary_Reaction_Solute_Stream$new()}}
-\item \href{#method-trade}{\code{Boundary_Reaction_Solute_Stream$trade()}}
-\item \href{#method-clone}{\code{Boundary_Reaction_Solute_Stream$clone()}}
+\item \href{#method-Boundary_Reaction_Solute_Stream-new}{\code{Boundary_Reaction_Solute_Stream$new()}}
+\item \href{#method-Boundary_Reaction_Solute_Stream-trade}{\code{Boundary_Reaction_Solute_Stream$trade()}}
+\item \href{#method-Boundary_Reaction_Solute_Stream-clone}{\code{Boundary_Reaction_Solute_Stream$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="SoilsToStreams" data-topic="Boundary_Reaction_Solute" data-id="calc_fracRemoval_resTimeWtdPowerLaw">}\href{../../SoilsToStreams/html/Boundary_Reaction_Solute.html#method-calc_fracRemoval_resTimeWtdPowerLaw}{\code{SoilsToStreams::Boundary_Reaction_Solute$calc_fracRemoval_resTimeWtdPowerLaw()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="SoilsToStreams" data-topic="Boundary_Reaction_Solute" data-id="processMethod_RT_PL">}\href{../../SoilsToStreams/html/Boundary_Reaction_Solute.html#method-processMethod_RT_PL}{\code{SoilsToStreams::Boundary_Reaction_Solute$processMethod_RT_PL()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="SoilsToStreams" data-topic="Boundary_Reaction_Solute" data-id="processMethod_pcnt">}\href{../../SoilsToStreams/html/Boundary_Reaction_Solute.html#method-processMethod_pcnt}{\code{SoilsToStreams::Boundary_Reaction_Solute$processMethod_pcnt()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="SoilsToStreams" data-topic="Boundary_Reaction_Solute" data-id="store">}\href{../../SoilsToStreams/html/Boundary_Reaction_Solute.html#method-store}{\code{SoilsToStreams::Boundary_Reaction_Solute$store()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="SoilsToStreams" data-topic="Boundary_Reaction_Solute" data-id="calc_fracRemoval_resTimeWtdPowerLaw"><a href='../../SoilsToStreams/html/Boundary_Reaction_Solute.html#method-Boundary_Reaction_Solute-calc_fracRemoval_resTimeWtdPowerLaw'><code>SoilsToStreams::Boundary_Reaction_Solute$calc_fracRemoval_resTimeWtdPowerLaw()</code></a></li>
+<li><span class="pkg-link" data-pkg="SoilsToStreams" data-topic="Boundary_Reaction_Solute" data-id="processMethod_RT_PL"><a href='../../SoilsToStreams/html/Boundary_Reaction_Solute.html#method-Boundary_Reaction_Solute-processMethod_RT_PL'><code>SoilsToStreams::Boundary_Reaction_Solute$processMethod_RT_PL()</code></a></li>
+<li><span class="pkg-link" data-pkg="SoilsToStreams" data-topic="Boundary_Reaction_Solute" data-id="processMethod_pcnt"><a href='../../SoilsToStreams/html/Boundary_Reaction_Solute.html#method-Boundary_Reaction_Solute-processMethod_pcnt'><code>SoilsToStreams::Boundary_Reaction_Solute$processMethod_pcnt()</code></a></li>
+<li><span class="pkg-link" data-pkg="SoilsToStreams" data-topic="Boundary_Reaction_Solute" data-id="store"><a href='../../SoilsToStreams/html/Boundary_Reaction_Solute.html#method-Boundary_Reaction_Solute-store'><code>SoilsToStreams::Boundary_Reaction_Solute$store()</code></a></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-Boundary_Reaction_Solute_Stream-new"></a>}}
+\if{latex}{\out{\hypertarget{method-Boundary_Reaction_Solute_Stream-new}{}}}
 \subsection{Method \code{new()}}{
 Instantiate a solute reaction boundary in the stream
   processing domain
@@ -92,8 +92,8 @@ A model boundary that calculates solute removal from stream
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-trade"></a>}}
-\if{latex}{\out{\hypertarget{method-trade}{}}}
+\if{html}{\out{<a id="method-Boundary_Reaction_Solute_Stream-trade"></a>}}
+\if{latex}{\out{\hypertarget{method-Boundary_Reaction_Solute_Stream-trade}{}}}
 \subsection{Method \code{trade()}}{
 Calculates the trades for reaction boundaries attached
   to stream cells
@@ -106,8 +106,8 @@ Trades for reaction boundaries attached to stream cells
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-Boundary_Reaction_Solute_Stream-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-Boundary_Reaction_Solute_Stream-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

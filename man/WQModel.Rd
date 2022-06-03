@@ -22,29 +22,29 @@ Define and instantiate the WQ model and the network topology of
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{WQModel$new()}}
-\item \href{#method-cellFactory}{\code{WQModel$cellFactory()}}
-\item \href{#method-boundaryFactory}{\code{WQModel$boundaryFactory()}}
-\item \href{#method-errorCheckCellInputs}{\code{WQModel$errorCheckCellInputs()}}
-\item \href{#method-initializeWaterCells_stream}{\code{WQModel$initializeWaterCells_stream()}}
-\item \href{#method-initializeSoluteCells_stream}{\code{WQModel$initializeSoluteCells_stream()}}
-\item \href{#method-linkSoluteCellsToWaterCells_stream}{\code{WQModel$linkSoluteCellsToWaterCells_stream()}}
-\item \href{#method-errorCheckBoundaryInputs}{\code{WQModel$errorCheckBoundaryInputs()}}
-\item \href{#method-initializeExternalWaterTransportBoundaries}{\code{WQModel$initializeExternalWaterTransportBoundaries()}}
-\item \href{#method-initializeInternalWaterTransportBoundaries}{\code{WQModel$initializeInternalWaterTransportBoundaries()}}
-\item \href{#method-initializeSoluteTransportBoundaries}{\code{WQModel$initializeSoluteTransportBoundaries()}}
-\item \href{#method-initializeSoluteReactionBoundaries}{\code{WQModel$initializeSoluteReactionBoundaries()}}
-\item \href{#method-linkBoundsToCells}{\code{WQModel$linkBoundsToCells()}}
-\item \href{#method-trade}{\code{WQModel$trade()}}
-\item \href{#method-store}{\code{WQModel$store()}}
-\item \href{#method-update}{\code{WQModel$update()}}
-\item \href{#method-iterate}{\code{WQModel$iterate()}}
-\item \href{#method-clone}{\code{WQModel$clone()}}
+\item \href{#method-WQModel-new}{\code{WQModel$new()}}
+\item \href{#method-WQModel-cellFactory}{\code{WQModel$cellFactory()}}
+\item \href{#method-WQModel-boundaryFactory}{\code{WQModel$boundaryFactory()}}
+\item \href{#method-WQModel-errorCheckCellInputs}{\code{WQModel$errorCheckCellInputs()}}
+\item \href{#method-WQModel-initializeWaterCells_stream}{\code{WQModel$initializeWaterCells_stream()}}
+\item \href{#method-WQModel-initializeSoluteCells_stream}{\code{WQModel$initializeSoluteCells_stream()}}
+\item \href{#method-WQModel-linkSoluteCellsToWaterCells_stream}{\code{WQModel$linkSoluteCellsToWaterCells_stream()}}
+\item \href{#method-WQModel-errorCheckBoundaryInputs}{\code{WQModel$errorCheckBoundaryInputs()}}
+\item \href{#method-WQModel-initializeExternalWaterTransportBoundaries}{\code{WQModel$initializeExternalWaterTransportBoundaries()}}
+\item \href{#method-WQModel-initializeInternalWaterTransportBoundaries}{\code{WQModel$initializeInternalWaterTransportBoundaries()}}
+\item \href{#method-WQModel-initializeSoluteTransportBoundaries}{\code{WQModel$initializeSoluteTransportBoundaries()}}
+\item \href{#method-WQModel-initializeSoluteReactionBoundaries}{\code{WQModel$initializeSoluteReactionBoundaries()}}
+\item \href{#method-WQModel-linkBoundsToCells}{\code{WQModel$linkBoundsToCells()}}
+\item \href{#method-WQModel-trade}{\code{WQModel$trade()}}
+\item \href{#method-WQModel-store}{\code{WQModel$store()}}
+\item \href{#method-WQModel-update}{\code{WQModel$update()}}
+\item \href{#method-WQModel-iterate}{\code{WQModel$iterate()}}
+\item \href{#method-WQModel-clone}{\code{WQModel$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-WQModel-new"></a>}}
+\if{latex}{\out{\hypertarget{method-WQModel-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{WQModel$new(
@@ -122,8 +122,8 @@ The ojbect of class \code{WQModel}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-cellFactory"></a>}}
-\if{latex}{\out{\hypertarget{method-cellFactory}{}}}
+\if{html}{\out{<a id="method-WQModel-cellFactory"></a>}}
+\if{latex}{\out{\hypertarget{method-WQModel-cellFactory}{}}}
 \subsection{Method \code{cellFactory()}}{
 Create a list of the model cells
 \subsection{Usage}{
@@ -135,8 +135,8 @@ A list of model cells
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-boundaryFactory"></a>}}
-\if{latex}{\out{\hypertarget{method-boundaryFactory}{}}}
+\if{html}{\out{<a id="method-WQModel-boundaryFactory"></a>}}
+\if{latex}{\out{\hypertarget{method-WQModel-boundaryFactory}{}}}
 \subsection{Method \code{boundaryFactory()}}{
 Create a list of the model boundaries
 \subsection{Usage}{
@@ -148,8 +148,8 @@ A list of model boundaries
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-errorCheckCellInputs"></a>}}
-\if{latex}{\out{\hypertarget{method-errorCheckCellInputs}{}}}
+\if{html}{\out{<a id="method-WQModel-errorCheckCellInputs"></a>}}
+\if{latex}{\out{\hypertarget{method-WQModel-errorCheckCellInputs}{}}}
 \subsection{Method \code{errorCheckCellInputs()}}{
 Error check to see if any cell specifications are
   duplicated
@@ -163,8 +163,8 @@ Nothing if no error is detected.  An error message is
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-initializeWaterCells_stream"></a>}}
-\if{latex}{\out{\hypertarget{method-initializeWaterCells_stream}{}}}
+\if{html}{\out{<a id="method-WQModel-initializeWaterCells_stream"></a>}}
+\if{latex}{\out{\hypertarget{method-WQModel-initializeWaterCells_stream}{}}}
 \subsection{Method \code{initializeWaterCells_stream()}}{
 Instantiate the water cells in the stream process domain
 \subsection{Usage}{
@@ -176,8 +176,8 @@ List of stream water cells
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-initializeSoluteCells_stream"></a>}}
-\if{latex}{\out{\hypertarget{method-initializeSoluteCells_stream}{}}}
+\if{html}{\out{<a id="method-WQModel-initializeSoluteCells_stream"></a>}}
+\if{latex}{\out{\hypertarget{method-WQModel-initializeSoluteCells_stream}{}}}
 \subsection{Method \code{initializeSoluteCells_stream()}}{
 Instantiate the solute cells in the stream process domain
 \subsection{Usage}{
@@ -189,8 +189,8 @@ List of stream solute cells
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-linkSoluteCellsToWaterCells_stream"></a>}}
-\if{latex}{\out{\hypertarget{method-linkSoluteCellsToWaterCells_stream}{}}}
+\if{html}{\out{<a id="method-WQModel-linkSoluteCellsToWaterCells_stream"></a>}}
+\if{latex}{\out{\hypertarget{method-WQModel-linkSoluteCellsToWaterCells_stream}{}}}
 \subsection{Method \code{linkSoluteCellsToWaterCells_stream()}}{
 Link the solute cells to the water cells in the stream process
   domain
@@ -204,8 +204,8 @@ Water cells with their \code{linkedSoluteCells} attribute populated
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-errorCheckBoundaryInputs"></a>}}
-\if{latex}{\out{\hypertarget{method-errorCheckBoundaryInputs}{}}}
+\if{html}{\out{<a id="method-WQModel-errorCheckBoundaryInputs"></a>}}
+\if{latex}{\out{\hypertarget{method-WQModel-errorCheckBoundaryInputs}{}}}
 \subsection{Method \code{errorCheckBoundaryInputs()}}{
 Error check to see if any boundary specifications are duplicated
   or have references to cells that do not exist.
@@ -219,8 +219,8 @@ Nothing if no error is detected.  If an error is detected, a message
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-initializeExternalWaterTransportBoundaries"></a>}}
-\if{latex}{\out{\hypertarget{method-initializeExternalWaterTransportBoundaries}{}}}
+\if{html}{\out{<a id="method-WQModel-initializeExternalWaterTransportBoundaries"></a>}}
+\if{latex}{\out{\hypertarget{method-WQModel-initializeExternalWaterTransportBoundaries}{}}}
 \subsection{Method \code{initializeExternalWaterTransportBoundaries()}}{
 Instantiate the transport boundaries that are on the physical
   edges of the model
@@ -234,8 +234,8 @@ Water transport boundaries at the upstream and downstream extents of
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-initializeInternalWaterTransportBoundaries"></a>}}
-\if{latex}{\out{\hypertarget{method-initializeInternalWaterTransportBoundaries}{}}}
+\if{html}{\out{<a id="method-WQModel-initializeInternalWaterTransportBoundaries"></a>}}
+\if{latex}{\out{\hypertarget{method-WQModel-initializeInternalWaterTransportBoundaries}{}}}
 \subsection{Method \code{initializeInternalWaterTransportBoundaries()}}{
 Instantiate the transport boundaries that are internal to the
   physical edges of the model
@@ -250,8 +250,8 @@ Water transport boundaries within the upstream and downstream extents
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-initializeSoluteTransportBoundaries"></a>}}
-\if{latex}{\out{\hypertarget{method-initializeSoluteTransportBoundaries}{}}}
+\if{html}{\out{<a id="method-WQModel-initializeSoluteTransportBoundaries"></a>}}
+\if{latex}{\out{\hypertarget{method-WQModel-initializeSoluteTransportBoundaries}{}}}
 \subsection{Method \code{initializeSoluteTransportBoundaries()}}{
 Instantiate the solute transport boundaries
 \subsection{Usage}{
@@ -263,8 +263,8 @@ Solute transport boundaries
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-initializeSoluteReactionBoundaries"></a>}}
-\if{latex}{\out{\hypertarget{method-initializeSoluteReactionBoundaries}{}}}
+\if{html}{\out{<a id="method-WQModel-initializeSoluteReactionBoundaries"></a>}}
+\if{latex}{\out{\hypertarget{method-WQModel-initializeSoluteReactionBoundaries}{}}}
 \subsection{Method \code{initializeSoluteReactionBoundaries()}}{
 Instantiate the solute reaction boundaries.  Current
   model version only supports stream reaction boundaries.
@@ -277,8 +277,8 @@ A list of solute reaction boundaries
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-linkBoundsToCells"></a>}}
-\if{latex}{\out{\hypertarget{method-linkBoundsToCells}{}}}
+\if{html}{\out{<a id="method-WQModel-linkBoundsToCells"></a>}}
+\if{latex}{\out{\hypertarget{method-WQModel-linkBoundsToCells}{}}}
 \subsection{Method \code{linkBoundsToCells()}}{
 Creates a list of boundaries attached to each cell and
   then adds the list of bounds connected to each cell as an attribute
@@ -292,8 +292,8 @@ Cells with \code{linkedBoundsList} attribute populated
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-trade"></a>}}
-\if{latex}{\out{\hypertarget{method-trade}{}}}
+\if{html}{\out{<a id="method-WQModel-trade"></a>}}
+\if{latex}{\out{\hypertarget{method-WQModel-trade}{}}}
 \subsection{Method \code{trade()}}{
 Runs the trade method on all boundaries in the model in
   the order in which they occur in the \code{bounds} list.
@@ -306,8 +306,8 @@ Updated boundary values.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-store"></a>}}
-\if{latex}{\out{\hypertarget{method-store}{}}}
+\if{html}{\out{<a id="method-WQModel-store"></a>}}
+\if{latex}{\out{\hypertarget{method-WQModel-store}{}}}
 \subsection{Method \code{store()}}{
 Runs the store method on all cells in the model.
 \subsection{Usage}{
@@ -319,8 +319,8 @@ Updated store values.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-update"></a>}}
-\if{latex}{\out{\hypertarget{method-update}{}}}
+\if{html}{\out{<a id="method-WQModel-update"></a>}}
+\if{latex}{\out{\hypertarget{method-WQModel-update}{}}}
 \subsection{Method \code{update()}}{
 Runs the update method on all cells and boundaries in the model.
 \subsection{Usage}{
@@ -332,8 +332,8 @@ Updates all values in cells and boundaries based on trades and stores.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-iterate"></a>}}
-\if{latex}{\out{\hypertarget{method-iterate}{}}}
+\if{html}{\out{<a id="method-WQModel-iterate"></a>}}
+\if{latex}{\out{\hypertarget{method-WQModel-iterate}{}}}
 \subsection{Method \code{iterate()}}{
 Iterates the model by calling all trades, stores, and
   updates.
@@ -343,12 +343,12 @@ Iterates the model by calling all trades, stores, and
 
 \subsection{Returns}{
 All cells and boundaries will values updated to reflect the
-  trades, stores, and updates, that occurred during the time step.
+  trades, stores, and updates that occurred during the time step.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-WQModel-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-WQModel-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

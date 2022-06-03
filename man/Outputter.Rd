@@ -3,22 +3,22 @@
 \name{Outputter}
 \alias{Outputter}
 \title{Class Outputter (R6)
-Outputs values from S2S Models}
+Outputs values from SoilsToStreams Models}
 \description{
-Outputs values from S2S Models
+Outputs values from SoilsToStreams Models
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{model}}{The S2S model object}
+\item{\code{model}}{The SoilsToStreams model object}
 
-\item{\code{objectClassName}}{The class of S2S model object to extract
+\item{\code{objectClassName}}{The class of SoilsToStreams model object to extract
 (either Cells or Bounds)}
 
 \item{\code{attributesToReport}}{The names of objects associated with the
-S2S cells or boundaries to output}
+SoilsToStreams cells or boundaries to output}
 
-\item{\code{objectsToReport}}{The values of the S2S cells or
+\item{\code{objectsToReport}}{The values of the SoilsToStreams cells or
 boundaries to output}
 
 \item{\code{reportingInterval}}{A number indicating the reporting interval.
@@ -35,17 +35,17 @@ files will be written.}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{Outputter$new()}}
-\item \href{#method-report}{\code{Outputter$report()}}
-\item \href{#method-getCellsOrBoundsByClass}{\code{Outputter$getCellsOrBoundsByClass()}}
-\item \href{#method-getCellOrBoundAttributes}{\code{Outputter$getCellOrBoundAttributes()}}
-\item \href{#method-timeSeriesGraph}{\code{Outputter$timeSeriesGraph()}}
-\item \href{#method-clone}{\code{Outputter$clone()}}
+\item \href{#method-Outputter-new}{\code{Outputter$new()}}
+\item \href{#method-Outputter-report}{\code{Outputter$report()}}
+\item \href{#method-Outputter-getCellsOrBoundsByClass}{\code{Outputter$getCellsOrBoundsByClass()}}
+\item \href{#method-Outputter-getCellOrBoundAttributes}{\code{Outputter$getCellOrBoundAttributes()}}
+\item \href{#method-Outputter-timeSeriesGraph}{\code{Outputter$timeSeriesGraph()}}
+\item \href{#method-Outputter-clone}{\code{Outputter$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-Outputter-new"></a>}}
+\if{latex}{\out{\hypertarget{method-Outputter-new}{}}}
 \subsection{Method \code{new()}}{
 Create an outputter
 \subsection{Usage}{
@@ -61,7 +61,7 @@ Create an outputter
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{model}}{The S2S model object}
+\item{\code{model}}{The SoilsToStreams model object}
 
 \item{\code{objectClassName}}{String with the class name of either the cells
 or boundaries on which to report}
@@ -80,8 +80,8 @@ NULL
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-report"></a>}}
-\if{latex}{\out{\hypertarget{method-report}{}}}
+\if{html}{\out{<a id="method-Outputter-report"></a>}}
+\if{latex}{\out{\hypertarget{method-Outputter-report}{}}}
 \subsection{Method \code{report()}}{
 Report the output
 \subsection{Usage}{
@@ -93,12 +93,12 @@ Write output to file
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-getCellsOrBoundsByClass"></a>}}
-\if{latex}{\out{\hypertarget{method-getCellsOrBoundsByClass}{}}}
+\if{html}{\out{<a id="method-Outputter-getCellsOrBoundsByClass"></a>}}
+\if{latex}{\out{\hypertarget{method-Outputter-getCellsOrBoundsByClass}{}}}
 \subsection{Method \code{getCellsOrBoundsByClass()}}{
 Gets cells or boundaries in the model by their class
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Outputter$getCellsOrBoundsByClass(s2sObjects, objectClassName)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Outputter$getCellsOrBoundsByClass(SoilsToStreamsObjects, objectClassName)}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
@@ -106,12 +106,12 @@ Selected cells or boundaries
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-getCellOrBoundAttributes"></a>}}
-\if{latex}{\out{\hypertarget{method-getCellOrBoundAttributes}{}}}
+\if{html}{\out{<a id="method-Outputter-getCellOrBoundAttributes"></a>}}
+\if{latex}{\out{\hypertarget{method-Outputter-getCellOrBoundAttributes}{}}}
 \subsection{Method \code{getCellOrBoundAttributes()}}{
 Gets attributes of cells or boundaries based on the boundary name
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Outputter$getCellOrBoundAttributes(s2sObjects, attributeName)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Outputter$getCellOrBoundAttributes(SoilsToStreamsObjects, attributeName)}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
@@ -119,12 +119,16 @@ Selected attributes of either cells or boundaries
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-timeSeriesGraph"></a>}}
-\if{latex}{\out{\hypertarget{method-timeSeriesGraph}{}}}
+\if{html}{\out{<a id="method-Outputter-timeSeriesGraph"></a>}}
+\if{latex}{\out{\hypertarget{method-Outputter-timeSeriesGraph}{}}}
 \subsection{Method \code{timeSeriesGraph()}}{
 Creates a of outputs through time.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Outputter$timeSeriesGraph(s2sobject, attributeName, outputFilePathAndName)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Outputter$timeSeriesGraph(
+  SoilsToStreamsobject,
+  attributeName,
+  outputFilePathAndName
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
@@ -132,8 +136,8 @@ Graph
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-Outputter-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-Outputter-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

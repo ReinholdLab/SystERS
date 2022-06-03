@@ -1,6 +1,6 @@
 #' @title Class Outputter (R6)
-#' Outputs values from S2S Models
-#' @description Outputs values from S2S Models
+#' Outputs values from SoilsToStreams Models
+#' @description Outputs values from SoilsToStreams Models
 #' @export
 #'
 #'
@@ -10,15 +10,15 @@ Outputter <-
 
     public =
       list(
-        #' @field model The S2S model object
+        #' @field model The SoilsToStreams model object
         model = NULL,
-        #' @field objectClassName The class of S2S model object to extract
+        #' @field objectClassName The class of SoilsToStreams model object to extract
         #'   (either Cells or Bounds)
         objectClassName = NULL,
         #' @field attributesToReport The names of objects associated with the
-        #'   S2S cells or boundaries to output
+        #'   SoilsToStreams cells or boundaries to output
         attributesToReport = NULL,
-        #' @field objectsToReport The values of the S2S cells or
+        #' @field objectsToReport The values of the SoilsToStreams cells or
         #'   boundaries to output
         objectsToReport = NULL,
         #' @field reportingInterval A number indicating the reporting interval.
@@ -32,7 +32,7 @@ Outputter <-
         destination = NULL,
 
         #' @description Create an outputter
-        #' @param model The S2S model object
+        #' @param model The SoilsToStreams model object
         #' @param objectClassName String with the class name of either the cells
         #'   or boundaries on which to report
         #' @param attributesToReport Vector of strings containing the names of
@@ -60,12 +60,12 @@ Outputter <-
             self$destination <- paste0(filePath, "/", objectClassName, "_", reportingInterval, "int", ".csv")
 
             if(grepl("Cell", objectClassName)){
-              s2sObjects <- model$cells
+              SoilsToStreamsObjects <- model$cells
             } else if(grepl("Boundary", objectClassName)){
-              s2sObjects <- model$bounds
+              SoilsToStreamsObjects <- model$bounds
             }
 
-            self$objectsToReport <- self$getCellsOrBoundsByClass(s2sObjects = s2sObjects, objectClassName = self$objectClassName)
+            self$objectsToReport <- self$getCellsOrBoundsByClass(SoilsToStreamsObjects = SoilsToStreamsObjects, objectClassName = self$objectClassName)
           },
 
 
@@ -101,25 +101,26 @@ Outputter <-
         #' @method Method Outputter$getCellsOrBoundsByClass
         #' @description Gets cells or boundaries in the model by their class
         #' @return Selected cells or boundaries
-        getCellsOrBoundsByClass = function(s2sObjects, objectClassName){
-          matches <- sapply(s2sObjects, is, class2 = objectClassName)
-          return(s2sObjects[matches])
+        getCellsOrBoundsByClass = function(SoilsToStreamsObjects, objectClassName){
+          matches <- sapply(SoilsToStreamsObjects, is, class2 = objectClassName)
+          return(SoilsToStreamsObjects[matches])
         },
         #' @method Method Outputter$getCellOrBoundAttributes
         #' @description Gets attributes of cells or boundaries based on the boundary name
         #' @return Selected attributes of either cells or boundaries
-        getCellOrBoundAttributes = function(s2sObjects, attributeName){
-          attribs <- sapply(s2sObjects, "[[", attributeName)
+        getCellOrBoundAttributes = function(SoilsToStreamsObjects, attributeName){
+          attribs <- sapply(SoilsToStreamsObjects, "[[", attributeName)
           return(attribs)
         },
 
         #' @method Method Outputter$timeSeriesGraph
         #' @description Creates a of outputs through time.
         #' @return Graph
-        timeSeriesGraph = function(s2sobject, attributeName, outputFilePathAndName){
+        timeSeriesGraph = function(SoilsToStreamsobject, attributeName, outputFilePathAndName){
+          browser()
            plotDat <- read.csv(outputFilePathAndName, head = TRUE)
-          theField <- objects(s2sobject)[grepl("(boundaryIdx|cellIdx)", objects(s2sobject))]
-          theFieldName <- s2sobject[[theField]]
+          theField <- objects(SoilsToStreamsobject)[grepl("(boundaryIdx|cellIdx)", objects(SoilsToStreamsobject))]
+          theFieldName <- SoilsToStreamsobject[[theField]]
           plotDat <- plotDat[plotDat$objectName == theFieldName, ]
           yVals <- plotDat[attributeName]
           xVals <- plotDat["modelTime"]

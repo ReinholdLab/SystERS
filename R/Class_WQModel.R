@@ -613,7 +613,7 @@ WQModel <-
         #' @description Iterates the model by calling all trades, stores, and
         #'   updates.
         #' @return All cells and boundaries will values updated to reflect the
-        #'   trades, stores, and updates, that occurred during the time step.
+        #'   trades, stores, and updates that occurred during the time step.
         iterate = function(){
           self$trade()
           self$store()

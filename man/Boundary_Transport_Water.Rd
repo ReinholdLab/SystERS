@@ -22,20 +22,20 @@ Transport boundary for water between cells
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{Boundary_Transport_Water$new()}}
-\item \href{#method-store}{\code{Boundary_Transport_Water$store()}}
-\item \href{#method-clone}{\code{Boundary_Transport_Water$clone()}}
+\item \href{#method-Boundary_Transport_Water-new}{\code{Boundary_Transport_Water$new()}}
+\item \href{#method-Boundary_Transport_Water-store}{\code{Boundary_Transport_Water$store()}}
+\item \href{#method-Boundary_Transport_Water-clone}{\code{Boundary_Transport_Water$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-Boundary_Transport_Water-new"></a>}}
+\if{latex}{\out{\hypertarget{method-Boundary_Transport_Water-new}{}}}
 \subsection{Method \code{new()}}{
 Instantiate a water transport boundary
 \subsection{Usage}{
@@ -66,8 +66,8 @@ A model boundary that transports water
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-store"></a>}}
-\if{latex}{\out{\hypertarget{method-store}{}}}
+\if{html}{\out{<a id="method-Boundary_Transport_Water-store"></a>}}
+\if{latex}{\out{\hypertarget{method-Boundary_Transport_Water-store}{}}}
 \subsection{Method \code{store()}}{
 Runs the store method on water cells in the model.
 \subsection{Usage}{
@@ -79,8 +79,8 @@ Updated store values.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-Boundary_Transport_Water-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-Boundary_Transport_Water-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

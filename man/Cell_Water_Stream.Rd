@@ -33,21 +33,21 @@ the \code{channelLength, channelArea, and channelDepth} params}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{Cell_Water_Stream$new()}}
-\item \href{#method-populateDependencies}{\code{Cell_Water_Stream$populateDependencies()}}
-\item \href{#method-update}{\code{Cell_Water_Stream$update()}}
-\item \href{#method-clone}{\code{Cell_Water_Stream$clone()}}
+\item \href{#method-Cell_Water_Stream-new}{\code{Cell_Water_Stream$new()}}
+\item \href{#method-Cell_Water_Stream-populateDependencies}{\code{Cell_Water_Stream$populateDependencies()}}
+\item \href{#method-Cell_Water_Stream-update}{\code{Cell_Water_Stream$update()}}
+\item \href{#method-Cell_Water_Stream-clone}{\code{Cell_Water_Stream$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-Cell_Water_Stream-new"></a>}}
+\if{latex}{\out{\hypertarget{method-Cell_Water_Stream-new}{}}}
 \subsection{Method \code{new()}}{
 Instantiate a \code{Class Cell_Water_Stream} object.
   Class \code{Class Cell_Water_Stream} inherits from class
@@ -85,8 +85,8 @@ The object of class \code{Cell_Water_Stream}.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-populateDependencies"></a>}}
-\if{latex}{\out{\hypertarget{method-populateDependencies}{}}}
+\if{html}{\out{<a id="method-Cell_Water_Stream-populateDependencies"></a>}}
+\if{latex}{\out{\hypertarget{method-Cell_Water_Stream-populateDependencies}{}}}
 \subsection{Method \code{populateDependencies()}}{
 Populates the fields in the cells that depend on
   boundaries being instantiated before the trade, store, update
@@ -102,8 +102,8 @@ Updates cell values for \code{channelResidenceTime,
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-update"></a>}}
-\if{latex}{\out{\hypertarget{method-update}{}}}
+\if{html}{\out{<a id="method-Cell_Water_Stream-update"></a>}}
+\if{latex}{\out{\hypertarget{method-Cell_Water_Stream-update}{}}}
 \subsection{Method \code{update()}}{
 Runs the update method on all cells of class
   \code{Cell_Water_Stream}.  In this current version of the model,
@@ -119,8 +119,8 @@ Updates cell values based on trades and stores.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-Cell_Water_Stream-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-Cell_Water_Stream-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

@@ -63,6 +63,7 @@ Cell_Water <-
         #' @param cellIdx Character string denoting the index for the cell
         #' @param processDomain Character string indicating process domain of cell (soil, groundwater, or stream)
         #' @param currency Character string with either water or name of solute
+        #' @param ... Inherited parameters
         #' @return The ojbect of class \code{Cell}.
 
         initialize =

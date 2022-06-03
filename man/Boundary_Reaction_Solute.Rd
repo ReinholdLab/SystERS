@@ -72,26 +72,25 @@ be specified}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{Boundary_Reaction_Solute$new()}}
-\item \href{#method-processMethod_RT_PL}{\code{Boundary_Reaction_Solute$processMethod_RT_PL()}}
-\item \href{#method-processMethod_pcnt}{\code{Boundary_Reaction_Solute$processMethod_pcnt()}}
-\item \href{#method-calc_fracRemoval_resTimeWtdPowerLaw}{\code{Boundary_Reaction_Solute$calc_fracRemoval_resTimeWtdPowerLaw()}}
-\item \href{#method-store}{\code{Boundary_Reaction_Solute$store()}}
-\item \href{#method-clone}{\code{Boundary_Reaction_Solute$clone()}}
+\item \href{#method-Boundary_Reaction_Solute-new}{\code{Boundary_Reaction_Solute$new()}}
+\item \href{#method-Boundary_Reaction_Solute-processMethod_RT_PL}{\code{Boundary_Reaction_Solute$processMethod_RT_PL()}}
+\item \href{#method-Boundary_Reaction_Solute-processMethod_pcnt}{\code{Boundary_Reaction_Solute$processMethod_pcnt()}}
+\item \href{#method-Boundary_Reaction_Solute-calc_fracRemoval_resTimeWtdPowerLaw}{\code{Boundary_Reaction_Solute$calc_fracRemoval_resTimeWtdPowerLaw()}}
+\item \href{#method-Boundary_Reaction_Solute-store}{\code{Boundary_Reaction_Solute$store()}}
+\item \href{#method-Boundary_Reaction_Solute-clone}{\code{Boundary_Reaction_Solute$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-Boundary_Reaction_Solute-new"></a>}}
+\if{latex}{\out{\hypertarget{method-Boundary_Reaction_Solute-new}{}}}
 \subsection{Method \code{new()}}{
-Instantiate a reaction boundary for a solute #' @param
-  ... Parameters inherit from Class \code{\link{Boundary}}
+Instantiate a reaction boundary for a solute #'
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Boundary_Reaction_Solute$new(
   ...,
@@ -110,16 +109,16 @@ Instantiate a reaction boundary for a solute #' @param
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
+\item{\code{...}}{Parameters inherit from Class \code{\link{Boundary}}}
+
 \item{\code{processMethodName}}{How to process the solute, either
 \code{pcnt} or \code{RT-PL}}
 
-\item{\code{tauMin}}{Minimum residence time of water to consider; bound
-on lower end of power law describing the residence time
-distribution}
+\item{\code{tauMin}}{Minimum residence time of water to consider; bound on
+lower end of power law describing the residence time distribution}
 
-\item{\code{tauMax}}{Maximum residence time of water to consider; bound
-on upper end of power law describing the residence time
-distribution}
+\item{\code{tauMax}}{Maximum residence time of water to consider; bound on
+upper end of power law describing the residence time distribution}
 
 \item{\code{alpha}}{Power law exponent describing the shape of the curve,
 typically between -1.2 and -1.9}
@@ -138,6 +137,9 @@ be applied to the \code{pcnt} Method.  The default value is
 \item{\code{pcntToRemove}}{Percent of solute amount (mass or mols) to remove
 from storage}
 
+\item{\code{volWaterInStorage}}{The volume of water in the reactive storage
+zone}
+
 \item{\code{boundaryIdx}}{String indexing the boundary}
 
 \item{\code{currency}}{String naming the currency handled by the boundary as
@@ -154,8 +156,8 @@ The object of class \code{Boundary_Reaction_Solute}.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-processMethod_RT_PL"></a>}}
-\if{latex}{\out{\hypertarget{method-processMethod_RT_PL}{}}}
+\if{html}{\out{<a id="method-Boundary_Reaction_Solute-processMethod_RT_PL"></a>}}
+\if{latex}{\out{\hypertarget{method-Boundary_Reaction_Solute-processMethod_RT_PL}{}}}
 \subsection{Method \code{processMethod_RT_PL()}}{
 Calculates the fraction solute to remove from storage
   based on a power law residence time weighted approach
@@ -163,10 +165,21 @@ Calculates the fraction solute to remove from storage
 \if{html}{\out{<div class="r">}}\preformatted{Boundary_Reaction_Solute$processMethod_RT_PL()}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{remaining}}{If \code{TRUE}, returns solute remaining.  If
+\code{FALSE}, returns solute removed.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Value of fraction removed and remaining in storage
+}
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-processMethod_pcnt"></a>}}
-\if{latex}{\out{\hypertarget{method-processMethod_pcnt}{}}}
+\if{html}{\out{<a id="method-Boundary_Reaction_Solute-processMethod_pcnt"></a>}}
+\if{latex}{\out{\hypertarget{method-Boundary_Reaction_Solute-processMethod_pcnt}{}}}
 \subsection{Method \code{processMethod_pcnt()}}{
 Calculates the fraction solute to remove from storage
   based on  a user specified percent
@@ -175,29 +188,34 @@ Calculates the fraction solute to remove from storage
 }
 
 \subsection{Returns}{
-
+Value of fraction removed and remaining in storage
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-calc_fracRemoval_resTimeWtdPowerLaw"></a>}}
-\if{latex}{\out{\hypertarget{method-calc_fracRemoval_resTimeWtdPowerLaw}{}}}
+\if{html}{\out{<a id="method-Boundary_Reaction_Solute-calc_fracRemoval_resTimeWtdPowerLaw"></a>}}
+\if{latex}{\out{\hypertarget{method-Boundary_Reaction_Solute-calc_fracRemoval_resTimeWtdPowerLaw}{}}}
 \subsection{Method \code{calc_fracRemoval_resTimeWtdPowerLaw()}}{
 Calculate fraction of solute removed/remainig from a
   fully saturated storage zone using a residence-time weighted
-  removal function assuming a power law residence time.  If remaining
-  = TRUE, then the function calculates the fraction of the solute
-  REMAINING; however if remaining = FALSE, then the function
-  calculates the fraction of solute REMOVED
+  removal function assuming a power law residence time.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Boundary_Reaction_Solute$calc_fracRemoval_resTimeWtdPowerLaw(
   remaining = remaining
 )}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{remaining}}{If \code{TRUE}, returns fraction of solute remaining.  If
+\code{FALSE}, returns fraction of solute removed.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-store"></a>}}
-\if{latex}{\out{\hypertarget{method-store}{}}}
+\if{html}{\out{<a id="method-Boundary_Reaction_Solute-store"></a>}}
+\if{latex}{\out{\hypertarget{method-Boundary_Reaction_Solute-store}{}}}
 \subsection{Method \code{store()}}{
 Runs the store method on solute cells in the model for
   reactions that remove solute from cells.
@@ -210,8 +228,8 @@ Updated store values.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-Boundary_Reaction_Solute-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-Boundary_Reaction_Solute-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

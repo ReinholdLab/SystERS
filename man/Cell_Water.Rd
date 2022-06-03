@@ -22,20 +22,20 @@ Instantiate a water cell. Inherits from class \code{Cell}.
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{Cell_Water$new()}}
-\item \href{#method-clone}{\code{Cell_Water$clone()}}
+\item \href{#method-Cell_Water-new}{\code{Cell_Water$new()}}
+\item \href{#method-Cell_Water-clone}{\code{Cell_Water$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="SoilsToStreams" data-topic="Cell" data-id="populateDependencies">}\href{../../SoilsToStreams/html/Cell.html#method-populateDependencies}{\code{SoilsToStreams::Cell$populateDependencies()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="SoilsToStreams" data-topic="Cell" data-id="populateDependencies"><a href='../../SoilsToStreams/html/Cell.html#method-Cell-populateDependencies'><code>SoilsToStreams::Cell$populateDependencies()</code></a></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-Cell_Water-new"></a>}}
+\if{latex}{\out{\hypertarget{method-Cell_Water-new}{}}}
 \subsection{Method \code{new()}}{
 Create a new water cell
 \subsection{Usage}{
@@ -45,6 +45,8 @@ Create a new water cell
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
+\item{\code{...}}{Inherited parameters}
+
 \item{\code{waterVolume}}{the volume of water in the cell}
 
 \item{\code{cellIdx}}{Character string denoting the index for the cell}
@@ -60,8 +62,8 @@ The ojbect of class \code{Cell}.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-Cell_Water-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-Cell_Water-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{
