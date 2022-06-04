@@ -39,9 +39,9 @@ Cell <-
 
 
 
-#' @title Class Cell_Water (R6)
-#' Water cell
-#' @description Instantiate a water cell. Inherits from class \code{Cell}.
+#' @title Class Cell_Water (R6) Water cell
+#' @description Instantiate a water cell. Inherits from class
+#'   \code{\link{Cell}}.
 #' @export
 
 Cell_Water <-
@@ -55,16 +55,18 @@ Cell_Water <-
       list(
         #' @field waterVolume volume of water stored in cell
         waterVolume = NULL,
-        #' @field linkedSoluteCells solute cells that are linked to the water cell
+        #' @field linkedSoluteCells solute cells that are linked to the water
+        #'   cell
         linkedSoluteCells = NULL,
 
         #' @description Create a new water cell
         #' @param waterVolume the volume of water in the cell
         #' @param cellIdx Character string denoting the index for the cell
-        #' @param processDomain Character string indicating process domain of cell (soil, groundwater, or stream)
+        #' @param processDomain Character string indicating process domain of
+        #'   cell (soil, groundwater, or stream)
         #' @param currency Character string with either water or name of solute
         #' @param ... Inherited parameters
-        #' @return The ojbect of class \code{Cell}.
+        #' @return The object of class \code{Cell_Water}.
 
         initialize =
           function(..., waterVolume = NULL){
@@ -76,9 +78,10 @@ Cell_Water <-
 )
 
 
-#' @title Class Cell_Water_Stream (R6)
-#' A water cell in the stream processing domain
-#' @description Instantiate a water cell. Inherits from class \code{Cell_Water}.
+#' @title Class Cell_Water_Stream (R6) A water cell in the stream processing
+#'   domain
+#' @description Instantiate a water cell. Inherits from class
+#'   \code{\link{Cell_Water}}.
 #' @export
 
 Cell_Water_Stream <-
@@ -97,12 +100,14 @@ Cell_Water_Stream <-
         channelArea = NULL,
         #' @field channelDepth Average depth of channel in stream cell
         channelDepth = NULL,
-        #' @field waterVolume the volume of water in the cell calculated from
-        #'   the \code{channelLength, channelArea, and channelDepth} params
+        #' @field waterVolume The volume of water in the cell calculated from
+        #'   the \code{channelLength, channelArea, channelDepth} parameters
         waterVolume = NULL,
-        #' @field channelResidenceTime Mean residence time of water in the channel compartment
+        #' @field channelResidenceTime Mean residence time of water in the
+        #'   channel compartment
         channelResidenceTime = NULL,
-        #' @field hydraulicLoad The hydraulic load of water in the channel compartment
+        #' @field hydraulicLoad The hydraulic load of water in the channel
+        #'   compartment
         hydraulicLoad = NULL,
 
         #' @description Instantiate a \code{Class Cell_Water_Stream} object.

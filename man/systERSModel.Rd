@@ -15,7 +15,55 @@ Define and instantiate the WQ model and the network topology of
 
 \item{\code{bounds}}{The model boundaries, stored in a list}
 
-\item{\code{iterationNum}}{The number of times the model has been iterated}
+\item{\code{timeInterval}}{The model time step}
+
+\item{\code{boundsTransportTable_water_int}}{Table of internal water
+boundary specifications}
+
+\item{\code{boundsTransportTable_water_ext}}{Table of external water
+boundary specifications}
+
+\item{\code{boundsTransportTable_solute_int}}{Table of internal solute
+boundary specifications}
+
+\item{\code{boundsTransportTable_solute_us}}{Table of external, upstream
+solute boundary specifications}
+
+\item{\code{boundsTransportTable_solute_ds}}{Table of external, downstream
+solute boundary specifications}
+
+\item{\code{boundsReactionTable_solute_int}}{Table of internal solute
+boundary specifications}
+
+\item{\code{cellsTable_water_stream}}{Table with the names of the water
+cells and their attributes in the stream processing domain}
+
+\item{\code{cellsTable_solute_stream}}{Table with the names of the solute
+cells and their attributes in the stream processing domain}
+
+\item{\code{cellsTable_water_soil}}{Table with the names of the water
+cells and their attributes in the soil processing domain}
+
+\item{\code{cellsTable_solute_soil}}{Table with the names of the solute
+cells and their attributes in the soil processing domain}
+
+\item{\code{cellsTable_water_groundwater}}{Table with the names of the water
+cells and their attributes in the groundwater processing domain}
+
+\item{\code{cellsTable_solute_groundwater}}{Table with the names of the
+solute cells and their attributes in the groundwater processing
+domain}
+
+\item{\code{cellsTableList}}{List storing all of the cell tables}
+
+\item{\code{boundsTableList}}{List storing all of the cell tables}
+
+\item{\code{solute_transport_df}}{A data frame created from the solute
+transport boundary specifications}
+
+\item{\code{unitsTable}}{Table of units for model parameters and outputs}
+
+\item{\code{iterationNum}}{How many times the model has iterated}
 }
 \if{html}{\out{</div>}}
 }
@@ -118,7 +166,7 @@ cells and their attributes in the groundwater processing domain}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-The ojbect of class \code{systERSModel}
+The object of class \code{systERSModel}
 }
 }
 \if{html}{\out{<hr>}}

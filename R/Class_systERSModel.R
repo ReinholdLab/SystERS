@@ -14,34 +14,55 @@ systERSModel <-
         cells = NULL,
         #' @field bounds The model boundaries, stored in a list
         bounds = NULL,
-
+        #' @field timeInterval The model time step
         timeInterval = NULL,
-
+        #' @field boundsTransportTable_water_int Table of internal water
+        #'   boundary specifications
         boundsTransportTable_water_int = NULL,
+        #' @field boundsTransportTable_water_ext Table of external water
+        #'   boundary specifications
         boundsTransportTable_water_ext = NULL,
-
+        #' @field boundsTransportTable_solute_int Table of internal solute
+        #'   boundary specifications
         boundsTransportTable_solute_int = NULL,
+        #' @field boundsTransportTable_solute_us Table of external, upstream
+        #'   solute boundary specifications
         boundsTransportTable_solute_us = NULL,
+        #' @field boundsTransportTable_solute_ds Table of external, downstream
+        #'   solute boundary specifications
         boundsTransportTable_solute_ds = NULL,
-
+        #' @field boundsReactionTable_solute_int Table of internal solute
+        #'   boundary specifications
         boundsReactionTable_solute_int = NULL,
-
+        #' @field cellsTable_water_stream Table with the names of the water
+        #'   cells and their attributes in the stream processing domain
         cellsTable_water_stream = NULL,
+        #' @field cellsTable_solute_stream Table with the names of the solute
+        #'   cells and their attributes in the stream processing domain
         cellsTable_solute_stream = NULL,
-
+        #' @field cellsTable_water_soil Table with the names of the water
+        #'   cells and their attributes in the soil processing domain
         cellsTable_water_soil = NULL,
+        #' @field cellsTable_solute_soil Table with the names of the solute
+        #'   cells and their attributes in the soil processing domain
         cellsTable_solute_soil = NULL,
-
+        #' @field cellsTable_water_groundwater Table with the names of the water
+        #'   cells and their attributes in the groundwater processing domain
         cellsTable_water_groundwater = NULL,
+        #' @field cellsTable_solute_groundwater Table with the names of the
+        #'   solute cells and their attributes in the groundwater processing
+        #'   domain
         cellsTable_solute_groundwater = NULL,
-
+        #' @field cellsTableList List storing all of the cell tables
         cellsTableList = NULL,
+        #' @field boundsTableList List storing all of the cell tables
         boundsTableList = NULL,
-
+        #' @field solute_transport_df A data frame created from the solute
+        #'   transport boundary specifications
         solute_transport_df = NULL,
-
+        #' @field unitsTable Table of units for model parameters and outputs
         unitsTable = NULL,
-
+        #' @field iterationNum How many times the model has iterated
         iterationNum = NULL,
 
         #' @param boundsTransportTable_water_int Table with the names of the
@@ -77,7 +98,7 @@ systERSModel <-
         #'   cells and their attributes in the groundwater processing domain
         #' @param unitsTable Table of units for model parameters and outputs
         #' @param timeInterval Model time step
-        #' @return The ojbect of class \code{systERSModel}
+        #' @return The object of class \code{systERSModel}
         initialize =
           function(
             boundsTransportTable_water_int = NULL,
@@ -256,15 +277,6 @@ systERSModel <-
           } else {
             bounds_transport_water <- bounds_transport_water_ext
           }
-
-          # populate dependencies
-          # bounds_transport_water <-
-          #   lapply(
-          #     bounds_transport_water,
-          #     function(b) {
-          #       if("Boundary_Transport_Water_Stream" %in% class(b)) b$populateDependencies()
-          #     }
-          #   )
 
           # Add the water bounds to the bounds list
           self$bounds <- bounds_transport_water
@@ -609,7 +621,6 @@ systERSModel <-
         },
 
         #' @method Method systERSModel$iterate
-        #' @field iterationNum The number of times the model has been iterated
         #' @description Iterates the model by calling all trades, stores, and
         #'   updates.
         #' @return All cells and boundaries will values updated to reflect the

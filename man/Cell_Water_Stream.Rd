@@ -2,10 +2,11 @@
 % Please edit documentation in R/Class_Cell.R
 \name{Cell_Water_Stream}
 \alias{Cell_Water_Stream}
-\title{Class Cell_Water_Stream (R6)
-A water cell in the stream processing domain}
+\title{Class Cell_Water_Stream (R6) A water cell in the stream processing
+  domain}
 \description{
-Instantiate a water cell. Inherits from class \code{Cell_Water}.
+Instantiate a water cell. Inherits from class
+  \code{\link{Cell_Water}}.
 }
 \section{Super classes}{
 \code{\link[systERS:Cell]{systERS::Cell}} -> \code{\link[systERS:Cell_Water]{systERS::Cell_Water}} -> \code{Cell_Water_Stream}
@@ -21,12 +22,14 @@ Instantiate a water cell. Inherits from class \code{Cell_Water}.
 
 \item{\code{channelDepth}}{Average depth of channel in stream cell}
 
-\item{\code{waterVolume}}{the volume of water in the cell calculated from
-the \code{channelLength, channelArea, and channelDepth} params}
+\item{\code{waterVolume}}{The volume of water in the cell calculated from
+the \code{channelLength, channelArea, channelDepth} parameters}
 
-\item{\code{channelResidenceTime}}{Mean residence time of water in the channel compartment}
+\item{\code{channelResidenceTime}}{Mean residence time of water in the
+channel compartment}
 
-\item{\code{hydraulicLoad}}{The hydraulic load of water in the channel compartment}
+\item{\code{hydraulicLoad}}{The hydraulic load of water in the channel
+compartment}
 }
 \if{html}{\out{</div>}}
 }

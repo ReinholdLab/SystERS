@@ -2,10 +2,10 @@
 % Please edit documentation in R/Class_Cell.R
 \name{Cell_Water}
 \alias{Cell_Water}
-\title{Class Cell_Water (R6)
-Water cell}
+\title{Class Cell_Water (R6) Water cell}
 \description{
-Instantiate a water cell. Inherits from class \code{Cell}.
+Instantiate a water cell. Inherits from class
+  \code{\link{Cell}}.
 }
 \section{Super class}{
 \code{\link[systERS:Cell]{systERS::Cell}} -> \code{Cell_Water}
@@ -15,7 +15,8 @@ Instantiate a water cell. Inherits from class \code{Cell}.
 \describe{
 \item{\code{waterVolume}}{volume of water stored in cell}
 
-\item{\code{linkedSoluteCells}}{solute cells that are linked to the water cell}
+\item{\code{linkedSoluteCells}}{solute cells that are linked to the water
+cell}
 }
 \if{html}{\out{</div>}}
 }
@@ -51,14 +52,15 @@ Create a new water cell
 
 \item{\code{cellIdx}}{Character string denoting the index for the cell}
 
-\item{\code{processDomain}}{Character string indicating process domain of cell (soil, groundwater, or stream)}
+\item{\code{processDomain}}{Character string indicating process domain of
+cell (soil, groundwater, or stream)}
 
 \item{\code{currency}}{Character string with either water or name of solute}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-The ojbect of class \code{Cell}.
+The object of class \code{Cell_Water}.
 }
 }
 \if{html}{\out{<hr>}}

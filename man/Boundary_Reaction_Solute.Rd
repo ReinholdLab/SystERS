@@ -109,7 +109,7 @@ Instantiate a reaction boundary for a solute #'
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{...}}{Parameters inherit from Class \code{\link{Boundary}}}
+\item{\code{...}}{Parameters inherited from Class \code{\link{Boundary}}}
 
 \item{\code{processMethodName}}{How to process the solute, either
 \code{pcnt} or \code{RT-PL}}

@@ -65,7 +65,7 @@ Boundary_Reaction_Solute <-
         pcntToRemove = NULL,
 
         #' @description Instantiate a reaction boundary for a solute #'
-        #' @param ... Parameters inherit from Class \code{\link{Boundary}}
+        #' @param ... Parameters inherited from Class \code{\link{Boundary}}
         #' @param boundaryIdx String indexing the boundary
         #' @param currency String naming the currency handled by the boundary as
         #'   a character e.g., \code{water, NO3}
