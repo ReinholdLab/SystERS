@@ -8,7 +8,7 @@ Water cell}
 Instantiate a water cell. Inherits from class \code{Cell}.
 }
 \section{Super class}{
-\code{\link[SoilsToStreams:Cell]{SoilsToStreams::Cell}} -> \code{Cell_Water}
+\code{\link[systERS:Cell]{systERS::Cell}} -> \code{Cell_Water}
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -29,7 +29,7 @@ Instantiate a water cell. Inherits from class \code{Cell}.
 \if{html}{\out{
 <details open><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="SoilsToStreams" data-topic="Cell" data-id="populateDependencies"><a href='../../SoilsToStreams/html/Cell.html#method-Cell-populateDependencies'><code>SoilsToStreams::Cell$populateDependencies()</code></a></li>
+<li><span class="pkg-link" data-pkg="systERS" data-topic="Cell" data-id="populateDependencies"><a href='../../systERS/html/Cell.html#method-Cell-populateDependencies'><code>systERS::Cell$populateDependencies()</code></a></li>
 </ul>
 </details>
 }}

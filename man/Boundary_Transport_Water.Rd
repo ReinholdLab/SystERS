@@ -8,7 +8,7 @@ A model boundary that transports water to and from cells}
 Transport boundary for water between cells
 }
 \section{Super class}{
-\code{\link[SoilsToStreams:Boundary]{SoilsToStreams::Boundary}} -> \code{Boundary_Transport_Water}
+\code{\link[systERS:Boundary]{systERS::Boundary}} -> \code{Boundary_Transport_Water}
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}

@@ -1,10 +1,10 @@
-Package: SoilsToStreams
+Package: systERS
 Type: Package
-Title: Simulate Solute Reactivity and Transport
-Version: 0.1.0
+Title: System for Environmental Reactor Simulation
+Version: 1.0.0
 Author: Ann Marie Reinhold, Robert A. Payn, and Stephanie A. Ewing
 Maintainer: Ann Marie Reinhold <annmarie.reinhold@montana.edu>
-Description: Simulates solute reactivity and transport through a network of soil, groundwater, and stream cells.
+Description: Simulates solute reactivity and transport with an environmental reactor framework through a network of soil, groundwater, and stream cells.
 License: MIT
 Encoding: UTF-8
 LazyData: true

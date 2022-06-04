@@ -3,22 +3,22 @@
 \name{Outputter}
 \alias{Outputter}
 \title{Class Outputter (R6)
-Outputs values from SoilsToStreams Models}
+Outputs values from systERS Models}
 \description{
-Outputs values from SoilsToStreams Models
+Outputs values from systERS Models
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{model}}{The SoilsToStreams model object}
+\item{\code{model}}{The systERS model object}
 
-\item{\code{objectClassName}}{The class of SoilsToStreams model object to extract
+\item{\code{objectClassName}}{The class of systERS model object to extract
 (either Cells or Bounds)}
 
 \item{\code{attributesToReport}}{The names of objects associated with the
-SoilsToStreams cells or boundaries to output}
+systERS cells or boundaries to output}
 
-\item{\code{objectsToReport}}{The values of the SoilsToStreams cells or
+\item{\code{objectsToReport}}{The values of the systERS cells or
 boundaries to output}
 
 \item{\code{reportingInterval}}{A number indicating the reporting interval.
@@ -61,7 +61,7 @@ Create an outputter
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{model}}{The SoilsToStreams model object}
+\item{\code{model}}{The systERS model object}
 
 \item{\code{objectClassName}}{String with the class name of either the cells
 or boundaries on which to report}
@@ -98,7 +98,7 @@ Write output to file
 \subsection{Method \code{getCellsOrBoundsByClass()}}{
 Gets cells or boundaries in the model by their class
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Outputter$getCellsOrBoundsByClass(SoilsToStreamsObjects, objectClassName)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Outputter$getCellsOrBoundsByClass(systERSObjects, objectClassName)}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
@@ -111,7 +111,7 @@ Selected cells or boundaries
 \subsection{Method \code{getCellOrBoundAttributes()}}{
 Gets attributes of cells or boundaries based on the boundary name
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Outputter$getCellOrBoundAttributes(SoilsToStreamsObjects, attributeName)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Outputter$getCellOrBoundAttributes(systERSObjects, attributeName)}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
@@ -124,11 +124,7 @@ Selected attributes of either cells or boundaries
 \subsection{Method \code{timeSeriesGraph()}}{
 Creates a of outputs through time.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Outputter$timeSeriesGraph(
-  SoilsToStreamsobject,
-  attributeName,
-  outputFilePathAndName
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Outputter$timeSeriesGraph(systERSobject, attributeName, outputFilePathAndName)}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{

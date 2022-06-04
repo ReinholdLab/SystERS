@@ -8,7 +8,7 @@ Boundary to transport solutes between cells}
 Transport boundary for solutes between cells
 }
 \section{Super class}{
-\code{\link[SoilsToStreams:Boundary]{SoilsToStreams::Boundary}} -> \code{Boundary_Transport_Solute}
+\code{\link[systERS:Boundary]{systERS::Boundary}} -> \code{Boundary_Transport_Solute}
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}

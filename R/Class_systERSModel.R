@@ -1,12 +1,12 @@
-#' @title Class WQModel (R6)
+#' @title Class systERSModel (R6)
 #' A water quality model
 #' @description Define and instantiate the WQ model and the network topology of
 #'   cells and boundaries
 #' @export
 
-WQModel <-
+systERSModel <-
   R6::R6Class(
-    classname = "WQModel",
+    classname = "systERSModel",
 
     public =
       list(
@@ -77,7 +77,7 @@ WQModel <-
         #'   cells and their attributes in the groundwater processing domain
         #' @param unitsTable Table of units for model parameters and outputs
         #' @param timeInterval Model time step
-        #' @return The ojbect of class \code{WQModel}
+        #' @return The ojbect of class \code{systERSModel}
         initialize =
           function(
             boundsTransportTable_water_int = NULL,
@@ -192,7 +192,7 @@ WQModel <-
           },
 
 
-        #' @method Method WQModel$cellFactory
+        #' @method Method systERSModel$cellFactory
         #' @description Create a list of the model cells
         #' @return A list of model cells
         cellFactory = function(){
@@ -215,7 +215,7 @@ WQModel <-
         }, # closes cellFactory
 
 
-        #' @method Method WQModel$boundaryFactory
+        #' @method Method systERSModel$boundaryFactory
         #' @description Create a list of the model boundaries
         #' @return A list of model boundaries
         boundaryFactory = function(){
@@ -286,7 +286,7 @@ WQModel <-
         }, # closes boundaryFactory
 
 
-        #' @method Method WQModel$errorCheckCellInputs
+        #' @method Method systERSModel$errorCheckCellInputs
         #' @description Error check to see if any cell specifications are
         #'   duplicated
         #' @return Nothing if no error is detected.  An error message is
@@ -307,7 +307,7 @@ WQModel <-
         }, # close method
 
 
-        #' @method Method WQModel$initializeWaterCells_stream
+        #' @method Method systERSModel$initializeWaterCells_stream
         #' @description Instantiate the water cells in the stream process domain
         #' @return List of stream water cells
         initializeWaterCells_stream = function(){
@@ -332,7 +332,7 @@ WQModel <-
           } else {return(NULL)} # close if
         }, # close method
 
-        #' @method Method WQModel$initializeSoluteCells_stream
+        #' @method Method systERSModel$initializeSoluteCells_stream
         #' @description Instantiate the solute cells in the stream process domain
         #' @return List of stream solute cells
         initializeSoluteCells_stream = function(){
@@ -357,7 +357,7 @@ WQModel <-
         }, # close method
 
 
-        #' @method Method WQModel$linkSoluteCellsToWaterCells_stream
+        #' @method Method systERSModel$linkSoluteCellsToWaterCells_stream
         #' @description Link the solute cells to the water cells in the stream process
         #'   domain
         #' @return Water cells with their \code{linkedSoluteCells} attribute populated
@@ -380,7 +380,7 @@ WQModel <-
           }, # close method
 
 
-        #' @method Method WQModel$errorCheckBoundaryInputs
+        #' @method Method systERSModel$errorCheckBoundaryInputs
         #' @description Error check to see if any boundary specifications are duplicated
         #'   or have references to cells that do not exist.
         #' @return Nothing if no error is detected.  If an error is detected, a message
@@ -410,7 +410,7 @@ WQModel <-
 
 
 
-        #' @method Method WQModel$initializeExternalWaterTransportBoundaries
+        #' @method Method systERSModel$initializeExternalWaterTransportBoundaries
         #' @description Instantiate the transport boundaries that are on the physical
         #'   edges of the model
         #' @return Water transport boundaries at the upstream and downstream extents of
@@ -463,7 +463,7 @@ WQModel <-
 
 
 
-        #' @method Method WQModel$initializeInternalWaterTransportBoundaries
+        #' @method Method systERSModel$initializeInternalWaterTransportBoundaries
         #' @description Instantiate the transport boundaries that are internal to the
         #'   physical edges of the model
         #' @return Water transport boundaries within the upstream and downstream extents
@@ -500,7 +500,7 @@ WQModel <-
 
 
 
-        #' @method Method WQModel$initializeSoluteTransportBoundaries
+        #' @method Method systERSModel$initializeSoluteTransportBoundaries
         #' @description Instantiate the solute transport boundaries
         #' @return Solute transport boundaries
         #'
@@ -526,7 +526,7 @@ WQModel <-
 
 
 
-        #' @method Method WQModel$initializeSoluteReactionBoundaries
+        #' @method Method systERSModel$initializeSoluteReactionBoundaries
         #' @description Instantiate the solute reaction boundaries.  Current
         #'   model version only supports stream reaction boundaries.
         #' @return A list of solute reaction boundaries
@@ -557,7 +557,7 @@ WQModel <-
 
 
 
-        #' @method Method WQModel$linkBoundsToCells
+        #' @method Method systERSModel$linkBoundsToCells
         #' @description Creates a list of boundaries attached to each cell and
         #'   then adds the list of bounds connected to each cell as an attribute
         #'   of the cell.
@@ -576,7 +576,7 @@ WQModel <-
 
 
 
-        #' @method Method WQModel$trade
+        #' @method Method systERSModel$trade
         #' @description Runs the trade method on all boundaries in the model in
         #'   the order in which they occur in the \code{bounds} list.
         #' @return Updated boundary values.
@@ -586,7 +586,7 @@ WQModel <-
         },
 
 
-        #' @method Method WQModel$store
+        #' @method Method systERSModel$store
         #'
         #' @description Runs the store method on all cells in the model.
         #' @return Updated store values.
@@ -595,7 +595,7 @@ WQModel <-
           return()
         },
 
-        #' @method Method WQModel$update
+        #' @method Method systERSModel$update
         #'
         #' @description Runs the update method on all cells and boundaries in the model.
         #' @return Updates all values in cells and boundaries based on trades and stores.
@@ -608,7 +608,7 @@ WQModel <-
           return()
         },
 
-        #' @method Method WQModel$iterate
+        #' @method Method systERSModel$iterate
         #' @field iterationNum The number of times the model has been iterated
         #' @description Iterates the model by calling all trades, stores, and
         #'   updates.

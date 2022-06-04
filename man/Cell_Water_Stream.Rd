@@ -8,7 +8,7 @@ A water cell in the stream processing domain}
 Instantiate a water cell. Inherits from class \code{Cell_Water}.
 }
 \section{Super classes}{
-\code{\link[SoilsToStreams:Cell]{SoilsToStreams::Cell}} -> \code{\link[SoilsToStreams:Cell_Water]{SoilsToStreams::Cell_Water}} -> \code{Cell_Water_Stream}
+\code{\link[systERS:Cell]{systERS::Cell}} -> \code{\link[systERS:Cell_Water]{systERS::Cell_Water}} -> \code{Cell_Water_Stream}
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}

@@ -1,6 +1,6 @@
 #' @title Class Outputter (R6)
-#' Outputs values from SoilsToStreams Models
-#' @description Outputs values from SoilsToStreams Models
+#' Outputs values from systERS Models
+#' @description Outputs values from systERS Models
 #' @export
 #'
 #'
@@ -10,15 +10,15 @@ Outputter <-
 
     public =
       list(
-        #' @field model The SoilsToStreams model object
+        #' @field model The systERS model object
         model = NULL,
-        #' @field objectClassName The class of SoilsToStreams model object to extract
+        #' @field objectClassName The class of systERS model object to extract
         #'   (either Cells or Bounds)
         objectClassName = NULL,
         #' @field attributesToReport The names of objects associated with the
-        #'   SoilsToStreams cells or boundaries to output
+        #'   systERS cells or boundaries to output
         attributesToReport = NULL,
-        #' @field objectsToReport The values of the SoilsToStreams cells or
+        #' @field objectsToReport The values of the systERS cells or
         #'   boundaries to output
         objectsToReport = NULL,
         #' @field reportingInterval A number indicating the reporting interval.
@@ -32,7 +32,7 @@ Outputter <-
         destination = NULL,
 
         #' @description Create an outputter
-        #' @param model The SoilsToStreams model object
+        #' @param model The systERS model object
         #' @param objectClassName String with the class name of either the cells
         #'   or boundaries on which to report
         #' @param attributesToReport Vector of strings containing the names of
@@ -60,12 +60,12 @@ Outputter <-
             self$destination <- paste0(filePath, "/", objectClassName, "_", reportingInterval, "int", ".csv")
 
             if(grepl("Cell", objectClassName)){
-              SoilsToStreamsObjects <- model$cells
+              systERSObjects <- model$cells
             } else if(grepl("Boundary", objectClassName)){
-              SoilsToStreamsObjects <- model$bounds
+              systERSObjects <- model$bounds
             }
 
-            self$objectsToReport <- self$getCellsOrBoundsByClass(SoilsToStreamsObjects = SoilsToStreamsObjects, objectClassName = self$objectClassName)
+            self$objectsToReport <- self$getCellsOrBoundsByClass(systERSObjects = systERSObjects, objectClassName = self$objectClassName)
           },
 
 
@@ -101,26 +101,26 @@ Outputter <-
         #' @method Method Outputter$getCellsOrBoundsByClass
         #' @description Gets cells or boundaries in the model by their class
         #' @return Selected cells or boundaries
-        getCellsOrBoundsByClass = function(SoilsToStreamsObjects, objectClassName){
-          matches <- sapply(SoilsToStreamsObjects, is, class2 = objectClassName)
-          return(SoilsToStreamsObjects[matches])
+        getCellsOrBoundsByClass = function(systERSObjects, objectClassName){
+          matches <- sapply(systERSObjects, is, class2 = objectClassName)
+          return(systERSObjects[matches])
         },
         #' @method Method Outputter$getCellOrBoundAttributes
         #' @description Gets attributes of cells or boundaries based on the boundary name
         #' @return Selected attributes of either cells or boundaries
-        getCellOrBoundAttributes = function(SoilsToStreamsObjects, attributeName){
-          attribs <- sapply(SoilsToStreamsObjects, "[[", attributeName)
+        getCellOrBoundAttributes = function(systERSObjects, attributeName){
+          attribs <- sapply(systERSObjects, "[[", attributeName)
           return(attribs)
         },
 
         #' @method Method Outputter$timeSeriesGraph
         #' @description Creates a of outputs through time.
         #' @return Graph
-        timeSeriesGraph = function(SoilsToStreamsobject, attributeName, outputFilePathAndName){
+        timeSeriesGraph = function(systERSobject, attributeName, outputFilePathAndName){
           browser()
            plotDat <- read.csv(outputFilePathAndName, head = TRUE)
-          theField <- objects(SoilsToStreamsobject)[grepl("(boundaryIdx|cellIdx)", objects(SoilsToStreamsobject))]
-          theFieldName <- SoilsToStreamsobject[[theField]]
+          theField <- objects(systERSobject)[grepl("(boundaryIdx|cellIdx)", objects(systERSobject))]
+          theFieldName <- systERSobject[[theField]]
           plotDat <- plotDat[plotDat$objectName == theFieldName, ]
           yVals <- plotDat[attributeName]
           xVals <- plotDat["modelTime"]

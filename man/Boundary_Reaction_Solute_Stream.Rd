@@ -11,7 +11,7 @@ Fraction of solute removed or remaining in the storage zone
 Reaction boundary for solute from stream cells
 }
 \section{Super classes}{
-\code{\link[SoilsToStreams:Boundary]{SoilsToStreams::Boundary}} -> \code{\link[SoilsToStreams:Boundary_Reaction_Solute]{SoilsToStreams::Boundary_Reaction_Solute}} -> \code{Boundary_Reaction_Solute_Stream}
+\code{\link[systERS:Boundary]{systERS::Boundary}} -> \code{\link[systERS:Boundary_Reaction_Solute]{systERS::Boundary_Reaction_Solute}} -> \code{Boundary_Reaction_Solute_Stream}
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -51,10 +51,10 @@ to the timestep}
 \if{html}{\out{
 <details open><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="SoilsToStreams" data-topic="Boundary_Reaction_Solute" data-id="calc_fracRemoval_resTimeWtdPowerLaw"><a href='../../SoilsToStreams/html/Boundary_Reaction_Solute.html#method-Boundary_Reaction_Solute-calc_fracRemoval_resTimeWtdPowerLaw'><code>SoilsToStreams::Boundary_Reaction_Solute$calc_fracRemoval_resTimeWtdPowerLaw()</code></a></li>
-<li><span class="pkg-link" data-pkg="SoilsToStreams" data-topic="Boundary_Reaction_Solute" data-id="processMethod_RT_PL"><a href='../../SoilsToStreams/html/Boundary_Reaction_Solute.html#method-Boundary_Reaction_Solute-processMethod_RT_PL'><code>SoilsToStreams::Boundary_Reaction_Solute$processMethod_RT_PL()</code></a></li>
-<li><span class="pkg-link" data-pkg="SoilsToStreams" data-topic="Boundary_Reaction_Solute" data-id="processMethod_pcnt"><a href='../../SoilsToStreams/html/Boundary_Reaction_Solute.html#method-Boundary_Reaction_Solute-processMethod_pcnt'><code>SoilsToStreams::Boundary_Reaction_Solute$processMethod_pcnt()</code></a></li>
-<li><span class="pkg-link" data-pkg="SoilsToStreams" data-topic="Boundary_Reaction_Solute" data-id="store"><a href='../../SoilsToStreams/html/Boundary_Reaction_Solute.html#method-Boundary_Reaction_Solute-store'><code>SoilsToStreams::Boundary_Reaction_Solute$store()</code></a></li>
+<li><span class="pkg-link" data-pkg="systERS" data-topic="Boundary_Reaction_Solute" data-id="calc_fracRemoval_resTimeWtdPowerLaw"><a href='../../systERS/html/Boundary_Reaction_Solute.html#method-Boundary_Reaction_Solute-calc_fracRemoval_resTimeWtdPowerLaw'><code>systERS::Boundary_Reaction_Solute$calc_fracRemoval_resTimeWtdPowerLaw()</code></a></li>
+<li><span class="pkg-link" data-pkg="systERS" data-topic="Boundary_Reaction_Solute" data-id="processMethod_RT_PL"><a href='../../systERS/html/Boundary_Reaction_Solute.html#method-Boundary_Reaction_Solute-processMethod_RT_PL'><code>systERS::Boundary_Reaction_Solute$processMethod_RT_PL()</code></a></li>
+<li><span class="pkg-link" data-pkg="systERS" data-topic="Boundary_Reaction_Solute" data-id="processMethod_pcnt"><a href='../../systERS/html/Boundary_Reaction_Solute.html#method-Boundary_Reaction_Solute-processMethod_pcnt'><code>systERS::Boundary_Reaction_Solute$processMethod_pcnt()</code></a></li>
+<li><span class="pkg-link" data-pkg="systERS" data-topic="Boundary_Reaction_Solute" data-id="store"><a href='../../systERS/html/Boundary_Reaction_Solute.html#method-Boundary_Reaction_Solute-store'><code>systERS::Boundary_Reaction_Solute$store()</code></a></li>
 </ul>
 </details>
 }}

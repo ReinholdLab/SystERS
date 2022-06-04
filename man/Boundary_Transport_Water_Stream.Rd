@@ -8,7 +8,7 @@ A model boundary that transports water to and from stream cells}
 Transport boundary for water between stream cells
 }
 \section{Super classes}{
-\code{\link[SoilsToStreams:Boundary]{SoilsToStreams::Boundary}} -> \code{\link[SoilsToStreams:Boundary_Transport_Water]{SoilsToStreams::Boundary_Transport_Water}} -> \code{Boundary_Transport_Water_Stream}
+\code{\link[systERS:Boundary]{systERS::Boundary}} -> \code{\link[systERS:Boundary_Transport_Water]{systERS::Boundary_Transport_Water}} -> \code{Boundary_Transport_Water_Stream}
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -32,7 +32,7 @@ Transport boundary for water between stream cells
 \if{html}{\out{
 <details open><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="SoilsToStreams" data-topic="Boundary_Transport_Water" data-id="store"><a href='../../SoilsToStreams/html/Boundary_Transport_Water.html#method-Boundary_Transport_Water-store'><code>SoilsToStreams::Boundary_Transport_Water$store()</code></a></li>
+<li><span class="pkg-link" data-pkg="systERS" data-topic="Boundary_Transport_Water" data-id="store"><a href='../../systERS/html/Boundary_Transport_Water.html#method-Boundary_Transport_Water-store'><code>systERS::Boundary_Transport_Water$store()</code></a></li>
 </ul>
 </details>
 }}

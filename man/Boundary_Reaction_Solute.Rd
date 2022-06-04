@@ -11,7 +11,7 @@ Fraction of solute removed or remaining in the storage zone
 Reaction boundary for a solute
 }
 \section{Super class}{
-\code{\link[SoilsToStreams:Boundary]{SoilsToStreams::Boundary}} -> \code{Boundary_Reaction_Solute}
+\code{\link[systERS:Boundary]{systERS::Boundary}} -> \code{Boundary_Reaction_Solute}
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
