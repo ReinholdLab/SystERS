@@ -29,6 +29,8 @@ Outputter <-
         #'   files will be written.
         filePath = NULL,
         #' @field destination The string with the full file path and file name.
+        #'   File type and extension must be compatible with
+        #'   \code{write.table()}.
         destination = NULL,
 
         #' @description Create an outputter
@@ -97,16 +99,22 @@ Outputter <-
           }
         },
 
-
         #' @method Method Outputter$getCellsOrBoundsByClass
         #' @description Gets cells or boundaries in the model by their class
+        #' @param systERSObjects Objects of class systERS
+        #' @param objectClassName String with the class name of either the cells
+        #'   or boundaries on which to report
         #' @return Selected cells or boundaries
         getCellsOrBoundsByClass = function(systERSObjects, objectClassName){
           matches <- sapply(systERSObjects, is, class2 = objectClassName)
           return(systERSObjects[matches])
         },
+
         #' @method Method Outputter$getCellOrBoundAttributes
-        #' @description Gets attributes of cells or boundaries based on the boundary name
+        #' @description Gets attributes of cells or boundaries based on the
+        #'   boundary name
+        #' @param systERSObjects Objects of class systERS
+        #' @param attributeName Name of attribute
         #' @return Selected attributes of either cells or boundaries
         getCellOrBoundAttributes = function(systERSObjects, attributeName){
           attribs <- sapply(systERSObjects, "[[", attributeName)
@@ -115,6 +123,10 @@ Outputter <-
 
         #' @method Method Outputter$timeSeriesGraph
         #' @description Creates a of outputs through time.
+        #' @param systERSobject An object of class systERS
+        #' @param attributeName Name of attribute
+        #' @param outputFilePathAndName File path where outputter will write
+        #'   results.
         #' @return Graph
         timeSeriesGraph = function(systERSobject, attributeName, outputFilePathAndName){
           browser()
@@ -129,10 +141,3 @@ Outputter <-
 
       )
   )
-
-
-
-
-
-
-

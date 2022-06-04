@@ -28,7 +28,9 @@ A value of \code{1} will report every timestep whereas a value of
 \item{\code{filePath}}{The string pointing to the place where the output
 files will be written.}
 
-\item{\code{destination}}{The string with the full file path and file name.}
+\item{\code{destination}}{The string with the full file path and file name.
+File type and extension must be compatible with
+\code{write.table()}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -101,6 +103,16 @@ Gets cells or boundaries in the model by their class
 \if{html}{\out{<div class="r">}}\preformatted{Outputter$getCellsOrBoundsByClass(systERSObjects, objectClassName)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{systERSObjects}}{Objects of class systERS}
+
+\item{\code{objectClassName}}{String with the class name of either the cells
+or boundaries on which to report}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Returns}{
 Selected cells or boundaries
 }
@@ -109,11 +121,21 @@ Selected cells or boundaries
 \if{html}{\out{<a id="method-Outputter-getCellOrBoundAttributes"></a>}}
 \if{latex}{\out{\hypertarget{method-Outputter-getCellOrBoundAttributes}{}}}
 \subsection{Method \code{getCellOrBoundAttributes()}}{
-Gets attributes of cells or boundaries based on the boundary name
+Gets attributes of cells or boundaries based on the
+  boundary name
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Outputter$getCellOrBoundAttributes(systERSObjects, attributeName)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{systERSObjects}}{Objects of class systERS}
+
+\item{\code{attributeName}}{Name of attribute}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Returns}{
 Selected attributes of either cells or boundaries
 }
@@ -127,6 +149,18 @@ Creates a of outputs through time.
 \if{html}{\out{<div class="r">}}\preformatted{Outputter$timeSeriesGraph(systERSobject, attributeName, outputFilePathAndName)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{systERSobject}}{An object of class systERS}
+
+\item{\code{attributeName}}{Name of attribute}
+
+\item{\code{outputFilePathAndName}}{File path where outputter will write
+results.}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Returns}{
 Graph
 }
