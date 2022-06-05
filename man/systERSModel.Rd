@@ -5,7 +5,7 @@
 \title{Class systERSModel (R6)
 A water quality model}
 \description{
-Define and instantiate the WQ model and the network topology of
+Define and instantiate the systERS model and the network topology of
   cells and boundaries
 }
 \section{Public fields}{

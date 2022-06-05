@@ -1,6 +1,6 @@
 #' @title Class systERSModel (R6)
 #' A water quality model
-#' @description Define and instantiate the WQ model and the network topology of
+#' @description Define and instantiate the systERS model and the network topology of
 #'   cells and boundaries
 #' @importFrom R6 R6Class
 #' @export
@@ -640,4 +640,4 @@ systERSModel <-
         }
 
       ) # closes public list
-  ) # closes WQ model
+  ) # closes systERS model
