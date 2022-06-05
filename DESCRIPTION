@@ -5,10 +5,8 @@ Version: 1.0.0
 Author: Ann Marie Reinhold, Robert A. Payn, and Stephanie A. Ewing
 Maintainer: Ann Marie Reinhold <annmarie.reinhold@montana.edu>
 Description: Simulates solute reactivity and transport with an environmental reactor framework through a network of soil, groundwater, and stream cells.
-License: MIT
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: 
-    R6,
-    plyr
+Imports: R6, plyr, hydrogeom
 RoxygenNote: 7.2.0
