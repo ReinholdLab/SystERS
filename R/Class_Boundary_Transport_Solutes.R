@@ -1,12 +1,13 @@
 #' @title Class Boundary_Transport_Solute (R6)
 #' Boundary to transport solutes between cells
 #' @description Transport boundary for solutes between cells
+#' @importFrom R6 R6Class
 #' @export
 Boundary_Transport_Solute <-
   R6::R6Class(
     classname = "Boundary_Transport_Solute",
 
-    #' @inherit Boundary
+    #' @inherit Boundary return details
     inherit = Boundary,
 
     public =

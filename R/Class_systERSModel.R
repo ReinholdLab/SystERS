@@ -2,6 +2,7 @@
 #' A water quality model
 #' @description Define and instantiate the WQ model and the network topology of
 #'   cells and boundaries
+#' @importFrom R6 R6Class
 #' @export
 
 systERSModel <-
@@ -321,6 +322,7 @@ systERSModel <-
 
         #' @method Method systERSModel$initializeWaterCells_stream
         #' @description Instantiate the water cells in the stream process domain
+        #' @importFrom plyr llply
         #' @return List of stream water cells
         initializeWaterCells_stream = function(){
           tbl <- self$cellsTableList$cells_water_stream
@@ -346,6 +348,7 @@ systERSModel <-
 
         #' @method Method systERSModel$initializeSoluteCells_stream
         #' @description Instantiate the solute cells in the stream process domain
+        #' @importFrom plyr llply
         #' @return List of stream solute cells
         initializeSoluteCells_stream = function(){
           tbl <- self$cellsTable_solute_stream
@@ -425,6 +428,7 @@ systERSModel <-
         #' @method Method systERSModel$initializeExternalWaterTransportBoundaries
         #' @description Instantiate the transport boundaries that are on the physical
         #'   edges of the model
+        #' @importFrom plyr llply
         #' @return Water transport boundaries at the upstream and downstream extents of
         #'   the model topology
         #'
@@ -478,9 +482,9 @@ systERSModel <-
         #' @method Method systERSModel$initializeInternalWaterTransportBoundaries
         #' @description Instantiate the transport boundaries that are internal to the
         #'   physical edges of the model
+        #' @importFrom plyr llply
         #' @return Water transport boundaries within the upstream and downstream extents
-        #'   of the model topology; i.e., those having exactly one upstream and one
-        #'   downstream cell
+        #'   of the model topology
         initializeInternalWaterTransportBoundaries = function(){
           tbl <- self$boundsTableList[["bounds_transport_water_int"]]
           plyr::llply(
@@ -514,6 +518,7 @@ systERSModel <-
 
         #' @method Method systERSModel$initializeSoluteTransportBoundaries
         #' @description Instantiate the solute transport boundaries
+        #' @importFrom plyr llply
         #' @return Solute transport boundaries
         #'
         initializeSoluteTransportBoundaries =
@@ -541,6 +546,7 @@ systERSModel <-
         #' @method Method systERSModel$initializeSoluteReactionBoundaries
         #' @description Instantiate the solute reaction boundaries.  Current
         #'   model version only supports stream reaction boundaries.
+        #' @importFrom plyr llply
         #' @return A list of solute reaction boundaries
         initializeSoluteReactionBoundaries = function(){
           tbl <- self$boundsTableList[["bounds_reaction_solute_int"]]

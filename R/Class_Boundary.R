@@ -1,6 +1,7 @@
 #' @title Class Boundary (R6)
 #' Boundary that connects to cells.
 #' @description Instantiate a boundary
+#' @importFrom R6 R6Class
 #' @export
 #'
 Boundary <-

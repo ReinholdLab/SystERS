@@ -293,8 +293,7 @@ Instantiate the transport boundaries that are internal to the
 
 \subsection{Returns}{
 Water transport boundaries within the upstream and downstream extents
-  of the model topology; i.e., those having exactly one upstream and one
-  downstream cell
+  of the model topology
 }
 }
 \if{html}{\out{<hr>}}

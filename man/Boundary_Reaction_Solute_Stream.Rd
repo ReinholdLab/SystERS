@@ -22,13 +22,7 @@ Reaction boundary for solute from stream cells
 stream cell}
 
 \item{\code{damkohlerNum}}{Damkohler number for the boundary.  This
-Damkohler represents the change over the entire stream reach, such
-that the same answer would be returned if timestep was set to be
-the mean residence time of the surface water in the reach.  Recall
-that hydraulic load is equal to channel depth over the mean
-residence time of water in the channel and it follows that this
-Damkohler is equal to uptake velocity over hydraulic load,
-\code{v_f / HL}.}
+Damkohler represents the change over the entire stream reach.}
 
 \item{\code{damkohlerNumStorage}}{Damkohler number for the transient storage
 zone (i.e. hyporheic zone)}

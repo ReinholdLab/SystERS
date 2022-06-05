@@ -1,6 +1,7 @@
 #' @title Class Cell (R6)
 #' Model cell
 #' @description Instantiate a \code{Cell}.
+#' @importFrom R6 R6Class
 #' @export
 Cell <-
   R6::R6Class(
@@ -42,13 +43,14 @@ Cell <-
 #' @title Class Cell_Water (R6) Water cell
 #' @description Instantiate a water cell. Inherits from class
 #'   \code{\link{Cell}}.
+#' @importFrom R6 R6Class
 #' @export
 
 Cell_Water <-
   R6::R6Class(
     classname = "Cell_Water",
 
-    #' @inherit Cell
+    #' @inherit Cell return details
     inherit = Cell,
 
     public =
@@ -82,13 +84,14 @@ Cell_Water <-
 #'   domain
 #' @description Instantiate a water cell. Inherits from class
 #'   \code{\link{Cell_Water}}.
+#' @importFrom R6 R6Class
 #' @export
 
 Cell_Water_Stream <-
   R6::R6Class(
     classname = "Cell_Water_Stream",
 
-    #' @inherit Cell_Water
+    #' @inherit Cell_Water return details
     inherit = Cell_Water,
     public =
       list(
@@ -190,13 +193,14 @@ Cell_Water_Stream <-
 #' A cell containing a solute.  Must be linked to a water cell.
 #' @description Instantiate a \code{Cell_Solute} object. Class
 #'   \code{Cell_Solute} inherits from class \code{Cell}.
+#' @importFrom R6 R6Class
 #' @export
 
 Cell_Solute <-
   R6::R6Class(
     classname = "Cell_Solute",
 
-    #' @inherit Cell
+    #' @inherit Cell return details
     inherit = Cell,
     public =
       list(

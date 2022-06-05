@@ -1,13 +1,16 @@
 #' @title Class Boundary_Reaction_Solute (R6)
 #' Reaction boundary for a solute
 #' @description Reaction boundary for a solute
+#' @importFrom R6 R6Class
+#' @importFrom hydrogeom powerLawIntCCDF
+#' @importFrom hydrogeom powerLawPDF
 #' @export
 
 Boundary_Reaction_Solute <-
   R6::R6Class(
     classname = "Boundary_Reaction_Solute",
 
-    #' @inherit Boundary
+    #' @inherit Boundary return details
     inherit = Boundary,
 
     public =
@@ -31,8 +34,8 @@ Boundary_Reaction_Solute <-
         #'   boundary is interacting
         processDomain = NULL,
         #' @field processMethodName How to process the solute, either
-        #'   \code{\link{Boundary_Reaction_Solute$processMethod_RT_PL}} or
-        #'   \code{\link{Boundary_Reaction_Solute$processMethod_pcnt}}
+        #'   \code{Boundary_Reaction_Solute$processMethod_RT_PL} or
+        #'   \code{Boundary_Reaction_Solute$processMethod_pcnt}
         processMethodName = NULL,
         #' @field processMethod Call to the Method  \code{pcnt} or \code{RT-PL}
         processMethod = NULL,
@@ -155,6 +158,7 @@ Boundary_Reaction_Solute <-
         #'   removal function assuming a power law residence time.
         #' @param remaining If \code{TRUE}, returns fraction of solute remaining.  If
         #'   \code{FALSE}, returns fraction of solute removed.
+        #' @importFrom plyr llply
         #' @returns Fraction of solute removed or remaining in the storage zone
         calc_fracRemoval_resTimeWtdPowerLaw = function(remaining = remaining){
           if(is.na(self$tauMin)){
@@ -267,12 +271,13 @@ Boundary_Reaction_Solute <-
 #' @title Class Boundary_Reaction_Solute_Stream (R6)
 #' A model boundary that calculates solute removal from stream cells
 #' @description Reaction boundary for solute from stream cells
+#' @importFrom R6 R6Class
 #' @export
 Boundary_Reaction_Solute_Stream <-
   R6::R6Class(
     classname = "Boundary_Reaction_Solute_Stream",
 
-    #' @inherit Boundary_Reaction_Solute
+    #' @inherit Boundary_Reaction_Solute return details
     inherit = Boundary_Reaction_Solute,
 
     public =
@@ -285,13 +290,7 @@ Boundary_Reaction_Solute_Stream <-
         #'   stream cell
         fractionRemaining = NULL,
         #' @field damkohlerNum Damkohler number for the boundary.  This
-        #'   Damkohler represents the change over the entire stream reach, such
-        #'   that the same answer would be returned if timestep was set to be
-        #'   the mean residence time of the surface water in the reach.  Recall
-        #'   that hydraulic load is equal to channel depth over the mean
-        #'   residence time of water in the channel and it follows that this
-        #'   Damkohler is equal to uptake velocity over hydraulic load,
-        #'   \code{v_f / HL}.
+        #'   Damkohler represents the change over the entire stream reach.
         damkohlerNum = NULL,
         #' @field damkohlerNumStorage Damkohler number for the transient storage
         #'   zone (i.e. hyporheic zone)

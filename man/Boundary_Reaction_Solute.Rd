@@ -35,8 +35,8 @@ of solute removed from and remaining in a cell sum to 1}
 boundary is interacting}
 
 \item{\code{processMethodName}}{How to process the solute, either
-\code{\link{Boundary_Reaction_Solute$processMethod_RT_PL}} or
-\code{\link{Boundary_Reaction_Solute$processMethod_pcnt}}}
+\code{Boundary_Reaction_Solute$processMethod_RT_PL} or
+\code{Boundary_Reaction_Solute$processMethod_pcnt}}
 
 \item{\code{processMethod}}{Call to the Method  \code{pcnt} or \code{RT-PL}}
 

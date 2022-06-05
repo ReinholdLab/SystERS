@@ -1,13 +1,14 @@
 #' @title Class Boundary_Transport_Water (R6)
 #' A model boundary that transports water to and from cells
 #' @description Transport boundary for water between cells
+#' @importFrom R6 R6Class
 #' @export
 
 Boundary_Transport_Water <-
   R6::R6Class(
     classname = "Boundary_Transport_Water",
 
-    #' @inherit Boundary
+    #' @inherit Boundary return details
     inherit = Boundary,
     public =
       list(
@@ -58,12 +59,13 @@ Boundary_Transport_Water <-
 #' @title Class Boundary_Transport_Water_Stream (R6)
 #' A model boundary that transports water to and from stream cells
 #' @description Transport boundary for water between stream cells
+#' @importFrom R6 R6Class
 #' @export
 Boundary_Transport_Water_Stream <-
   R6::R6Class(
     classname = "Boundary_Transport_Water_Stream",
 
-    #' @inherit Boundary_Transport_Water
+    #' @inherit Boundary_Transport_Water return details
     inherit = Boundary_Transport_Water,
 
     public =

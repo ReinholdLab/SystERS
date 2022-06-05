@@ -1,6 +1,7 @@
 #' @title Class Outputter (R6)
 #' Outputs values from systERS Models
 #' @description Outputs values from systERS Models
+#' @importFrom R6 R6Class
 #' @export
 #'
 #'
