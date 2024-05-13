@@ -1,5 +1,3 @@
-test git branch set up
-
 #' @title Class systERSModel (R6)
 #' A water quality model
 #' @description Define and instantiate the systERS model and the network topology of
