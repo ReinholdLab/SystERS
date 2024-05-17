@@ -1,51 +1,49 @@
 #' @title Class SoilCell (R6) Soil cell
 #' @description Instantiate a soil cell. Inherits from class
-#'   \code{\link{Cell}}.
+#'   \code{\link{SoilCell}}.
 #' @importFrom R6 R6Class
 #' @export
 
-SoilCell<-
-  R6::R6Class(
-    Classname = "SoilCell",
+SoilCell <- R6::R6Class(
+  classname = "SoilCell",
 
-    #' @inherit Cell return details
-    inherit = Cell,
+  #' @inherit Cell return details
+  # inherit = Cell,
 
-    public = list(
-      #' @field field_capacity The max volume of water that can be held within the cell.
-      field_capacity = NULL,
-      #' @field cell_storage The amount of water already contained within the cell.
-      cell_storage = NULL,
-      #' @field number_cell User defined number of cells in a soil column.
-      number_cell = NULL,
-      #' @field ground_water The volume of water in the final soil cell.
-      ground_water = NULL,
+  public = list(
+    #' @field field_capacity The max volume of water that can be held within the cell.
+    field_capacity = NA,
+    #' @field number_cell User defined number of cells in a soil column.
+    number_cell = NULL,
+    #' @field cell_storage The amount of water already contained within the cell.
+    cell_storage = NA,
+    #' @field ground_water The volume of water in the final soil cell.
+    ground_water = NA,
 
-      #' @description Create a new water cell
-      #' @param field_capacity The volume of water in the cell.
-      #' @param cell_storage The volume of water already present in cell.
-      #' @param number_cell The number of cells.
-      #' @param ground_water The volume of water in the final soil cell.
-      #' @param cellIdx Character string denoting the index for the cell
-      #' @param processDomain Character string indicating process domain of
-      #'   cell (soil, groundwater, or stream)
-      #' @param currency Character string with either water or name of solute
-      #' @param ... Inherited parameters
-      #' @return The object of class \code{SoilCell}.
-      #'
+    #' @description Create a new water cell
+    #' @param field_capacity The volume of water in the cell.
+    #' @param cell_storage The volume of water already present in cell.
+    #' @param number_cell The number of cells.
+    #' @param ground_water The volume of water in the final soil cell.
+    #' @param cellIdx Character string denoting the index for the cell
+    #' @param processDomain Character string indicating process domain of
+    #'   cell (soil, groundwater, or stream)
+    #' @param currency Character string with either water or name of solute
+    #' @param ... Inherited parameters
+    #' @return The object of class \code{SoilCell}.
 
-      initialize = function(..., field_capacity, cell_storage, number_cell, ground_water) {
 
-          super$initialize(...)
+    initialize = function(field_capacity, cell_storage, ground_water) {
 
-          self$field_capacity <- field_capacity
-          self$cell_storage <- cell_storage
-          self$number_cell <- number_cell
-          self$ground_water <- ground_water
-        },
-      transport_funct <- function() BoundarySoilTransport$new(self)
-    )
+      # super$initialize(...)
+
+      self$field_capacity <- field_capacity
+      self$cell_storage <- cell_storage
+      self$number_cell <- length(field_capacity)
+      self$ground_water <- ground_water
+    }
   )
+)
 
 #' @title Class Soil Boundary (R6)
 #' Boundary that connects to soil cells.
@@ -142,13 +140,12 @@ BoundarySoilTransport <-
         #' @param timeInterval  Model time step
         #' @return A model boundary that transports water
         initialize =
-          function(..., input, SoilCell = SoilCell$new()){
+          function(...,input, SoilCell = SoilCell$new(field_capacity, cell_storage, ground_water)){
 
             super$initialize(...)
 
             field_capacity <- SoilCell$self$field_capacity
             cell_storage <- SoilCell$self$cell_storage
-            number_cell <- SoilCell$self$number_cell
             ground_water <- SoilCell$self$ground_water
 
             self$input <- as.numeric(input) # as.numeric is here in case reading from sparse table
@@ -185,3 +182,8 @@ BoundarySoilTransport <-
         }
       )
   )
+
+
+
+
+
