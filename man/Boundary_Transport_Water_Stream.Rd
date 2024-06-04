@@ -32,7 +32,7 @@ Transport boundary for water between stream cells
 \if{html}{\out{
 <details open><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="systERS" data-topic="Boundary_Transport_Water" data-id="store"><a href='../../systERS/html/Boundary_Transport_Water.html#method-Boundary_Transport_Water-store'><code>systERS::Boundary_Transport_Water$store()</code></a></li>
+<li><span class="pkg-link" data-pkg="systERS" data-topic="Boundary_Transport_Water" data-id="store"><a href='../../systERS/html/Boundary_Transport_Water.html#method-Boundary_Transport_Water-store'><code>systERS::Boundary_Transport_Water$store()</code></a></span></li>
 </ul>
 </details>
 }}

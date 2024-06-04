@@ -42,12 +42,6 @@ compartment}
 \item \href{#method-Cell_Water_Stream-clone}{\code{Cell_Water_Stream$clone()}}
 }
 }
-\if{html}{\out{
-<details open><summary>Inherited methods</summary>
-<ul>
-</ul>
-</details>
-}}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Cell_Water_Stream-new"></a>}}
 \if{latex}{\out{\hypertarget{method-Cell_Water_Stream-new}{}}}

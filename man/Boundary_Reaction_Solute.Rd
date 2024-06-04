@@ -80,12 +80,6 @@ be specified}
 \item \href{#method-Boundary_Reaction_Solute-clone}{\code{Boundary_Reaction_Solute$clone()}}
 }
 }
-\if{html}{\out{
-<details open><summary>Inherited methods</summary>
-<ul>
-</ul>
-</details>
-}}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Boundary_Reaction_Solute-new"></a>}}
 \if{latex}{\out{\hypertarget{method-Boundary_Reaction_Solute-new}{}}}

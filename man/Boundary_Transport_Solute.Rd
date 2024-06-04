@@ -33,12 +33,6 @@ advecting the solute in this boundary}
 \item \href{#method-Boundary_Transport_Solute-clone}{\code{Boundary_Transport_Solute$clone()}}
 }
 }
-\if{html}{\out{
-<details open><summary>Inherited methods</summary>
-<ul>
-</ul>
-</details>
-}}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Boundary_Transport_Solute-new"></a>}}
 \if{latex}{\out{\hypertarget{method-Boundary_Transport_Solute-new}{}}}

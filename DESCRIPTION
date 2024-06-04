@@ -9,4 +9,4 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports: R6, plyr, hydrogeom
-RoxygenNote: 7.2.0
+RoxygenNote: 7.3.1

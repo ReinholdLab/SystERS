@@ -30,7 +30,7 @@ cell}
 \if{html}{\out{
 <details open><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="systERS" data-topic="Cell" data-id="populateDependencies"><a href='../../systERS/html/Cell.html#method-Cell-populateDependencies'><code>systERS::Cell$populateDependencies()</code></a></li>
+<li><span class="pkg-link" data-pkg="systERS" data-topic="Cell" data-id="populateDependencies"><a href='../../systERS/html/Cell.html#method-Cell-populateDependencies'><code>systERS::Cell$populateDependencies()</code></a></span></li>
 </ul>
 </details>
 }}

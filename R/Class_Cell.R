@@ -251,46 +251,4 @@ Cell_Solute <-
   )
 
 
-#' @title Class CellSoil (R6) Soil cell
-#' @description Instantiate a soil cell. Inherits from class
-#'   \code{\link{Cell}}.
-#' @importFrom R6 R6Class
-#' @export
 
-#' CellSoil <-
-#'   R6::R6Class(
-#'     Classname = "CellSoil",
-#'
-#'     #' @inherit Cell return details
-#'     inherit = Cell,
-#'
-#'     public = list(
-#'       #' @field field_capacity The max volume of water that can be held within the cell.
-#'       field_capacity = NULL,
-#'       #' @field cell_storage The amount of water already contained within the cell.
-#'       cell_storage = NULL,
-#'       #' @field number_cell User defined number of cells in a soil column.
-#'       number_cell = NULL,
-#'
-#'       #' @description Create a new water cell
-#'       #' @param field_capacity The volume of water in the cell.
-#'       #' @param cell_storage The volume of water already present in cell.
-#'       #' @param number_cell The number of cells.
-#'       #' @param cellIdx Character string denoting the index for the cell
-#'       #' @param processDomain Character string indicating process domain of
-#'       #'   cell (soil, groundwater, or stream)
-#'       #' @param currency Character string with either water or name of solute
-#'       #' @param ... Inherited parameters
-#'       #' @return The object of class \code{Cell_Water}.
-#'       #'
-#'
-#'       initialize = function(..., field_capacity, cell_storage, number_cell) {
-#'
-#'           super$initialize(...)
-#'
-#'           self$field_capacity <- field_capacity
-#'           self$cell_storage <- cell_storage
-#'           self$number_cell <- number_cell
-#'         }
-#'     )
-#'   )
