@@ -45,10 +45,10 @@ to the timestep}
 \if{html}{\out{
 <details open><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="systERS" data-topic="Boundary_Reaction_Solute" data-id="calc_fracRemoval_resTimeWtdPowerLaw"><a href='../../systERS/html/Boundary_Reaction_Solute.html#method-Boundary_Reaction_Solute-calc_fracRemoval_resTimeWtdPowerLaw'><code>systERS::Boundary_Reaction_Solute$calc_fracRemoval_resTimeWtdPowerLaw()</code></a></li>
-<li><span class="pkg-link" data-pkg="systERS" data-topic="Boundary_Reaction_Solute" data-id="processMethod_RT_PL"><a href='../../systERS/html/Boundary_Reaction_Solute.html#method-Boundary_Reaction_Solute-processMethod_RT_PL'><code>systERS::Boundary_Reaction_Solute$processMethod_RT_PL()</code></a></li>
-<li><span class="pkg-link" data-pkg="systERS" data-topic="Boundary_Reaction_Solute" data-id="processMethod_pcnt"><a href='../../systERS/html/Boundary_Reaction_Solute.html#method-Boundary_Reaction_Solute-processMethod_pcnt'><code>systERS::Boundary_Reaction_Solute$processMethod_pcnt()</code></a></li>
-<li><span class="pkg-link" data-pkg="systERS" data-topic="Boundary_Reaction_Solute" data-id="store"><a href='../../systERS/html/Boundary_Reaction_Solute.html#method-Boundary_Reaction_Solute-store'><code>systERS::Boundary_Reaction_Solute$store()</code></a></li>
+<li><span class="pkg-link" data-pkg="systERS" data-topic="Boundary_Reaction_Solute" data-id="calc_fracRemoval_resTimeWtdPowerLaw"><a href='../../systERS/html/Boundary_Reaction_Solute.html#method-Boundary_Reaction_Solute-calc_fracRemoval_resTimeWtdPowerLaw'><code>systERS::Boundary_Reaction_Solute$calc_fracRemoval_resTimeWtdPowerLaw()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="systERS" data-topic="Boundary_Reaction_Solute" data-id="processMethod_RT_PL"><a href='../../systERS/html/Boundary_Reaction_Solute.html#method-Boundary_Reaction_Solute-processMethod_RT_PL'><code>systERS::Boundary_Reaction_Solute$processMethod_RT_PL()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="systERS" data-topic="Boundary_Reaction_Solute" data-id="processMethod_pcnt"><a href='../../systERS/html/Boundary_Reaction_Solute.html#method-Boundary_Reaction_Solute-processMethod_pcnt'><code>systERS::Boundary_Reaction_Solute$processMethod_pcnt()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="systERS" data-topic="Boundary_Reaction_Solute" data-id="store"><a href='../../systERS/html/Boundary_Reaction_Solute.html#method-Boundary_Reaction_Solute-store'><code>systERS::Boundary_Reaction_Solute$store()</code></a></span></li>
 </ul>
 </details>
 }}

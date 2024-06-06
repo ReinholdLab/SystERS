@@ -27,12 +27,6 @@ Transport boundary for water between cells
 \item \href{#method-Boundary_Transport_Water-clone}{\code{Boundary_Transport_Water$clone()}}
 }
 }
-\if{html}{\out{
-<details open><summary>Inherited methods</summary>
-<ul>
-</ul>
-</details>
-}}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Boundary_Transport_Water-new"></a>}}
 \if{latex}{\out{\hypertarget{method-Boundary_Transport_Water-new}{}}}
