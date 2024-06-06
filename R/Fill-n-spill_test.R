@@ -44,21 +44,19 @@ Cell_Water_Soil <- R6::R6Class(
     #' @param cellWidth The width of the soil cell.
     #' @param cellLength The length of the soil cell.
     #' @param cellPorosity The porosity of the soil cell.
-    #' @param cellTortuosity The tortuosity of the soil cell.
     #' @param cellMatricPotential The matric potential of the soil cell.
     #' @param cellSoilType The soil type of the cell. For notation purposes only.
     #' @return The object of class \code{Cell_Water_Soil}.
 
 
     initialize = function(...,field_capacity, waterVolume, cellLength, cellHeight, cellWidth,
-                          cellPorosity, cellTortuosity) {
+                          cellPorosity, cellTortuosity, cellMatricPotential, cellSoilType) {
 
       super$initialize(...)
       self$cellLength <- cellLength
       self$cellHeight <- cellHeight
       self$cellWidth <- cellWidth
       self$cellPorosity <- cellPorosity
-      self$cellTortuosity <- cellTortuosity
       self$waterVolume <- waterVolume
       self$cellVolume <- cellLength * cellWidth * cellHeight
       self$cellMatricPotential <- cellMatricPotential
