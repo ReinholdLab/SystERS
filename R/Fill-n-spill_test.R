@@ -25,8 +25,11 @@ Cell_Water_Soil <- R6::R6Class(
     cellLength = NULL,
     #' @field cellPorosity The porosity of the soil cell.
     cellPorosity = NULL,
-    #' @field cellTortuosity The tortuosity of the soil cell.
-    cellTortuosity = NULL,
+    #' @field cellMatricPotential The matric potential of the soil cell.
+    cellMatricPotential = NULL,
+    #' @field cellSoilType The soil type of the cell. For notation purposes only.
+    cellSoilType = NULL,
+
 
     #' @description Create a new water cell
     #' @param field_capacity The max volume of water that can be in the cell.
@@ -42,6 +45,8 @@ Cell_Water_Soil <- R6::R6Class(
     #' @param cellLength The length of the soil cell.
     #' @param cellPorosity The porosity of the soil cell.
     #' @param cellTortuosity The tortuosity of the soil cell.
+    #' @param cellMatricPotential The matric potential of the soil cell.
+    #' @param cellSoilType The soil type of the cell. For notation purposes only.
     #' @return The object of class \code{Cell_Water_Soil}.
 
 
@@ -56,6 +61,8 @@ Cell_Water_Soil <- R6::R6Class(
       self$cellTortuosity <- cellTortuosity
       self$waterVolume <- waterVolume
       self$cellVolume <- cellLength * cellWidth * cellHeight
+      self$cellMatricPotential <- cellMatricPotential
+      self$cellSoilType <- cellSoilType
 
       self$field_capacity <- self$cellPorosity * self$cellLength * self$cellHeight * self$cellWidth
 
