@@ -72,6 +72,7 @@ Cell_Water_Soil <- R6::R6Class(
       # self$cellGravimetricPotential <- cellGravimetricPotential
       self$cellSoilType <- cellSoilType
       self$waterVolume <- waterVolume
+      # do we need to add cellInput here and calculate spillOver here?
 
 
       self$saturationVolume <- cellPorosity * self$cellVolume
