@@ -11,11 +11,10 @@ Cell_Water_Soil <- R6::R6Class(
   inherit = Cell_Water,
 
   public = list(
-    #' @field field_capacity The max volume of water that can be held within the cell.
-    field_capacity = NA,
-    #' @field waterVolume The volume of water stored in cell.
-    waterVolume = NULL,
-    #' @field cellVolume The volume of the soil cell.
+    #' @field saturationVolume The max volume of water that can be held within the cell.
+    saturationVolume = NA,
+    #' @field cellVolume The volume of the soil cell calculate from from
+    #'   the \code{channelLength, channelWidth, channelHeight} parameters.
     cellVolume = NULL,
     #' @field cellHeight The height of the soil cell.
     cellHeight = NULL,
@@ -27,15 +26,20 @@ Cell_Water_Soil <- R6::R6Class(
     cellPorosity = NULL,
     #' @field cellMatricPotential The matric potential of the soil cell.
     cellMatricPotential = NULL,
+    #' @field cellGravimetricPotential The total pressure gradient for the soil cell.
+    cellGravimetricPotential = NULL,
     #' @field cellSoilType The soil type of the cell. For notation purposes only.
     cellSoilType = NULL,
-    #' @field cellStorage The volume of water already present in the cell.
-    cellStorage = NULL,
+    #' @field waterVolume The volume of water stored in the soil cell.
+    waterVolume = NULL,
+    #' @field cellInput The volume of water entering the soil cell.
+    cellInput = NULL,
+    #' @field cellSpillOver The volume of water exiting the soil cell.
+    cellSpillOver = NULL,
 
 
     #' @description Create a new water cell
-    #' @param field_capacity The max volume of water that can be in the cell.
-    #' @param waterVolume The volume of water stored in cell.
+    #' @param saturationVolume The max volume of water that can be in the cell.
     #' @param cellIdx Character string denoting the index for the cell
     #' @param processDomain Character string indicating process domain of
     #'   cell (soil, groundwater, or stream)
@@ -47,28 +51,71 @@ Cell_Water_Soil <- R6::R6Class(
     #' @param cellLength The length of the soil cell.
     #' @param cellPorosity The porosity of the soil cell.
     #' @param cellMatricPotential The matric potential of the soil cell.
+    #' @param cellGravimetricPotential The total pressure gradient for the soil cell.
     #' @param cellSoilType The soil type of the cell. For notation purposes only.
-    #' @param cellStorage The volume of water already present in teh cell.
+    #' @param waterVolume The volume of water already present in the cell.
+    #' @param cellInput The volume of water entering the soil cell.
+    #' @param cellSpillOver The volume of water exiting the soil cell.
     #' @return The object of class \code{Cell_Water_Soil}.
 
 
-    initialize = function(...,field_capacity, waterVolume, cellLength, cellHeight, cellWidth,
-                          cellPorosity, cellTortuosity, cellMatricPotential, cellSoilType, cellStorage) {
+    initialize = function(..., cellLength, cellHeight, cellWidth,
+                          cellPorosity, cellSoilType, waterVolume) {
 
       super$initialize(...)
       self$cellLength <- cellLength
       self$cellHeight <- cellHeight
       self$cellWidth <- cellWidth
-      self$cellPorosity <- cellPorosity
-      self$waterVolume <- waterVolume
       self$cellVolume <- cellLength * cellWidth * cellHeight
-      self$cellMatricPotential <- cellMatricPotential
+      self$cellPorosity <- cellPorosity #pore space/total volume, change this to search a list based on soil type for value
+      # self$cellMatricPotential <- cellMatricPotential
+      # self$cellGravimetricPotential <- cellGravimetricPotential
       self$cellSoilType <- cellSoilType
-      cellStorage <- cellStorage
+      self$waterVolume <- waterVolume
 
-      self$field_capacity <- self$cellPorosity * self$cellLength * self$cellHeight * self$cellWidth
 
+      self$saturationVolume <- cellPorosity * self$cellVolume
+
+    },
+
+    #' @method Method Cell_Water_Soil$populateDependencies
+    #' @description Populates the fields in the cells that depend on
+    #'   boundaries being instantiated before the trade, store, update
+    #'   sequence can be run.
+    #' @return Updates cell values for \code{cellSpillOver}
+    #' based on cell values (\code{saturationVolume, waterVolume}) and
+    #'   upstream/downstream boundary values (\code{cellInput}).
+    populateDependencies = function(){
+
+      usWaterVolume <- sapply(self$linkedBoundsList$upstreamBounds, function(bound) bound$waterVolume)
+      usSaturationVolume <- sapply(self$linkedBoundsList$upstreamBounds, function(bound) bound$saturationVolume)
+      usInput <- sapply(self$linkedBoundsList$upstreamBounds, function(bound) bound$cellInput)
+
+      usCellSpillOver <- if ((usInput + usWaterVolume) > usSaturationVolume) { (usInput + usWaterVolume) - usSaturationVolume } else {0}
+
+      dsWaterVolume <- sapply(self$linkedBoundsList$downstreamBounds, function(bound) bound$waterVolume)
+      dsSaturationVolume <- sapply(self$linkedBoundsList$downstreamBounds, function(bound) bound$saturationVolume)
+      dsInput <- usCellSpillOver
+
+    },
+
+    #' @method Method Cell_Water_Stream$update
+    #' @description Runs the update method on all cells of class
+    #'   \code{Cell_Water_Soil}.  In this current version of the model,
+    #'   this simply adjusts the height of the water in the stream cell
+    #'   based on the water volume, i.e., it holds the channel area constant
+    #'   with changes in discharge.
+    #' @return Updates cell values based on trades and stores.
+    update = function(){
+
+      self$populateDependencies()
+
+      self$waterVolume <- if((cellInput + waterVolume) < saturationVolume) {cellInput + waterVolume} else {self$waterVolume}
+
+      return()
     }
   )
 )
+
+
 
