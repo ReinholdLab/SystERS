@@ -60,7 +60,7 @@ Cell_Water_Soil <- R6::R6Class(
 
 
     initialize = function(..., cellLength, cellHeight, cellWidth,
-                          cellPorosity, cellSoilType, waterVolume) {
+                          cellPorosity, cellSoilType, waterVolume, cellInput) {
 
       super$initialize(...)
       self$cellLength <- cellLength
@@ -73,6 +73,8 @@ Cell_Water_Soil <- R6::R6Class(
       self$cellSoilType <- cellSoilType
       self$waterVolume <- waterVolume
       # do we need to add cellInput here and calculate spillOver here?
+      #Or should this be using discharge in the Class_Boundary_Transport_Water class as the input?
+      # self$cellInput <- cellInput
 
 
       self$saturationVolume <- cellPorosity * self$cellVolume
@@ -100,7 +102,7 @@ Cell_Water_Soil <- R6::R6Class(
 
     },
 
-    #' @method Method Cell_Water_Stream$update
+    #' @method Method Cell_Water_Soil$update
     #' @description Runs the update method on all cells of class
     #'   \code{Cell_Water_Soil}.  In this current version of the model,
     #'   this simply adjusts the height of the water in the stream cell
