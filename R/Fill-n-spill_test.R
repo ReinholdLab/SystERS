@@ -60,7 +60,7 @@ Cell_Water_Soil <- R6::R6Class(
 
 
     initialize = function(..., cellLength, cellHeight, cellWidth,
-                          cellPorosity, cellSoilType, waterVolume, cellInput) {
+                          cellPorosity, cellSoilType, initWaterVolume) {
 
       super$initialize(...)
       self$cellLength <- cellLength
@@ -71,7 +71,7 @@ Cell_Water_Soil <- R6::R6Class(
       # self$cellMatricPotential <- cellMatricPotential
       # self$cellGravimetricPotential <- cellGravimetricPotential
       self$cellSoilType <- cellSoilType
-      self$waterVolume <- waterVolume
+      self$waterVolume <- initWaterVolume #define the initial water volume
       # do we need to add cellInput here and calculate spillOver here?
       #Or should this be using discharge in the Class_Boundary_Transport_Water class as the input?
       # self$cellInput <- cellInput
@@ -92,13 +92,10 @@ Cell_Water_Soil <- R6::R6Class(
 
       usWaterVolume <- sapply(self$linkedBoundsList$upstreamBounds, function(bound) bound$waterVolume)
       usSaturationVolume <- sapply(self$linkedBoundsList$upstreamBounds, function(bound) bound$saturationVolume)
-      usInput <- sapply(self$linkedBoundsList$upstreamBounds, function(bound) bound$cellInput)
-
-      usCellSpillOver <- if ((usInput + usWaterVolume) > usSaturationVolume) { (usInput + usWaterVolume) - usSaturationVolume } else {0}
 
       dsWaterVolume <- sapply(self$linkedBoundsList$downstreamBounds, function(bound) bound$waterVolume)
       dsSaturationVolume <- sapply(self$linkedBoundsList$downstreamBounds, function(bound) bound$saturationVolume)
-      dsInput <- usCellSpillOver
+
 
     },
 
@@ -112,8 +109,6 @@ Cell_Water_Soil <- R6::R6Class(
     update = function(){
 
       self$populateDependencies()
-
-      self$waterVolume <- if((cellInput + waterVolume) < saturationVolume) {cellInput + waterVolume} else {self$waterVolume}
 
       return()
     }
