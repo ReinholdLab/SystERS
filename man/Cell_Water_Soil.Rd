@@ -13,21 +13,30 @@ Instantiate a soil cell. Inherits from class
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{field_capacity}}{The max volume of water that can be held within the cell.}
+\item{\code{saturationVolume}}{The max volume of water that can be held within the cell.}
 
-\item{\code{waterVolume}}{volume of water stored in cell}
+\item{\code{cellVolume}}{The volume of the soil cell calculate from from
+the \code{channelLength, channelWidth, channelHeight} parameters.}
 
-\item{\code{cellVolume}}{akdj}
+\item{\code{cellHeight}}{The height of the soil cell.}
 
-\item{\code{cellHeight}}{ajkdl}
+\item{\code{cellWidth}}{The width of the soil cell.}
 
-\item{\code{cellWidth}}{ajd}
+\item{\code{cellLength}}{The length of the soil cell.}
 
-\item{\code{cellLength}}{akj}
+\item{\code{cellPorosity}}{The porosity of the soil cell.}
 
-\item{\code{cellPorosity}}{safh}
+\item{\code{cellMatricPotential}}{The matric potential of the soil cell.}
 
-\item{\code{cellTortuosity}}{jafd}
+\item{\code{cellGravimetricPotential}}{The total pressure gradient for the soil cell.}
+
+\item{\code{cellSoilType}}{The soil type of the cell. For notation purposes only.}
+
+\item{\code{waterVolume}}{The volume of water stored in the soil cell.}
+
+\item{\code{cellInput}}{The volume of water entering the soil cell.}
+
+\item{\code{cellSpillOver}}{The volume of water exiting the soil cell.}
 }
 \if{html}{\out{</div>}}
 }
@@ -35,16 +44,11 @@ Instantiate a soil cell. Inherits from class
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-Cell_Water_Soil-new}{\code{Cell_Water_Soil$new()}}
+\item \href{#method-Cell_Water_Soil-populateDependencies}{\code{Cell_Water_Soil$populateDependencies()}}
+\item \href{#method-Cell_Water_Soil-update}{\code{Cell_Water_Soil$update()}}
 \item \href{#method-Cell_Water_Soil-clone}{\code{Cell_Water_Soil$clone()}}
 }
 }
-\if{html}{\out{
-<details open><summary>Inherited methods</summary>
-<ul>
-<li><span class="pkg-link" data-pkg="systERS" data-topic="Cell" data-id="populateDependencies"><a href='../../systERS/html/Cell.html#method-Cell-populateDependencies'><code>systERS::Cell$populateDependencies()</code></a></span></li>
-</ul>
-</details>
-}}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Cell_Water_Soil-new"></a>}}
 \if{latex}{\out{\hypertarget{method-Cell_Water_Soil-new}{}}}
@@ -53,13 +57,12 @@ Create a new water cell
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Cell_Water_Soil$new(
   ...,
-  field_capacity,
-  waterVolume,
   cellLength,
   cellHeight,
   cellWidth,
   cellPorosity,
-  cellTortuosity
+  cellSoilType,
+  initWaterVolume
 )}\if{html}{\out{</div>}}
 }
 
@@ -68,19 +71,17 @@ Create a new water cell
 \describe{
 \item{\code{...}}{Inherited parameters}
 
-\item{\code{field_capacity}}{The max volume of water that can be in the cell.}
+\item{\code{cellLength}}{The length of the soil cell.}
 
-\item{\code{waterVolume}}{Volume of water stored in cell.}
+\item{\code{cellHeight}}{The height of the soil cell.}
 
-\item{\code{cellLength}}{akj}
+\item{\code{cellWidth}}{The width of the soil cell.}
 
-\item{\code{cellHeight}}{ajkdl}
+\item{\code{cellPorosity}}{The porosity of the soil cell.}
 
-\item{\code{cellWidth}}{ajd}
+\item{\code{cellSoilType}}{The soil type of the cell. For notation purposes only.}
 
-\item{\code{cellPorosity}}{safh}
-
-\item{\code{cellTortuosity}}{jafd}
+\item{\code{saturationVolume}}{The max volume of water that can be in the cell.}
 
 \item{\code{cellIdx}}{Character string denoting the index for the cell}
 
@@ -89,12 +90,56 @@ cell (soil, groundwater, or stream)}
 
 \item{\code{currency}}{Character string with either water or name of solute}
 
-\item{\code{cellVolume}}{akdj}
+\item{\code{cellVolume}}{The volume of the soil cell.}
+
+\item{\code{cellMatricPotential}}{The matric potential of the soil cell.}
+
+\item{\code{cellGravimetricPotential}}{The total pressure gradient for the soil cell.}
+
+\item{\code{waterVolume}}{The volume of water already present in the cell.}
+
+\item{\code{cellInput}}{The volume of water entering the soil cell.}
+
+\item{\code{cellSpillOver}}{The volume of water exiting the soil cell.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
 The object of class \code{Cell_Water_Soil}.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Cell_Water_Soil-populateDependencies"></a>}}
+\if{latex}{\out{\hypertarget{method-Cell_Water_Soil-populateDependencies}{}}}
+\subsection{Method \code{populateDependencies()}}{
+Populates the fields in the cells that depend on
+  boundaries being instantiated before the trade, store, update
+  sequence can be run.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Cell_Water_Soil$populateDependencies()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Updates cell values for \code{cellSpillOver}
+based on cell values (\code{saturationVolume, waterVolume}) and
+  upstream/downstream boundary values (\code{cellInput}).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Cell_Water_Soil-update"></a>}}
+\if{latex}{\out{\hypertarget{method-Cell_Water_Soil-update}{}}}
+\subsection{Method \code{update()}}{
+Runs the update method on all cells of class
+  \code{Cell_Water_Soil}.  In this current version of the model,
+  this simply adjusts the height of the water in the stream cell
+  based on the water volume, i.e., it holds the channel area constant
+  with changes in discharge.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Cell_Water_Soil$update()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Updates cell values based on trades and stores.
 }
 }
 \if{html}{\out{<hr>}}
