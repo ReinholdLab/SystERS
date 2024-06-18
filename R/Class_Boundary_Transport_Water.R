@@ -45,6 +45,7 @@ Boundary_Transport_Water <-
         store = function(){
           self$upstreamCell$waterVolume <- self$upstreamCell$waterVolume - self$volume
           self$downstreamCell$waterVolume <- self$downstreamCell$waterVolume + self$volume
+
           return(c(self$upstreamCell$waterVolume, self$downstreamCell$waterVolume))
         }
       ) # close public
@@ -232,6 +233,7 @@ Boundary_Transport_Water_Soil <-
           function(...){
             super$initialize(...)
 
+            browser()
             if(any(self$usModBound, self$dsModBound )) {
               self$populateDependencies <- self$populateDependenciesExternalBound
             } else{
@@ -253,44 +255,56 @@ Boundary_Transport_Water_Soil <-
           # To get spillOver...
 
 
-          self$spillOver <-
-            if ((self$discharge + usWaterVolume) > usSaturationVolume) { (self$discharge + usWaterVolume) - usSaturationVolume }
-                else {0}
+          usWaterVolume <- self$upstreamCell$waterVolume
+          usSaturationVolume <- self$upstreamCell$saturationVolume
+          discharge <- self$upstreamCell$spillOver
+
+          browser() ##error with if else statement, argument is of length zero...I think this is looking for a list?
+          self$spillOver <- if ((discharge + usWaterVolume) > usSaturationVolume) {
+            (self$discharge + usWaterVolume) - usSaturationVolume
+            } else {0}
+
+          print("spillover is: ")
+          return(self$spillOver)
 
           },
 
 
 
-        #' #' @description Populate boundary dependencies for boundaries at the
-        #' #'   edge of the topology (i.e., with either one upstream or one
-        #' #'   downstream cell).  Sets the \code{channelVelocity} based on the
-        #' #'   \code{discharge} and the cross sectional area of the boundary.
-        #' #' @method Method
-        #' #'   Boundary_Transport_Water_Stream$populateDependenciesExternalBound
-        #' #' @return Populates boundary dependencies
-        #' populateDependenciesExternalBound = function(){
-        #'   # To get velocity, divide Q by the mean of x-sec area of u/s and d/s
-        #'   # cell.  Upstream model boundaries (ie, most upstream) will thus
-        #'   # have a velocity equal only to the d/s cell (because there is no
-        #'   # u/s cell).  The opposite is true for the most d/s boundaries.
-        #'   # Likewise, to get residence time, divide by the mean of u/s and d/s
-        #'   # channel lengths.  Upstream model boundaries will thus have the
-        #'   # channel length defined by the d/s cell because no u/s cell exists
-        #'   # and vice versa for d/s model boundaries. Same pattern applies to
-        #'   # hydraulic load...
-        #'
-        #'   if(self$usModBound) {
-        #'     connectedCell <- self$downstreamCell
-        #'   } else if(self$dsModBound){
-        #'     connectedCell <- self$upstreamCell
-        #'   }
-        #'
-        #'   depth <- connectedCell$channelDepth
-        #'   widthXdepth <- connectedCell$channelWidth * depth
-        #'
-        #'   self$channelVelocity <- self$discharge / widthXdepth
-        #'
-        #' },
+        #' @description Populate boundary dependencies for boundaries at the
+        #'   edge of the topology (i.e., with either one upstream or one
+        #'   downstream cell).  Sets the \code{channelVelocity} based on the
+        #'   \code{discharge} and the cross sectional area of the boundary.
+        #' @method Method
+        #'   Boundary_Transport_Water_Stream$populateDependenciesExternalBound
+        #' @return Populates boundary dependencies
+        populateDependenciesExternalBound = function(){
+          # To get velocity, divide Q by the mean of x-sec area of u/s and d/s
+          # cell.  Upstream model boundaries (ie, most upstream) will thus
+          # have a velocity equal only to the d/s cell (because there is no
+          # u/s cell).  The opposite is true for the most d/s boundaries.
+          # Likewise, to get residence time, divide by the mean of u/s and d/s
+          # channel lengths.  Upstream model boundaries will thus have the
+          # channel length defined by the d/s cell because no u/s cell exists
+          # and vice versa for d/s model boundaries. Same pattern applies to
+          # hydraulic load...
+
+          if(self$usModBound) {
+            connectedCell <- self$downstreamCell
+          } else if(self$dsModBound){
+            connectedCell <- self$upstreamCell
+          }
+
+          waterVolume <- connectedCell$waterVolume
+          saturationVolume <- connectedCell$saturationVolume
+
+          self$spillOver <-
+            if ((self$discharge + waterVolume) > saturationVolume) {
+              (self$discharge + waterVolume) - saturationVolume
+              } else {0}
+
+          return(self$spillOver)
+        },
 
 
         #' @description Calculates the trades between the stream water cells
@@ -301,8 +315,6 @@ Boundary_Transport_Water_Soil <-
         #'   (\code{discharge, volume}).
 
         trade   = function(){
-          browser()
-          print("debugger")
           # volume of water to trade
           self$volume <- self$discharge * self$timeInterval #L
 
@@ -317,7 +329,7 @@ Boundary_Transport_Water_Soil <-
             ) # close warning
           } # close if statement
 
-          return(list(discharge = self$discharge, volume = self$volume))
+          return(list(discharge = self$discharge, volume = self$volume, spillOver = self$spillOver))
         } # close function def
       ) # close public
 

@@ -93,6 +93,8 @@ Cell_Water_Soil <- R6::R6Class(
       usWaterVolume <- sapply(self$linkedBoundsList$upstreamBounds, function(bound) bound$waterVolume)
       usSaturationVolume <- sapply(self$linkedBoundsList$upstreamBounds, function(bound) bound$saturationVolume)
 
+      usSpillOver <- sapply(self$linkedBoundsList$upstreamBounds, function(bound) bound$spillOver)
+
       dsWaterVolume <- sapply(self$linkedBoundsList$downstreamBounds, function(bound) bound$waterVolume)
       dsSaturationVolume <- sapply(self$linkedBoundsList$downstreamBounds, function(bound) bound$saturationVolume)
 

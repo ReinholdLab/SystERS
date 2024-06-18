@@ -24,6 +24,7 @@ Transport boundary for water between soil cells
 \itemize{
 \item \href{#method-Boundary_Transport_Water_Soil-new}{\code{Boundary_Transport_Water_Soil$new()}}
 \item \href{#method-Boundary_Transport_Water_Soil-populateDependenciesInternalBound}{\code{Boundary_Transport_Water_Soil$populateDependenciesInternalBound()}}
+\item \href{#method-Boundary_Transport_Water_Soil-populateDependenciesExternalBound}{\code{Boundary_Transport_Water_Soil$populateDependenciesExternalBound()}}
 \item \href{#method-Boundary_Transport_Water_Soil-trade}{\code{Boundary_Transport_Water_Soil$trade()}}
 \item \href{#method-Boundary_Transport_Water_Soil-clone}{\code{Boundary_Transport_Water_Soil$clone()}}
 }
@@ -81,36 +82,22 @@ Populate boundary dependencies for boundaries with
 
 \subsection{Returns}{
 Populates boundary dependencies
-#' @description Populate boundary dependencies for boundaries at the
-#'   edge of the topology (i.e., with either one upstream or one
-#'   downstream cell).  Sets the \code{channelVelocity} based on the
-#'   \code{discharge} and the cross sectional area of the boundary.
-#' @method Method
-#'   Boundary_Transport_Water_Stream$populateDependenciesExternalBound
-#' @return Populates boundary dependencies
-populateDependenciesExternalBound = function(){
-  # To get velocity, divide Q by the mean of x-sec area of u/s and d/s
-  # cell.  Upstream model boundaries (ie, most upstream) will thus
-  # have a velocity equal only to the d/s cell (because there is no
-  # u/s cell).  The opposite is true for the most d/s boundaries.
-  # Likewise, to get residence time, divide by the mean of u/s and d/s
-  # channel lengths.  Upstream model boundaries will thus have the
-  # channel length defined by the d/s cell because no u/s cell exists
-  # and vice versa for d/s model boundaries. Same pattern applies to
-  # hydraulic load...
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Boundary_Transport_Water_Soil-populateDependenciesExternalBound"></a>}}
+\if{latex}{\out{\hypertarget{method-Boundary_Transport_Water_Soil-populateDependenciesExternalBound}{}}}
+\subsection{Method \code{populateDependenciesExternalBound()}}{
+Populate boundary dependencies for boundaries at the
+  edge of the topology (i.e., with either one upstream or one
+  downstream cell).  Sets the \code{channelVelocity} based on the
+  \code{discharge} and the cross sectional area of the boundary.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Boundary_Transport_Water_Soil$populateDependenciesExternalBound()}\if{html}{\out{</div>}}
+}
 
-  if(self$usModBound) {
-    connectedCell <- self$downstreamCell
-  } else if(self$dsModBound){
-    connectedCell <- self$upstreamCell
-  }
-
-  depth <- connectedCell$channelDepth
-  widthXdepth <- connectedCell$channelWidth * depth
-
-  self$channelVelocity <- self$discharge / widthXdepth
-
-},
+\subsection{Returns}{
+Populates boundary dependencies
 }
 }
 \if{html}{\out{<hr>}}
