@@ -11,8 +11,8 @@ Cell_Water_Soil <- R6::R6Class(
   inherit = Cell_Water,
 
   public = list(
-    #' @field saturationVolume The max volume of water that can be held within the cell.
-    saturationVolume = NA,
+    #' @field fieldCapacity The max volume of water that can be held within the cell.
+    fieldCapacity = NA,
     #' @field cellVolume The volume of the soil cell calculate from from
     #'   the \code{channelLength, channelWidth, channelHeight} parameters.
     cellVolume = NULL,
@@ -39,7 +39,7 @@ Cell_Water_Soil <- R6::R6Class(
 
 
     #' @description Create a new water cell
-    #' @param saturationVolume The max volume of water that can be in the cell.
+    #' @param fieldCapacity The max volume of water that can be in the cell.
     #' @param cellIdx Character string denoting the index for the cell
     #' @param processDomain Character string indicating process domain of
     #'   cell (soil, groundwater, or stream)
@@ -77,7 +77,7 @@ Cell_Water_Soil <- R6::R6Class(
       # self$cellInput <- cellInput
 
 
-      self$saturationVolume <- cellPorosity * self$cellVolume
+      self$fieldCapacity <- cellPorosity * self$cellVolume #Really a measure of saturation volume currently. FC will be calculated later.
 
     },
 
@@ -86,15 +86,15 @@ Cell_Water_Soil <- R6::R6Class(
     #'   boundaries being instantiated before the trade, store, update
     #'   sequence can be run.
     #' @return Updates cell values for \code{cellSpillOver}
-    #' based on cell values (\code{saturationVolume, waterVolume}) and
+    #' based on cell values (\code{fieldCapacity, waterVolume}) and
     #'   upstream/downstream boundary values (\code{cellInput}).
     populateDependencies = function(){
 
       usWaterVolume <- sapply(self$linkedBoundsList$upstreamBounds, function(bound) bound$waterVolume)
-      usSaturationVolume <- sapply(self$linkedBoundsList$upstreamBounds, function(bound) bound$saturationVolume)
+      usfieldCapacity <- sapply(self$linkedBoundsList$upstreamBounds, function(bound) bound$fieldCapacity)
 
       dsWaterVolume <- sapply(self$linkedBoundsList$downstreamBounds, function(bound) bound$waterVolume)
-      dsSaturationVolume <- sapply(self$linkedBoundsList$downstreamBounds, function(bound) bound$saturationVolume)
+      usfieldCapacity <- sapply(self$linkedBoundsList$downstreamBounds, function(bound) bound$fieldCapacity)
 
 
     },

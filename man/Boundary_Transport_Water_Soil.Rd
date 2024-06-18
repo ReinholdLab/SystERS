@@ -24,17 +24,11 @@ Transport boundary for water between soil cells
 \itemize{
 \item \href{#method-Boundary_Transport_Water_Soil-new}{\code{Boundary_Transport_Water_Soil$new()}}
 \item \href{#method-Boundary_Transport_Water_Soil-populateDependenciesInternalBound}{\code{Boundary_Transport_Water_Soil$populateDependenciesInternalBound()}}
+\item \href{#method-Boundary_Transport_Water_Soil-store}{\code{Boundary_Transport_Water_Soil$store()}}
 \item \href{#method-Boundary_Transport_Water_Soil-trade}{\code{Boundary_Transport_Water_Soil$trade()}}
 \item \href{#method-Boundary_Transport_Water_Soil-clone}{\code{Boundary_Transport_Water_Soil$clone()}}
 }
 }
-\if{html}{\out{
-<details open><summary>Inherited methods</summary>
-<ul>
-<li><span class="pkg-link" data-pkg="systERS" data-topic="Boundary_Transport_Water" data-id="store"><a href='../../systERS/html/Boundary_Transport_Water.html#method-Boundary_Transport_Water-store'><code>systERS::Boundary_Transport_Water$store()</code></a></span></li>
-</ul>
-</details>
-}}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Boundary_Transport_Water_Soil-new"></a>}}
 \if{latex}{\out{\hypertarget{method-Boundary_Transport_Water_Soil-new}{}}}
@@ -111,6 +105,19 @@ populateDependenciesExternalBound = function(){
   self$channelVelocity <- self$discharge / widthXdepth
 
 },
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Boundary_Transport_Water_Soil-store"></a>}}
+\if{latex}{\out{\hypertarget{method-Boundary_Transport_Water_Soil-store}{}}}
+\subsection{Method \code{store()}}{
+Runs the store method on water cells in the model.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Boundary_Transport_Water_Soil$store()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Updated store values.
 }
 }
 \if{html}{\out{<hr>}}

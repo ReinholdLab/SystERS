@@ -13,7 +13,7 @@ Instantiate a soil cell. Inherits from class
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{saturationVolume}}{The max volume of water that can be held within the cell.}
+\item{\code{fieldCapacity}}{The max volume of water that can be held within the cell.}
 
 \item{\code{cellVolume}}{The volume of the soil cell calculate from from
 the \code{channelLength, channelWidth, channelHeight} parameters.}
@@ -81,7 +81,7 @@ Create a new water cell
 
 \item{\code{cellSoilType}}{The soil type of the cell. For notation purposes only.}
 
-\item{\code{saturationVolume}}{The max volume of water that can be in the cell.}
+\item{\code{fieldCapacity}}{The max volume of water that can be in the cell.}
 
 \item{\code{cellIdx}}{Character string denoting the index for the cell}
 
@@ -121,7 +121,7 @@ Populates the fields in the cells that depend on
 
 \subsection{Returns}{
 Updates cell values for \code{cellSpillOver}
-based on cell values (\code{saturationVolume, waterVolume}) and
+based on cell values (\code{fieldCapacity, waterVolume}) and
   upstream/downstream boundary values (\code{cellInput}).
 }
 }
