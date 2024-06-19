@@ -258,15 +258,13 @@ Boundary_Transport_Water_Soil <-
           usSaturationVolume <- self$upstreamCell$saturationVolume
           discharge <- self$upstreamCell$cellSpillOver
 
-          browser() ##error with if else statement, argument is of length zero...I think this is looking for a list?
           self$spillOver <- if ((discharge + usWaterVolume) > usSaturationVolume) {
             spillOver <- (self$discharge + usWaterVolume) - usSaturationVolume
             self$downstreamCell$cellSpillOver <- spillOver
           } else {spillOver <- 0
             self$downstreamCell$cellSpillOver <- spillOver}
 
-          print("spillover is: ")
-          return(self$spillOver)
+          paste("SpillOver is:", print(self$spillOver))
 
           },
 
@@ -306,7 +304,7 @@ Boundary_Transport_Water_Soil <-
             } else {spillOver <- 0
               self$downstreamCell$cellSpillOver <- spillOver}
 
-          return(self$spillOver)
+          paste("SpillOver is:", print(self$spillOver))
 
         },
 
