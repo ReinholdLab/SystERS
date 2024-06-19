@@ -261,8 +261,10 @@ Boundary_Transport_Water_Soil <-
           self$spillOver <- if ((discharge + usWaterVolume) > usSaturationVolume) {
             spillOver <- (self$discharge + usWaterVolume) - usSaturationVolume
             self$downstreamCell$cellSpillOver <- spillOver
+            self$downstreamCell$waterVolume <- self$downstreamCell$saturationVolume
           } else {spillOver <- 0
-            self$downstreamCell$cellSpillOver <- spillOver}
+            self$downstreamCell$cellSpillOver <- spillOver
+            self$downstreamCell$waterVolume <- self$downstreamCell$waterVolume + spillOver}
 
           paste("SpillOver is:", print(self$spillOver))
 
@@ -302,7 +304,8 @@ Boundary_Transport_Water_Soil <-
               spillOver <- (self$discharge + waterVolume) - saturationVolume
               self$downstreamCell$cellSpillOver <- spillOver
             } else {spillOver <- 0
-              self$downstreamCell$cellSpillOver <- spillOver}
+              self$downstreamCell$cellSpillOver <- spillOver
+              self$downstreamCell$waterVolume <- self$downstreamCell$waterVolume + spillOver}
 
           paste("SpillOver is:", print(self$spillOver))
 
