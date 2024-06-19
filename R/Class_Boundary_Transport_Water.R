@@ -233,7 +233,6 @@ Boundary_Transport_Water_Soil <-
           function(...){
             super$initialize(...)
 
-            browser()
             if(any(self$usModBound, self$dsModBound )) {
               self$populateDependencies <- self$populateDependenciesExternalBound
             } else{
@@ -257,10 +256,9 @@ Boundary_Transport_Water_Soil <-
 
           usWaterVolume <- self$upstreamCell$waterVolume
           usSaturationVolume <- self$upstreamCell$saturationVolume
-          discharge <- self$upstreamCell$spillOver
+         discharge <- self$upstreamCell$spillOver
 
-          browser() ##error with if else statement, argument is of length zero...I think this is looking for a list?
-          self$spillOver <- if ((discharge + usWaterVolume) > usSaturationVolume) {
+          self$spillOver <- if ((self$discharge + usWaterVolume) > usSaturationVolume) {
             (self$discharge + usWaterVolume) - usSaturationVolume
             } else {0}
 
@@ -300,8 +298,10 @@ Boundary_Transport_Water_Soil <-
 
           self$spillOver <-
             if ((self$discharge + waterVolume) > saturationVolume) {
-              (self$discharge + waterVolume) - saturationVolume
-              } else {0}
+              spillOver <- (self$discharge + waterVolume) - saturationVolume
+              self$downstreamCell$cellSpillOver
+              } else {spillOver <- 0
+              self$downstreamCell$cellSpillOver <- spillOver}
 
           return(self$spillOver)
         },
