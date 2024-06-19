@@ -271,8 +271,7 @@ Boundary_Transport_Water_Soil <-
           } else {spillOver <- 0
             self$downstreamCell$cellSpillOver <- spillOver}
 
-          print("spillover is: ")
-          return(self$spillOver)
+          paste("SpillOver is:", print(self$spillOver))
 
           },
 
@@ -312,7 +311,7 @@ Boundary_Transport_Water_Soil <-
             } else {spillOver <- 0
               self$downstreamCell$cellSpillOver <- spillOver}
 
-          return(self$spillOver)
+          paste("SpillOver is:", print(self$spillOver))
 
         },
 
