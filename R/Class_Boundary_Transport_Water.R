@@ -253,27 +253,25 @@ Boundary_Transport_Water_Soil <-
         populateDependenciesInternalBound = function(){
           # To get spillOver...
 
-
           usWaterVolume <- self$upstreamCell$waterVolume
           usSaturationVolume <- self$upstreamCell$saturationVolume
+          spillOver <- self$upstreamCell$cellSpillOver
+          dsWaterVolume <- self$downstreamCell$waterVolume
+          dsSaturationVolume <- self$downstreamCell$saturationVolume
 
-         discharge <- self$upstreamCell$spillOver
-
-          self$spillOver <- if ((self$discharge + usWaterVolume) > usSaturationVolume) {
-            (self$discharge + usWaterVolume) - usSaturationVolume
-          } else {0}
-
-          discharge <- self$upstreamCell$cellSpillOver
-
-          self$spillOver <- if ((discharge + usWaterVolume) > usSaturationVolume) {
-            spillOver <- (self$discharge + usWaterVolume) - usSaturationVolume
-            self$downstreamCell$cellSpillOver <- spillOver
+          self$spillOver <- if ((self$upstreamCell$cellSpillOver + dsWaterVolume) > dsSaturationVolume) {
+            self$downstreamCell$cellSpillOver <- (self$upstreamCell$cellSpillOver + dsWaterVolume) - dsSaturationVolume
           } else {spillOver <- 0
-            self$downstreamCell$cellSpillOver <- spillOver}
+          self$downstreamCell$cellSpillOver <- spillOver}
 
           paste("SpillOver is:", print(self$spillOver))
 
-          },
+          self$downstreamCell$waterVolume <-
+            if ((waterVolume > saturationVolume) {
+              self$downstreamCell$waterVolume <- saturationVolume
+            } else {self$downstreamCell$waterVolume <- self$discharge + waterVolume}
+
+        },
 
 
 
@@ -307,9 +305,15 @@ Boundary_Transport_Water_Soil <-
           self$spillOver <-
             if ((self$discharge + waterVolume) > saturationVolume) {
               spillOver <- (self$discharge + waterVolume) - saturationVolume
-
+              self$downstreamCell$cellSpillOver <- spillOver
             } else {spillOver <- 0
-              self$downstreamCell$cellSpillOver <- spillOver}
+            self$downstreamCell$cellSpillOver <- spillOver}
+
+
+          self$downstreamCell$waterVolume <-
+            if ((self$discharge + waterVolume) > saturationVolume) {
+              self$downstreamCell$waterVolume <- saturationVolume
+            } else {self$downstreamCell$waterVolume <- self$discharge + waterVolume}
 
           paste("SpillOver is:", print(self$spillOver))
 
