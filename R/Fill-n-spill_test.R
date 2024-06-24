@@ -110,9 +110,15 @@ Cell_Water_Soil <- R6::R6Class(
     #' @return Updates cell values based on trades and stores.
     update = function(){
 
+      self$waterVolume <- if(self$cellSpillOver > 0) {
+        self$waterVolume <- self$saturationVolume
+      } else {
+        self$waterVolume <- self$waterVolume
+      }
+
       self$populateDependencies()
 
-      return()
+      return(self$waterVolume)
     }
   )
 )
