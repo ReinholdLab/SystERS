@@ -253,24 +253,23 @@ Boundary_Transport_Water_Soil <-
         populateDependenciesInternalBound = function(){
           # To get spillOver...
 
-          usWaterVolume <- self$upstreamCell$waterVolume
-          usSaturationVolume <- self$upstreamCell$saturationVolume
-          spillOver <- self$upstreamCell$cellSpillOver
           dsWaterVolume <- self$downstreamCell$waterVolume
           dsSaturationVolume <- self$downstreamCell$saturationVolume
+          usSpillOver <- self$upstreamCell$cellSpillOver
 
-          self$spillOver <- if ((self$upstreamCell$cellSpillOver + dsWaterVolume) > dsSaturationVolume) {
-            self$downstreamCell$cellSpillOver <- (self$upstreamCell$cellSpillOver + dsWaterVolume) - dsSaturationVolume
+          self$spillOver <- if ((usSpillOver + dsWaterVolume) > dsSaturationVolume) {
+            spillOver <- (usSpillOver + dsWaterVolume) - dsSaturationVolume
+            self$downstreamCell$cellSpillOver <- spillOver
           } else {spillOver <- 0
-          self$downstreamCell$cellSpillOver <- spillOver}
+            self$downstreamCell$cellSpillOver <- spillOver
+            self$downstreamCell$cellInput <- usSpillOver}
 
           paste("SpillOver is:", print(self$spillOver))
 
           self$downstreamCell$waterVolume <-
-            if ((waterVolume > saturationVolume) {
+            if (waterVolume > saturationVolume) {
               self$downstreamCell$waterVolume <- saturationVolume
             } else {self$downstreamCell$waterVolume <- self$discharge + waterVolume}
-
         },
 
 
@@ -329,18 +328,20 @@ Boundary_Transport_Water_Soil <-
 
         trade   = function(){
           # volume of water to trade
+          self$discharge <- self$spillOver
           self$volume <- self$discharge * self$timeInterval #L
 
-          if(!self$usModBound){
-            # volume of water to remain
-            volumeToRemain <- self$upstreamCell$waterVolume - self$volume
-            if(volumeToRemain < 0) stop(
-              paste(
-                "You are about to remove more water volume from a cell than it held at the start of the timestep.
-               Boundary is ", print(self$boundaryIdx)
-              ) # close paste
-            ) # close warning
-          } # close if statement
+          # if(!self$usModBound){
+          #   # volume of water to remain
+          #   volumeToRemain <- self$upstreamCell$waterVolume - self$volume
+          #   if(volumeToRemain < 0) stop(
+          #     paste(
+          #       "You are about to remove more water volume from a cell than it held at the start of the timestep.
+          #      Boundary is ", print(self$boundaryIdx)
+          #     ) # close paste
+          #   ) # close warning
+          # } # close if statement
+
 
           return(list(discharge = self$discharge, volume = self$volume, spillOver = self$spillOver))
         } # close function def
