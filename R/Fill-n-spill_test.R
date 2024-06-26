@@ -36,6 +36,8 @@ Cell_Water_Soil <- R6::R6Class(
     cellInput = NULL,
     #' @field cellSpillOver The volume of water exiting the soil cell.
     cellSpillOver = NULL,
+    #' @field cellTypePorosity List of soil types and matching porosity values.
+    cellTypePorosity = NULL,
 
 
     #' @description Create a new water cell
@@ -56,18 +58,18 @@ Cell_Water_Soil <- R6::R6Class(
     #' @param waterVolume The volume of water already present in the cell.
     #' @param cellInput The volume of water entering the soil cell.
     #' @param cellSpillOver The volume of water exiting the soil cell.
+    #' @param cellTypePorosity
     #' @return The object of class \code{Cell_Water_Soil}.
 
 
     initialize = function(..., cellLength, cellHeight, cellWidth,
-                          cellPorosity, cellSoilType, initWaterVolume) {
+                             cellSoilType, initWaterVolume) {
 
       super$initialize(...)
       self$cellLength <- cellLength
       self$cellHeight <- cellHeight
       self$cellWidth <- cellWidth
       self$cellVolume <- cellLength * cellWidth * cellHeight
-      self$cellPorosity <- cellPorosity #pore space/total volume, change this to search a list based on soil type for value
       # self$cellMatricPotential <- cellMatricPotential
       # self$cellGravimetricPotential <- cellGravimetricPotential
       self$cellSoilType <- cellSoilType
@@ -76,8 +78,30 @@ Cell_Water_Soil <- R6::R6Class(
       #Or should this be using discharge in the Class_Boundary_Transport_Water class as the input?
       # self$cellInput <- cellInput
 
+      #Currently from https://stormwater.pca.state.mn.us/index.php/Soil_water_storage_properties. Probably better resources?
+      self$cellTypePorosity <- list(
+        sand = 0.43,
+        loamysand = 0.44,
+        sandyloam = 0.45,
+        loam = 0.47,
+        siltloam = 0.50,
+        sandyclayloam = 0.4,
+        clayloam = 0.46,
+        siltyclayloam = 0.49,
+        sandyclay = 0.47,
+        clay = 0.47)
 
-      self$saturationVolume <- cellPorosity * self$cellVolume
+      self$cellPorosity <-
+        if (self$cellSoilType %in% names(self$cellTypePorosity)) {
+          cellPorosity <- self$cellTypePorosity[[self$cellSoilType]]
+          } else {
+          return(print("Err: Soil type not in dictionary."))
+          }
+        #search a list based on soil type for value
+
+      self$saturationVolume <- self$cellPorosity * self$cellVolume
+
+
 
     },
 
