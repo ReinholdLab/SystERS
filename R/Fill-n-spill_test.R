@@ -72,7 +72,7 @@ Cell_Water_Soil <- R6::R6Class(
       self$cellVolume <- cellLength * cellWidth * cellHeight
       # self$cellMatricPotential <- cellMatricPotential
       # self$cellGravimetricPotential <- cellGravimetricPotential
-      self$cellSoilType <- cellSoilType
+      self$cellSoilType <- tolower(cellSoilType)
       self$waterVolume <- initWaterVolume #define the initial water volume
       # do we need to add cellInput here and calculate spillOver here?
       #Or should this be using discharge in the Class_Boundary_Transport_Water class as the input?
