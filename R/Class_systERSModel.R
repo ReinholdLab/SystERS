@@ -231,6 +231,13 @@ systERSModel <-
           names(cells_solute_stream) <- self$cellsTable_solute_stream$cellIdx
           self$cells <- c(self$cells, cells_solute_stream)
 
+          cells_water_soil <- self$initializeWaterCells_soil()
+          names(cells_water_soil) <- self$cellsTable_water_soil$cellIdx
+          self$cells <- cells_water_soil
+
+
+          #Soil cells - write initialize function
+
           self$linkSoluteCellsToWaterCells_stream()
           return()
 
@@ -253,8 +260,11 @@ systERSModel <-
             lapply(
               bounds_transport_water_ext,
               function(b) {
-                if("Boundary_Transport_Water_Stream" %in% class(b)) b$populateDependenciesExternalBound()
+                if("Boundary_Transport_Water_Stream" %in% class(b)) { b$populateDependenciesExternalBound()
                 return(b)
+              } else if("Boundary_Transport_Water_Soil" %in% class(b)) { b$populateDependenciesExternalBound()
+                return(b)
+              }
               }
             )
 
@@ -269,8 +279,11 @@ systERSModel <-
               lapply(
                 bounds_transport_water_int,
                 function(b) {
-                  if("Boundary_Transport_Water_Stream" %in% class(b)) b$populateDependenciesInternalBound()
-                  return(b)
+                  if("Boundary_Transport_Water_Stream" %in% class(b)) { b$populateDependenciesInternalBound()
+                    return(b)
+                  } else if("Boundary_Transport_Water_Soil" %in% class(b)) { b$populateDependenciesInternalBound()
+                    return(b)
+                  }
                 }
               )
             bounds_transport_water <- c(bounds_transport_water_ext, bounds_transport_water_int)
@@ -371,6 +384,34 @@ systERSModel <-
           } else{ return(NULL) } # close if
         }, # close method
 
+        #' @method Method systERSModel$initializeWaterCells_soil
+        #' @description Instantiate the soil water cells in the stream process domain
+        #' @importFrom plyr llply
+        #' @return List of soil water cells
+        initializeWaterCells_soil = function(){
+          tbl <- self$cellsTableList$cells_water_soil
+          if(!is.null(tbl)){
+            return(
+              plyr::llply(
+                1:nrow(tbl),
+                function(rowNum){
+                  Cell_Water_Soil$new(
+                    cellIdx = tbl$cellIdx[rowNum],
+                    currency = tbl$currency[rowNum],
+                    processDomain = tbl$processDomain[rowNum],
+
+                    cellLength = tbl$cellLength[rowNum],
+                    cellHeight = tbl$cellHeight[rowNum],
+                    cellWidth = tbl$cellWidth[rowNum],
+                    cellSoilType = tbl$cellSoilType[rowNum],
+                    initWaterVolume = tbl$initWaterVolume[rowNum]
+                  )
+                }
+              ) # close llply
+            ) # close return
+          } else {return(NULL)} # close if
+        }, # close method
+
 
         #' @method Method systERSModel$linkSoluteCellsToWaterCells_stream
         #' @description Link the solute cells to the water cells in the stream process
@@ -460,6 +501,16 @@ systERSModel <-
                     discharge = tbl$discharge[rowNum],
                     timeInterval = self$timeInterval
                 )
+              } else if (tbl$processDomain[rowNum] == "soil"){
+                b <-
+                  Boundary_Transport_Water_Soil$new(
+                    boundaryIdx = tbl$boundaryIdx[rowNum],
+                    currency = tbl$currency[rowNum],
+                    upstreamCell = self$cells[[upstreamCell]],
+                    downstreamCell = self$cells[[downstreamCell]],
+                    discharge = tbl$discharge[rowNum],
+                    timeInterval = self$timeInterval
+                  )
               } else {
                 b <-
                   Boundary_Transport_Water$new(
@@ -500,7 +551,16 @@ systERSModel <-
                   discharge = tbl$discharge[rowNum],
                   timeInterval = self$timeInterval
                 )
-              } else {
+              } else if(tbl$processDomainName[rowNum] == "soil"){
+                Boundary_Transport_Water_Soil$new(
+                  boundaryIdx = tbl$boundaryIdx[rowNum],
+                  currency = tbl$currency[rowNum],
+                  upstreamCell = self$cells[[  tbl$upstreamCellIdx[rowNum] ]],
+                  downstreamCell = self$cells[[ tbl$downstreamCellIdx[rowNum] ]],
+                  discharge = tbl$discharge[rowNum],
+                  timeInterval = self$timeInterval
+                )
+                } else {
                 Boundary_Transport_Water$new(
                   boundaryIdx = tbl$boundaryIdx[rowNum],
                   currency = tbl$currency[rowNum],
@@ -531,7 +591,7 @@ systERSModel <-
                   boundaryIdx = tbl$boundaryIdx[rowNum],
                   currency = tbl$currency[rowNum],
                   linkedBound = self$bounds[[ tbl$linkedBound[rowNum] ]],
-                  # concentration = tbl$concentration[rowNum],
+                  concentration = tbl$concentration[rowNum],
                   load = tbl$load[rowNum],
                   upstreamCell = self$cells[[  tbl$upstreamCellIdx[rowNum] ]],
                   downstreamCell = self$cells[[ tbl$downstreamCellIdx[rowNum] ]],
@@ -620,7 +680,7 @@ systERSModel <-
         update = function(){
           lapply(self$cells, function(c) c$update())
           lapply(
-            self$bounds[sapply(self$bounds, function(b) any(class(b) %in% "Boundary_Transport_Water_Stream"))],
+            self$bounds[sapply(self$bounds, function(b) any(class(b) %in% "Boundary_Transport_Water"))],
             function(b) b$populateDependencies()
             )
           return()
