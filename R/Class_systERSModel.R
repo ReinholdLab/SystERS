@@ -102,21 +102,21 @@ systERSModel <-
         #' @return The object of class \code{systERSModel}
         initialize =
           function(
-    boundsTransportTable_water_int = NULL,
-    boundsTransportTable_water_ext = NULL,
-    boundsTransportTable_solute_int = NULL,
-    boundsTransportTable_solute_us = NULL,
-    boundsTransportTable_solute_ds = NULL,
-    boundsReactionTable_solute_int = NULL,
-    cellsTable_water_stream = NULL,
-    cellsTable_solute_stream = NULL,
-    cellsTable_water_soil = NULL,
-    cellsTable_solute_soil = NULL,
-    cellsTable_water_groundwater = NULL,
-    cellsTable_solute_groundwater = NULL,
-    unitsTable = NULL,
-    timeInterval
-          ) {
+              boundsTransportTable_water_int = NULL,
+              boundsTransportTable_water_ext = NULL,
+              boundsTransportTable_solute_int = NULL,
+              boundsTransportTable_solute_us = NULL,
+              boundsTransportTable_solute_ds = NULL,
+              boundsReactionTable_solute_int = NULL,
+              cellsTable_water_stream = NULL,
+              cellsTable_solute_stream = NULL,
+              cellsTable_water_soil = NULL,
+              cellsTable_solute_soil = NULL,
+              cellsTable_water_groundwater = NULL,
+              cellsTable_solute_groundwater = NULL,
+              unitsTable = NULL,
+              timeInterval
+           ) {
             #### GENERAL
 
             # set duration of each time step
@@ -239,6 +239,7 @@ systERSModel <-
       #Soil cells - write initialize function
 
       self$linkSoluteCellsToWaterCells_stream()
+      self$linkSoluteCellsToWaterCells_soil()
       return()
 
     }, # closes cellFactory
@@ -426,6 +427,28 @@ systERSModel <-
           function(c) {
             # identify the water cells to which the solute cells are connected
             cellIdxs <- self$cellsTable_solute_stream$cellIdx[self$cellsTable_solute_stream$linkedCell == c$cellIdx]
+            soluteCells <- self$cells[cellIdxs]
+            names(soluteCells) <- cellIdxs
+            # link the solute cells to the water cells
+            c$linkedSoluteCells <- soluteCells
+            return(c)
+          }
+        ) # close lapply
+      }, # close method
+
+    #' @method Method systERSModel$linkSoluteCellsToWaterCells_soil
+    #' @description Link the solute cells to the soil water cells in the stream process
+    #'   domain
+    #' @return Soil water cells with their \code{linkedSoluteCells} attribute populated
+    #'   with a list of solute cells that are linked to the soil water cell
+    linkSoluteCellsToWaterCells_soil =
+      function(){
+        streamWaterSoilCells <- self$cells[sapply(self$cells, function(c) "Cell_Water_Soil" %in% class(c))]
+        lapply(
+          streamWaterSoilCells,
+          function(c) {
+            # identify the water cells to which the solute cells are connected
+            cellIdxs <- self$cellsTable_solute_soil$cellIdx[self$cellsTable_solute_soil$linkedCell == c$cellIdx]
             soluteCells <- self$cells[cellIdxs]
             names(soluteCells) <- cellIdxs
             # link the solute cells to the water cells
