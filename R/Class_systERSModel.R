@@ -155,7 +155,7 @@ systERSModel <-
             self$cellsTableList <- cellsTableList[cellTablesToKeep]
 
             #### BOUNDARIES
-
+            # browser()
             # Tables with boundary specifications
             self$boundsTransportTable_water_int <- boundsTransportTable_water_int
             self$boundsTransportTable_water_ext <- boundsTransportTable_water_ext
@@ -235,6 +235,10 @@ systERSModel <-
       names(cells_water_soil) <- self$cellsTable_water_soil$cellIdx
       self$cells <- cells_water_soil
 
+      cells_solute_soil <- self$initializeSoluteCells_soil()
+      names(cells_solute_soil) <- self$cellsTable_solute_soil$cellIdx
+      self$cells <- c(self$cells, cells_solute_soil)
+
 
       #Soil cells - write initialize function
 
@@ -250,6 +254,7 @@ systERSModel <-
     #' @return A list of model boundaries
     boundaryFactory = function(){
 
+      browser()
       # Run a few checks on the boundary inputs
       self$errorCheckBoundaryInputs()
 
@@ -413,6 +418,31 @@ systERSModel <-
       } else {return(NULL)} # close if
     }, # close method
 
+    #' @method Method systERSModel$initializeSoluteCells_soil
+    #' @description Instantiate the solute cells in the soil process domain
+    #' @importFrom plyr llply
+    #' @return List of soil solute cells
+    initializeSoluteCells_soil = function(){
+      tbl <- self$cellsTable_solute_soil
+      if(!is.null(tbl)){
+        return(
+          plyr::llply(
+            1:nrow(tbl),
+            function(rowNum){
+              Cell_Solute$new(
+                cellIdx = tbl$cellIdx[rowNum],
+                processDomain = tbl$processDomain[rowNum],
+                currency = tbl$currency[rowNum],
+
+                concentration = tbl$concentration[rowNum],
+                linkedCell = self$cells[[ tbl$linkedCell[rowNum] ]]
+              )
+            }
+          ) # close llply
+        ) # close return
+      } else{ return(NULL) } # close if
+    }, # close method
+
 
     #' @method Method systERSModel$linkSoluteCellsToWaterCells_stream
     #' @description Link the solute cells to the water cells in the stream process
@@ -466,6 +496,7 @@ systERSModel <-
     #'   is thrown.
     errorCheckBoundaryInputs =
       function(){
+        browser()
         lapply(
           1:length(self$boundsTableList),
           function(i) {
