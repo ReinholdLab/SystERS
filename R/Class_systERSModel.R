@@ -242,8 +242,11 @@ systERSModel <-
 
       #Soil cells - write initialize function
 
-      self$linkSoluteCellsToWaterCells_stream()
-      self$linkSoluteCellsToWaterCells_soil()
+      if(!is.null(cells_water_stream)) {
+        self$linkSoluteCellsToWaterCells_stream()
+      } else if (!is.null(cells_water_soil)) {
+        self$linkSoluteCellsToWaterCells_soil()
+      }
       return()
 
     }, # closes cellFactory
@@ -422,7 +425,6 @@ systERSModel <-
     #' @importFrom plyr llply
     #' @return List of soil solute cells
     initializeSoluteCells_soil = function(){
-      browser()
       tbl <- self$cellsTable_solute_soil
       if(!is.null(tbl)){
         return(
@@ -478,7 +480,7 @@ systERSModel <-
           soilWaterCells,
           function(c) {
 
-            browser()
+
             # identify the water cells to which the solute cells are connected
             cellIdxs <- self$cellsTable_solute_soil$cellIdx[self$cellsTable_solute_soil$linkedCell == c$cellIdx]
             soluteCells <- self$cells[cellIdxs]
