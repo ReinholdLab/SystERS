@@ -254,7 +254,6 @@ systERSModel <-
     #' @return A list of model boundaries
     boundaryFactory = function(){
 
-      browser()
       # Run a few checks on the boundary inputs
       self$errorCheckBoundaryInputs()
 
@@ -423,6 +422,7 @@ systERSModel <-
     #' @importFrom plyr llply
     #' @return List of soil solute cells
     initializeSoluteCells_soil = function(){
+      browser()
       tbl <- self$cellsTable_solute_soil
       if(!is.null(tbl)){
         return(
@@ -473,10 +473,12 @@ systERSModel <-
     #'   with a list of solute cells that are linked to the soil water cell
     linkSoluteCellsToWaterCells_soil =
       function(){
-        streamWaterSoilCells <- self$cells[sapply(self$cells, function(c) "Cell_Water_Soil" %in% class(c))]
+        soilWaterCells <- self$cells[sapply(self$cells, function(c) "Cell_Water_Soil" %in% class(c))]
         lapply(
-          streamWaterSoilCells,
+          soilWaterCells,
           function(c) {
+
+            browser()
             # identify the water cells to which the solute cells are connected
             cellIdxs <- self$cellsTable_solute_soil$cellIdx[self$cellsTable_solute_soil$linkedCell == c$cellIdx]
             soluteCells <- self$cells[cellIdxs]
@@ -496,7 +498,6 @@ systERSModel <-
     #'   is thrown.
     errorCheckBoundaryInputs =
       function(){
-        browser()
         lapply(
           1:length(self$boundsTableList),
           function(i) {
