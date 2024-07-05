@@ -138,7 +138,7 @@ Cell_Water_Soil <- R6::R6Class(
       self$waterVolume <- if(self$cellSpillOver > 0) {
         self$waterVolume <- self$saturationVolume
       } else {
-        self$waterVolume <- self$waterVolume
+        self$waterVolume <- self$waterVolume + self$cellInput
       }
 
       self$populateDependencies()

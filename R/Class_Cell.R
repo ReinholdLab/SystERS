@@ -227,6 +227,7 @@ Cell_Solute <-
             linkedCell,
             concentration
           ){
+            browser()
             super$initialize(...)
 
             self$linkedCell <- linkedCell

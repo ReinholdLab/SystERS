@@ -204,12 +204,18 @@ systERSModel <-
             waterTransportBounds <- self$bounds[sapply(self$bounds, function(b) any(class(b) %in% "Boundary_Transport_Water"))]
             waterTransportBounds <- waterTransportBounds[sort(sapply(waterTransportBounds, "[[", "boundaryIdx"))]
 
+            if(!is.null(self$solute_transport_df)) {
             soluteTransportBounds <- self$bounds[sapply(self$bounds, function(b) any(class(b) %in% "Boundary_Transport_Solute"))]
             soluteTransportBounds <- soluteTransportBounds[sort(sapply(soluteTransportBounds, "[[", "boundaryIdx"))]
+            }
 
+            if(!is.null(self$boundsReactionTable_solute_int)) {
             soluteReactionBounds <- self$bounds[sapply(self$bounds, function(b) any(class(b) %in% "Boundary_Reaction_Solute"))]
+            }
 
+            if(!is.null(self$solute_transport_df) && !is.null(self$boundsReactionTable_solute_int)) {
             self$bounds <- c(waterTransportBounds, soluteTransportBounds, soluteReactionBounds)
+            }
 
           },
 
@@ -218,7 +224,7 @@ systERSModel <-
     #' @description Create a list of the model cells
     #' @return A list of model cells
     cellFactory = function(){
-
+      browser()
       # Error check to see if any cell specifications are duplicated
       self$errorCheckCellInputs()
 
@@ -227,18 +233,23 @@ systERSModel <-
       names(cells_water_stream) <- self$cellsTable_water_stream$cellIdx
       self$cells <- cells_water_stream
 
-      cells_solute_stream <- self$initializeSoluteCells_stream()
-      names(cells_solute_stream) <- self$cellsTable_solute_stream$cellIdx
-      self$cells <- c(self$cells, cells_solute_stream)
+      if(is.null(self$cellsTable_solute_stream)) {
+      } else {
+        cells_solute_stream <- self$initializeSoluteCells_stream()
+        names(cells_solute_stream) <- self$cellsTable_solute_stream$cellIdx
+        self$cells <- c(self$cells, cells_solute_stream)
+      }
 
       cells_water_soil <- self$initializeWaterCells_soil()
       names(cells_water_soil) <- self$cellsTable_water_soil$cellIdx
       self$cells <- cells_water_soil
 
-      cells_solute_soil <- self$initializeSoluteCells_soil()
-      names(cells_solute_soil) <- self$cellsTable_solute_soil$cellIdx
-      self$cells <- c(self$cells, cells_solute_soil)
-
+      if(is.null(self$cellsTable_solute_soil)) {
+      } else {
+        cells_solute_soil <- self$initializeSoluteCells_soil()
+        names(cells_solute_soil) <- self$cellsTable_solute_soil$cellIdx
+        self$cells <- c(self$cells, cells_solute_soil)
+      }
 
       #Soil cells - write initialize function
 
@@ -249,14 +260,14 @@ systERSModel <-
       }
       return()
 
-    }, # closes cellFactory
 
+    }, # closes cellFactory
 
     #' @method Method systERSModel$boundaryFactory
     #' @description Create a list of the model boundaries
     #' @return A list of model boundaries
     boundaryFactory = function(){
-
+      browser()
       # Run a few checks on the boundary inputs
       self$errorCheckBoundaryInputs()
 
@@ -304,18 +315,25 @@ systERSModel <-
       self$bounds <- bounds_transport_water
 
       # create the solute transport bounds (references self$bounds)
+      if (!is.null(self$solute_transport_df)) {
       bounds_transport_solute <- self$initializeSoluteTransportBoundaries()
       names(bounds_transport_solute) <- self$solute_transport_df$boundaryIdx
+      }
 
       # Add the solute transport bounds to the bounds list
+      if (!is.null(self$solute_transport_df)) {
       self$bounds <- c(self$bounds, bounds_transport_solute)
+      }
 
       # Create solute reaction boundaries
+      if (!is.null(self$boundsReactionTable_solute_int)) {
       bounds_react_solute <- self$initializeSoluteReactionBoundaries()
       names(bounds_react_solute) <- self$boundsTableList[["bounds_reaction_solute_int"]]$boundaryIdx
-
+      }
       # Add the solute reaction boundaries to the bounds list
+      if (!is.null(self$boundsReactionTable_solute_int)) {
       self$bounds <- c(self$bounds, bounds_react_solute)
+      }
 
     }, # closes boundaryFactory
 
@@ -536,6 +554,7 @@ systERSModel <-
         1:nrow(tbl),
         function(rowNum) {
 
+
           locationOfBoundInNetwork <- tbl$locationOfBoundInNetwork[rowNum]
 
           if(!(locationOfBoundInNetwork %in% c("upstream", "downstream"))) stop("External model boundaries must have a 'locationOfBoundInNetwork' with a value of either 'upstream' or 'downstream'.")
@@ -598,7 +617,7 @@ systERSModel <-
       plyr::llply(
         1:nrow(tbl),
         function(rowNum) {
-
+          browser()
           if(tbl$processDomainName[rowNum] == "stream"){
             Boundary_Transport_Water_Stream$new(
               boundaryIdx = tbl$boundaryIdx[rowNum],
@@ -644,11 +663,12 @@ systERSModel <-
         plyr::llply(
           1:nrow(tbl),
           function(rowNum) {
+            browser()
             Boundary_Transport_Solute$new(
               boundaryIdx = tbl$boundaryIdx[rowNum],
               currency = tbl$currency[rowNum],
               linkedBound = self$bounds[[ tbl$linkedBound[rowNum] ]],
-              concentration = tbl$concentration[rowNum],
+              # concentration = tbl$concentration[rowNum],
               load = tbl$load[rowNum],
               upstreamCell = self$cells[[  tbl$upstreamCellIdx[rowNum] ]],
               downstreamCell = self$cells[[ tbl$downstreamCellIdx[rowNum] ]],

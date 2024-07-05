@@ -250,7 +250,6 @@ Boundary_Transport_Water_Soil <-
         populateDependenciesInternalBound = function(){
           # To get spillOver...
 
-
           dsWaterVolume <- self$downstreamCell$waterVolume
           dsSaturationVolume <- self$downstreamCell$saturationVolume
           usSpillOver <- self$upstreamCell$cellSpillOver
@@ -295,8 +294,9 @@ Boundary_Transport_Water_Soil <-
           waterVolume <- connectedCell$waterVolume
           saturationVolume <- connectedCell$saturationVolume
 
+
           self$spillOver <-
-            if(self$usModBound) {
+          if(self$usModBound) {
               if ((self$discharge + waterVolume) > saturationVolume) {
                 spillOver <- (self$discharge + waterVolume) - saturationVolume
                 self$downstreamCell$cellSpillOver <- spillOver
@@ -318,8 +318,11 @@ Boundary_Transport_Water_Soil <-
 
         trade   = function(){
           # volume of water to trade
+          if(self$spillOver > 0) {
           self$discharge <- self$spillOver
+          } else { self$downstreamCell$cellInput <- self$discharge}
           self$volume <- self$discharge * self$timeInterval #L
+
 
           # if(!self$usModBound){
           #   # volume of water to remain
