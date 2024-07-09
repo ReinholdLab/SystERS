@@ -155,7 +155,6 @@ systERSModel <-
             self$cellsTableList <- cellsTableList[cellTablesToKeep]
 
             #### BOUNDARIES
-            # browser()
             # Tables with boundary specifications
             self$boundsTransportTable_water_int <- boundsTransportTable_water_int
             self$boundsTransportTable_water_ext <- boundsTransportTable_water_ext
@@ -205,16 +204,16 @@ systERSModel <-
             waterTransportBounds <- waterTransportBounds[sort(sapply(waterTransportBounds, "[[", "boundaryIdx"))]
 
             if(!is.null(self$solute_transport_df)) {
-            soluteTransportBounds <- self$bounds[sapply(self$bounds, function(b) any(class(b) %in% "Boundary_Transport_Solute"))]
-            soluteTransportBounds <- soluteTransportBounds[sort(sapply(soluteTransportBounds, "[[", "boundaryIdx"))]
+              soluteTransportBounds <- self$bounds[sapply(self$bounds, function(b) any(class(b) %in% "Boundary_Transport_Solute"))]
+              soluteTransportBounds <- soluteTransportBounds[sort(sapply(soluteTransportBounds, "[[", "boundaryIdx"))]
             }
 
             if(!is.null(self$boundsReactionTable_solute_int)) {
-            soluteReactionBounds <- self$bounds[sapply(self$bounds, function(b) any(class(b) %in% "Boundary_Reaction_Solute"))]
+              soluteReactionBounds <- self$bounds[sapply(self$bounds, function(b) any(class(b) %in% "Boundary_Reaction_Solute"))]
             }
 
             if(!is.null(self$solute_transport_df) && !is.null(self$boundsReactionTable_solute_int)) {
-            self$bounds <- c(waterTransportBounds, soluteTransportBounds, soluteReactionBounds)
+              self$bounds <- c(waterTransportBounds, soluteTransportBounds, soluteReactionBounds)
             }
 
           },
@@ -224,7 +223,6 @@ systERSModel <-
     #' @description Create a list of the model cells
     #' @return A list of model cells
     cellFactory = function(){
-      browser()
       # Error check to see if any cell specifications are duplicated
       self$errorCheckCellInputs()
 
@@ -267,7 +265,6 @@ systERSModel <-
     #' @description Create a list of the model boundaries
     #' @return A list of model boundaries
     boundaryFactory = function(){
-      browser()
       # Run a few checks on the boundary inputs
       self$errorCheckBoundaryInputs()
 
@@ -316,23 +313,23 @@ systERSModel <-
 
       # create the solute transport bounds (references self$bounds)
       if (!is.null(self$solute_transport_df)) {
-      bounds_transport_solute <- self$initializeSoluteTransportBoundaries()
-      names(bounds_transport_solute) <- self$solute_transport_df$boundaryIdx
+        bounds_transport_solute <- self$initializeSoluteTransportBoundaries()
+        names(bounds_transport_solute) <- self$solute_transport_df$boundaryIdx
       }
 
       # Add the solute transport bounds to the bounds list
       if (!is.null(self$solute_transport_df)) {
-      self$bounds <- c(self$bounds, bounds_transport_solute)
+        self$bounds <- c(self$bounds, bounds_transport_solute)
       }
 
       # Create solute reaction boundaries
       if (!is.null(self$boundsReactionTable_solute_int)) {
-      bounds_react_solute <- self$initializeSoluteReactionBoundaries()
-      names(bounds_react_solute) <- self$boundsTableList[["bounds_reaction_solute_int"]]$boundaryIdx
+        bounds_react_solute <- self$initializeSoluteReactionBoundaries()
+        names(bounds_react_solute) <- self$boundsTableList[["bounds_reaction_solute_int"]]$boundaryIdx
       }
       # Add the solute reaction boundaries to the bounds list
       if (!is.null(self$boundsReactionTable_solute_int)) {
-      self$bounds <- c(self$bounds, bounds_react_solute)
+        self$bounds <- c(self$bounds, bounds_react_solute)
       }
 
     }, # closes boundaryFactory
@@ -617,7 +614,6 @@ systERSModel <-
       plyr::llply(
         1:nrow(tbl),
         function(rowNum) {
-          browser()
           if(tbl$processDomainName[rowNum] == "stream"){
             Boundary_Transport_Water_Stream$new(
               boundaryIdx = tbl$boundaryIdx[rowNum],
@@ -690,22 +686,42 @@ systERSModel <-
       plyr::llply(
         1:nrow(tbl),
         function(rowNum) {
-          Boundary_Reaction_Solute_Stream$new(
-            boundaryIdx = tbl$boundaryIdx[rowNum],
-            currency = tbl$currency[rowNum],
-            upstreamCell = self$cells[[ tbl$upstreamCellIdx[rowNum] ]],
-            downstreamCell = NULL,
-            timeInterval = self$timeInterval,
-            pcntToRemove = tbl$pcntToRemove[rowNum],
-            qStorage = tbl$qStorage[rowNum],
-            volWaterInStorage = tbl$volWaterInStorage[rowNum],
-            alpha = tbl$alpha[rowNum],
-            tauMin = tbl$tauMin[rowNum],
-            tauMax = tbl$tauMax[rowNum],
-            tauRxn = tbl$tauRxn[rowNum],
-            k = tbl$k[rowNum],
-            processMethodName = tbl$processMethodName[rowNum]
-          )
+          browser()
+          if(tbl$processDomain[rowNum] == "stream"){
+            Boundary_Reaction_Solute_Stream$new(
+              boundaryIdx = tbl$boundaryIdx[rowNum],
+              currency = tbl$currency[rowNum],
+              upstreamCell = self$cells[[ tbl$upstreamCellIdx[rowNum] ]],
+              downstreamCell = NULL,
+              timeInterval = self$timeInterval,
+              pcntToRemove = tbl$pcntToRemove[rowNum],
+              qStorage = tbl$qStorage[rowNum],
+              volWaterInStorage = tbl$volWaterInStorage[rowNum],
+              alpha = tbl$alpha[rowNum],
+              tauMin = tbl$tauMin[rowNum],
+              tauMax = tbl$tauMax[rowNum],
+              tauRxn = tbl$tauRxn[rowNum],
+              k = tbl$k[rowNum],
+              processMethodName = tbl$processMethodName[rowNum]
+            )
+          } else if(tbl$processDomain[rowNum] == "soil"){
+            Boundary_Reaction_Solute_Soil$new(
+              boundaryIdx = tbl$boundaryIdx[rowNum],
+              currency = tbl$currency[rowNum],
+              upstreamCell = self$cells[[ tbl$upstreamCellIdx[rowNum] ]],
+              downstreamCell = NULL,
+              timeInterval = self$timeInterval,
+              pcntToRemove = tbl$pcntToRemove[rowNum],
+              qStorage = tbl$qStorage[rowNum],
+              volWaterInStorage = tbl$volWaterInStorage[rowNum],
+              alpha = tbl$alpha[rowNum],
+              tauMin = tbl$tauMin[rowNum],
+              tauMax = tbl$tauMax[rowNum],
+              tauRxn = tbl$tauRxn[rowNum],
+              k = tbl$k[rowNum],
+              processMethodName = tbl$processMethodName[rowNum]
+            )
+          }
         }
       ) # close llply
     }, # close method

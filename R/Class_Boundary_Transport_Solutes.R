@@ -91,6 +91,7 @@ Boundary_Transport_Solute <-
         #'   solute transport boundaries.
         #' @return Updated store values.
         store = function(){
+          browser()
           self$upstreamCell$amount <- self$upstreamCell$amount - self$amount
           self$downstreamCell$amount <- self$downstreamCell$amount + self$amount
           return(c(self$upstreamCell$amount, self$downstreamCell$amount))

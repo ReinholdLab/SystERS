@@ -387,9 +387,162 @@ Boundary_Reaction_Solute_Stream <-
             )
           }
 
-
           hydraulicLoad <- self$upstreamCell$linkedCell$hydraulicLoad
           steadyStateFracRemaining <- exp(-1 * self$qStorage * self$fractionRemovedStorage  / hydraulicLoad)
+          steadyStateFracRemoved <- 1 - steadyStateFracRemaining
+
+          self$damkohlerNum <- -1*(log(1-steadyStateFracRemoved))
+          self$damkohlerNumScaledToTimeStep <- -1*(log(1-self$fractionRemoved))
+          self$damkohlerNumStorage <- -1*(log(1-self$fractionRemovedStorage))
+
+          self$rxnVals <-
+            data.frame(
+              boundary = self$boundaryIdx,
+              processMethodName = self$processMethodName,
+              fracRemoved = self$fractionRemoved,
+              fracRemaning = self$fractionRemaining,
+              fracRemovedFromStrg = self$fractionRemovedStorage,
+              fracRemainingInStrg = self$fractionRemainingStorage,
+              mustBeOne = self$mustBeOne,
+              startingAmount = self$startingAmount,
+              amountToRemove = self$amountToRemove
+            )
+          return(list(amountToRemove = self$amountToRemove, amountToRemain = self$amountToRemain))
+        }
+      ) # close public
+  ) # close class
+
+
+
+
+#' @title Class Boundary_Reaction_Solute_Soil (R6)
+#' A model boundary that calculates solute removal from soil cells
+#' @description Reaction boundary for solute from soil cells
+#' @importFrom R6 R6Class
+#' @export
+Boundary_Reaction_Solute_Soil <-
+  R6::R6Class(
+    classname = "Boundary_Reaction_Solute_Soil",
+
+    #' @inherit Boundary_Reaction_Solute return details
+    inherit = Boundary_Reaction_Solute,
+
+    public =
+      list(
+        #' @description Instantiate a solute reaction boundary in the soil
+        #'   processing domain
+        #' @field fractionRemoved Fraction of solute removed from soil cell
+        fractionRemoved = NULL,
+        #' @field fractionRemaining Fraction of solute remaining in
+        #'   soil cell
+        fractionRemaining = NULL,
+        #' @field damkohlerNum Damkohler number for the boundary.  This
+        #'   Damkohler represents the change over the entire soil reach.
+        damkohlerNum = NULL,
+        #' @field damkohlerNumStorage Damkohler number for the transient storage
+        #'   zone (i.e. hyporheic zone)
+        damkohlerNumStorage = NULL,
+        #' @field damkohlerNumScaledToTimeStep A Damkohler for the reach, scaled
+        #'   to the timestep
+        damkohlerNumScaledToTimeStep = NULL,
+        #' @field concentrationStorage Concentration of solute in storage
+        concentrationStorage = NULL,
+        #'
+        #' @param ... Parameters inherit from Class
+        #'   \code{\link{Boundary_Reaction_Solute}} and thus
+        #'   \code{\link{Boundary}}
+        #' @param boundaryIdx String indexing the boundary
+        #' @param currency String naming the currency handled by the boundary as
+        #'   a character e.g., \code{water, NO3}
+        #' @param upstreamCell  Cell (if one exists) upstream of the boundary
+        #' @param timeInterval  Model time step
+        #' @return A model boundary that calculates solute removal from soil
+        #'   cells in the soil processing domain
+        initialize =
+          function(...){
+            super$initialize(...)
+            # print("Process domain is soil and the reaction class hasn't been
+            #         developed yet.")
+            }, # close initialize
+
+
+        #' @method Method Boundary_Reaction_Solute_Soil$trade
+        #' @description Calculates the trades for reaction boundaries attached
+        #'   to Soil cells
+        #' @return Trades for reaction boundaries attached to Soil cells
+        trade = function(){
+          browser()
+
+          self$processMethod()
+          # Error check: do the fraction of solute removed and remaining from STORAGE sum to one?
+          if( round(sum(self$fractionRemovedStorage, self$fractionRemainingStorage), 3) != 1 ) {
+            msgGeneral <- "The fraction of solute removed and remaining from storage do not sum to one."
+            msgDetail <- paste(
+              msgGeneral,
+              "\nBoundary:", self$boundaryIdx,
+              "\nFraction removed from storage:", self$fractionRemovedStorage,
+              "\nFraction remaining in storage:", self$fractionRemainingStorage
+            )
+            warning(
+              noquote( strsplit (msgDetail, "\n") [[1]])
+            )
+          }
+
+          # Calculate fraction removed and remaining from the cell
+
+          # upstreamWaterBounds <- self$upstreamCell$linkedCell$linkedBoundsList$upstreamBounds
+          # hydraulicLoad <- self$upstreamCell$linkedCell$hydraulicLoad
+
+          # channelDepth <- self$upstreamCell$linkedCell$channelDepth
+
+          k_s <- self$qStorage * self$fractionRemovedStorage
+          # / channelDepth
+
+          self$fractionRemaining <- exp(-1 * k_s  * self$timeInterval)
+
+          self$fractionRemoved <- 1 - self$fractionRemaining
+
+          # Error check: do the fraction of solute removed and remaining from the CELL sum to one?
+          self$mustBeOne <- round(sum(self$fractionRemoved, self$fractionRemaining), 3)
+          if( self$mustBeOne != 1 ) {
+            msgGeneral <- "The fraction of solute removed and remaining in the cell do not sum to one."
+            msgDetail <- paste(
+              msgGeneral,
+              "\nBoundary:", self$boundaryIdx,
+              "\nFraction removed from storage:", self$fractionRemovedStorage,
+              "\nFraction remaining in storage:", self$fractionRemainingStorage
+            )
+            tmp <- data.frame(
+              fracRemnStrg = self$fractionRemainingStorage,
+              fracRemovStrg = self$fractionRemovedStorage,
+              fracRemov = self$fractionRemoved,
+              fracRmn = self$fractionRemaining)
+            stop(
+              noquote( strsplit (msgDetail, "\n") [[1]]),
+              print( tmp )
+            )
+          }
+
+          self$startingAmount <- self$upstreamCell$amount # mols or mass of solute in primary flow field at start of time step
+
+          self$amountToRemove <- self$startingAmount * self$fractionRemoved
+          self$amountToRemain <- self$startingAmount - self$amountToRemove
+
+          # throw error if you are removing more solute than is available
+          if(self$amountToRemain < 0){
+            browser()
+            stop(
+              paste("You are trying to remove more solute from a cell than it held at the start of the timestep.
+                      Boundary is ",
+                    print(self$boundaryIdx)
+              )
+            )
+          }
+
+
+          # hydraulicLoad <- self$upstreamCell$linkedCell$hydraulicLoad
+          steadyStateFracRemaining <- exp(-1 * self$qStorage * self$fractionRemovedStorage)
+                                          # / hydraulicLoad)
           steadyStateFracRemoved <- 1 - steadyStateFracRemaining
 
           self$damkohlerNum <- -1*(log(1-steadyStateFracRemoved))

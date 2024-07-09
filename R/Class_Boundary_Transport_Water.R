@@ -43,6 +43,7 @@ Boundary_Transport_Water <-
         #' @description Runs the store method on water cells in the model.
         #' @return Updated store values.
         store = function(){
+          browser()
           self$upstreamCell$waterVolume <- self$upstreamCell$waterVolume - self$volume
           self$downstreamCell$waterVolume <- self$downstreamCell$waterVolume + self$volume
 
@@ -285,6 +286,7 @@ Boundary_Transport_Water_Soil <-
           # and vice versa for d/s model boundaries. Same pattern applies to
           # hydraulic load...
 
+          browser()
           if(self$usModBound) {
             connectedCell <- self$downstreamCell
           } else if(self$dsModBound){
@@ -303,9 +305,9 @@ Boundary_Transport_Water_Soil <-
               } else {spillOver <- 0
               self$downstreamCell$cellSpillOver <- spillOver}}
           else if (self$dsModBound){
-            self$spillOver <- self$upstreamCell$cellSpillOver
+            spillOver <- self$upstreamCell$cellSpillOver
+            self$downstreamCell$cellSpillOver <- spillOver
           }
-
         },
 
 
@@ -317,26 +319,33 @@ Boundary_Transport_Water_Soil <-
         #'   (\code{discharge, volume}).
 
         trade   = function(){
+          browser()
           # volume of water to trade
           if(self$spillOver > 0) {
-          self$discharge <- self$spillOver
-          } else { self$downstreamCell$cellInput <- self$discharge}
-          self$volume <- self$discharge * self$timeInterval #L
+            self$discharge <- self$spillOver
+            if(self$usModBound){
+              if((self$volume + self$spillOver) > self$downstreamCell$saturationVolume) {
+                self$downstreamCell$waterVolume <- self$downstreamCell$saturationVolume
+              } else if ((self$volume + self$spillOver) < self$downstreamCell$saturationVolume) {
+                self$downstreamCell$waterVolume <- self$volume + self$spillOver}
+            } else if (self$dsModBound) {
+              if((self$volume + self$spillOver) > self$upstreamCell$saturationVolume) {
+                self$upstreamCell$waterVolume <- self$upstreamCell$saturationVolume
+              } else if ((self$volume + self$spillOver) < self$upstreamCell$saturationVolume) {
+                self$upstreamCell$waterVolume <- self$volume + self$spillOver}
+            }
+          } else {self$discharge -> self$discharge}
 
 
-          # if(!self$usModBound){
-          #   # volume of water to remain
-          #   volumeToRemain <- self$upstreamCell$waterVolume - self$volume
-          #   if(volumeToRemain < 0) stop(
-          #     paste(
-          #       "You are about to remove more water volume from a cell than it held at the start of the timestep.
-          #      Boundary is ", print(self$boundaryIdx)
-          #     ) # close paste
-          #   ) # close warning
-          # } # close if statement
+
+          # self$waterVolume <- if(self$cellSpillOver > 0) {
+          #   self$waterVolume <- self$saturationVolume
+          # } else {
+          #   self$waterVolume <- self$waterVolume + self$cellInput
+          # }
 
 
-          return(list(discharge = self$discharge, volume = self$volume, spillOver = self$spillOver))
+          return(list(discharge = self$discharge, spillOver = self$spillOver))
         } # close function def
       ) # close public
 
