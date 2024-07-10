@@ -43,7 +43,6 @@ Boundary_Transport_Water <-
         #' @description Runs the store method on water cells in the model.
         #' @return Updated store values.
         store = function(){
-          browser()
           self$upstreamCell$waterVolume <- self$upstreamCell$waterVolume - self$volume
           self$downstreamCell$waterVolume <- self$downstreamCell$waterVolume + self$volume
 
@@ -286,7 +285,6 @@ Boundary_Transport_Water_Soil <-
           # and vice versa for d/s model boundaries. Same pattern applies to
           # hydraulic load...
 
-          browser()
           if(self$usModBound) {
             connectedCell <- self$downstreamCell
           } else if(self$dsModBound){
