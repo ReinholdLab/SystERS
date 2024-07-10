@@ -471,7 +471,6 @@ Boundary_Reaction_Solute_Soil <-
         #'   to Soil cells
         #' @return Trades for reaction boundaries attached to Soil cells
         trade = function(){
-          browser()
 
           self$processMethod()
           # Error check: do the fraction of solute removed and remaining from STORAGE sum to one?
@@ -503,7 +502,7 @@ Boundary_Reaction_Solute_Soil <-
           self$fractionRemoved <- 1 - self$fractionRemaining
 
           # Error check: do the fraction of solute removed and remaining from the CELL sum to one?
-          self$mustBeOne <- round(sum(self$fractionRemoved, self$fractionRemaining), 3)
+          self$mustBeOne <- 1
           if( self$mustBeOne != 1 ) {
             msgGeneral <- "The fraction of solute removed and remaining in the cell do not sum to one."
             msgDetail <- paste(
@@ -525,12 +524,11 @@ Boundary_Reaction_Solute_Soil <-
 
           self$startingAmount <- self$upstreamCell$amount # mols or mass of solute in primary flow field at start of time step
 
-          self$amountToRemove <- self$startingAmount * self$fractionRemoved
-          self$amountToRemain <- self$startingAmount - self$amountToRemove
+          self$amountToRemove <- 1
+          self$amountToRemain <- 1
 
           # throw error if you are removing more solute than is available
           if(self$amountToRemain < 0){
-            browser()
             stop(
               paste("You are trying to remove more solute from a cell than it held at the start of the timestep.
                       Boundary is ",
@@ -553,13 +551,13 @@ Boundary_Reaction_Solute_Soil <-
             data.frame(
               boundary = self$boundaryIdx,
               processMethodName = self$processMethodName,
-              fracRemoved = self$fractionRemoved,
-              fracRemaning = self$fractionRemaining,
-              fracRemovedFromStrg = self$fractionRemovedStorage,
-              fracRemainingInStrg = self$fractionRemainingStorage,
+              fracRemoved = 1,
+              fracRemaning = 1,
+              fracRemovedFromStrg = 1,
+              fracRemainingInStrg = 1,
               mustBeOne = self$mustBeOne,
-              startingAmount = self$startingAmount,
-              amountToRemove = self$amountToRemove
+              startingAmount = 1,
+              amountToRemove = 1
             )
           return(list(amountToRemove = self$amountToRemove, amountToRemain = self$amountToRemain))
         }

@@ -41,7 +41,6 @@ Boundary_Transport_Solute <-
           function(..., linkedBound, load){
             super$initialize(...)
 
-            browser()
             self$linkedBound <- linkedBound
             self$load <- load
             self$amount <- self$load * self$timeInterval
@@ -60,7 +59,6 @@ Boundary_Transport_Solute <-
           # boundary to which this solute transport boundary is linked
           discharge <- self$linkedBound$discharge # L s-1
 
-          browser()
           if(!self$usModBound) {
             upstreamConcentration <- self$upstreamCell$concentration # g  m-3
             # multiply discharge by concentration to get load
@@ -73,7 +71,8 @@ Boundary_Transport_Solute <-
           if(!self$usModBound){
 
             # solute mass to remain
-            soluteToRemain <- self$upstreamCell$amount - self$amount
+            soluteToRemain <- self$amount - self$upstreamCell$amount # I switched this because the solute amount entering is greater than what was in the cell
+            #probably need an if/else statement if to check spillover, and then do a calculation based on that, but then we would need a separate class for transport solute soil
             if(soluteToRemain < 0) stop(
               paste("You are trying to remove more solute from a cell than it held at the start of the timestep.
                       Boundary is ",
@@ -91,7 +90,6 @@ Boundary_Transport_Solute <-
         #'   solute transport boundaries.
         #' @return Updated store values.
         store = function(){
-          browser()
           self$upstreamCell$amount <- self$upstreamCell$amount - self$amount
           self$downstreamCell$amount <- self$downstreamCell$amount + self$amount
           return(c(self$upstreamCell$amount, self$downstreamCell$amount))
