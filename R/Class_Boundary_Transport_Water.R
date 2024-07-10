@@ -319,7 +319,6 @@ Boundary_Transport_Water_Soil <-
         #'   (\code{discharge, volume}).
 
         trade   = function(){
-          browser()
           # volume of water to trade
           if(self$spillOver > 0) {
             self$discharge <- self$spillOver

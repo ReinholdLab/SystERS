@@ -659,7 +659,6 @@ systERSModel <-
         plyr::llply(
           1:nrow(tbl),
           function(rowNum) {
-            browser()
             Boundary_Transport_Solute$new(
               boundaryIdx = tbl$boundaryIdx[rowNum],
               currency = tbl$currency[rowNum],
@@ -686,7 +685,6 @@ systERSModel <-
       plyr::llply(
         1:nrow(tbl),
         function(rowNum) {
-          browser()
           if(tbl$processDomain[rowNum] == "stream"){
             Boundary_Reaction_Solute_Stream$new(
               boundaryIdx = tbl$boundaryIdx[rowNum],
