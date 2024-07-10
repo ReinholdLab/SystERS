@@ -43,6 +43,7 @@ Boundary_Transport_Water <-
         #' @description Runs the store method on water cells in the model.
         #' @return Updated store values.
         store = function(){
+          browser()
           self$upstreamCell$waterVolume <- self$upstreamCell$waterVolume - self$volume
           self$downstreamCell$waterVolume <- self$downstreamCell$waterVolume + self$volume
 
@@ -290,6 +291,7 @@ Boundary_Transport_Water_Soil <-
           # and vice versa for d/s model boundaries. Same pattern applies to
           # hydraulic load...
 
+          browser()
           if(self$usModBound) {
             connectedCell <- self$downstreamCell
           } else if(self$dsModBound){
@@ -307,13 +309,17 @@ Boundary_Transport_Water_Soil <-
               } else {spillOver <- 0
               self$downstreamCell$cellSpillOver <- spillOver}}
           else if (self$dsModBound){
-            self$spillOver <- self$upstreamCell$cellSpillOver
+            spillOver <- self$upstreamCell$cellSpillOver
+            self$downstreamCell$cellSpillOver <- spillOver
           }
+<<<<<<< HEAD
 
 
 
           paste("SpillOver is:", print(self$spillOver))
 
+=======
+>>>>>>> 66d4599ecf18c8ec0939ed4a7a1f120c2089514c
         },
 
 
@@ -325,7 +331,9 @@ Boundary_Transport_Water_Soil <-
         #'   (\code{discharge, volume}).
 
         trade   = function(){
+          browser()
           # volume of water to trade
+<<<<<<< HEAD
           self$discharge <- self$spillOver
           self$volume <- self$discharge * self$timeInterval #L
 
@@ -339,9 +347,33 @@ Boundary_Transport_Water_Soil <-
           #     ) # close paste
           #   ) # close warning
           # } # close if statement
+=======
+          if(self$spillOver > 0) {
+            self$discharge <- self$spillOver
+            if(self$usModBound){
+              if((self$volume + self$spillOver) > self$downstreamCell$saturationVolume) {
+                self$downstreamCell$waterVolume <- self$downstreamCell$saturationVolume
+              } else if ((self$volume + self$spillOver) < self$downstreamCell$saturationVolume) {
+                self$downstreamCell$waterVolume <- self$volume + self$spillOver}
+            } else if (self$dsModBound) {
+              if((self$volume + self$spillOver) > self$upstreamCell$saturationVolume) {
+                self$upstreamCell$waterVolume <- self$upstreamCell$saturationVolume
+              } else if ((self$volume + self$spillOver) < self$upstreamCell$saturationVolume) {
+                self$upstreamCell$waterVolume <- self$volume + self$spillOver}
+            }
+          } else {self$discharge -> self$discharge}
 
 
-          return(list(discharge = self$discharge, volume = self$volume, spillOver = self$spillOver))
+
+          # self$waterVolume <- if(self$cellSpillOver > 0) {
+          #   self$waterVolume <- self$saturationVolume
+          # } else {
+          #   self$waterVolume <- self$waterVolume + self$cellInput
+          # }
+>>>>>>> 66d4599ecf18c8ec0939ed4a7a1f120c2089514c
+
+
+          return(list(discharge = self$discharge, spillOver = self$spillOver))
         } # close function def
       ) # close public
 

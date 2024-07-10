@@ -155,7 +155,10 @@ systERSModel <-
             self$cellsTableList <- cellsTableList[cellTablesToKeep]
 
             #### BOUNDARIES
+<<<<<<< HEAD
 
+=======
+>>>>>>> 66d4599ecf18c8ec0939ed4a7a1f120c2089514c
             # Tables with boundary specifications
             self$boundsTransportTable_water_int <- boundsTransportTable_water_int
             self$boundsTransportTable_water_ext <- boundsTransportTable_water_ext
@@ -204,20 +207,44 @@ systERSModel <-
             waterTransportBounds <- self$bounds[sapply(self$bounds, function(b) any(class(b) %in% "Boundary_Transport_Water"))]
             waterTransportBounds <- waterTransportBounds[sort(sapply(waterTransportBounds, "[[", "boundaryIdx"))]
 
+<<<<<<< HEAD
             soluteTransportBounds <- self$bounds[sapply(self$bounds, function(b) any(class(b) %in% "Boundary_Transport_Solute"))]
             soluteTransportBounds <- soluteTransportBounds[sort(sapply(soluteTransportBounds, "[[", "boundaryIdx"))]
 
             soluteReactionBounds <- self$bounds[sapply(self$bounds, function(b) any(class(b) %in% "Boundary_Reaction_Solute"))]
 
             self$bounds <- c(waterTransportBounds, soluteTransportBounds, soluteReactionBounds)
+=======
+            if(!is.null(self$solute_transport_df)) {
+              soluteTransportBounds <- self$bounds[sapply(self$bounds, function(b) any(class(b) %in% "Boundary_Transport_Solute"))]
+              soluteTransportBounds <- soluteTransportBounds[sort(sapply(soluteTransportBounds, "[[", "boundaryIdx"))]
+            }
+
+            if(!is.null(self$boundsReactionTable_solute_int)) {
+              soluteReactionBounds <- self$bounds[sapply(self$bounds, function(b) any(class(b) %in% "Boundary_Reaction_Solute"))]
+            }
+
+            if(!is.null(self$solute_transport_df) && !is.null(self$boundsReactionTable_solute_int)) {
+              self$bounds <- c(waterTransportBounds, soluteTransportBounds, soluteReactionBounds)
+            }
+>>>>>>> 66d4599ecf18c8ec0939ed4a7a1f120c2089514c
 
           },
 
 
+<<<<<<< HEAD
         #' @method Method systERSModel$cellFactory
         #' @description Create a list of the model cells
         #' @return A list of model cells
         cellFactory = function(){
+=======
+    #' @method Method systERSModel$cellFactory
+    #' @description Create a list of the model cells
+    #' @return A list of model cells
+    cellFactory = function(){
+      # Error check to see if any cell specifications are duplicated
+      self$errorCheckCellInputs()
+>>>>>>> 66d4599ecf18c8ec0939ed4a7a1f120c2089514c
 
           # Error check to see if any cell specifications are duplicated
           self$errorCheckCellInputs()
@@ -238,8 +265,17 @@ systERSModel <-
 
           #Soil cells - write initialize function
 
+<<<<<<< HEAD
           self$linkSoluteCellsToWaterCells_stream()
           return()
+=======
+    #' @method Method systERSModel$boundaryFactory
+    #' @description Create a list of the model boundaries
+    #' @return A list of model boundaries
+    boundaryFactory = function(){
+      # Run a few checks on the boundary inputs
+      self$errorCheckBoundaryInputs()
+>>>>>>> 66d4599ecf18c8ec0939ed4a7a1f120c2089514c
 
         }, # closes cellFactory
 
@@ -649,8 +685,242 @@ systERSModel <-
             }
           )
 
+<<<<<<< HEAD
           return()
         },
+=======
+      } else {
+        bounds_transport_water <- bounds_transport_water_ext
+      }
+
+      # Add the water bounds to the bounds list
+      self$bounds <- bounds_transport_water
+
+      # create the solute transport bounds (references self$bounds)
+      if (!is.null(self$solute_transport_df)) {
+        bounds_transport_solute <- self$initializeSoluteTransportBoundaries()
+        names(bounds_transport_solute) <- self$solute_transport_df$boundaryIdx
+      }
+
+      # Add the solute transport bounds to the bounds list
+      if (!is.null(self$solute_transport_df)) {
+        self$bounds <- c(self$bounds, bounds_transport_solute)
+      }
+
+      # Create solute reaction boundaries
+      if (!is.null(self$boundsReactionTable_solute_int)) {
+        bounds_react_solute <- self$initializeSoluteReactionBoundaries()
+        names(bounds_react_solute) <- self$boundsTableList[["bounds_reaction_solute_int"]]$boundaryIdx
+      }
+      # Add the solute reaction boundaries to the bounds list
+      if (!is.null(self$boundsReactionTable_solute_int)) {
+        self$bounds <- c(self$bounds, bounds_react_solute)
+      }
+
+    }, # closes boundaryFactory
+
+
+    #' @method Method systERSModel$errorCheckCellInputs
+    #' @description Error check to see if any cell specifications are
+    #'   duplicated
+    #' @return Nothing if no error is detected.  An error message is
+    #'   returned if an error is detected.
+    errorCheckCellInputs = function(){
+      lapply(
+        self$cellsTableList,
+        function(t) {
+          # A series of error checks:
+          if( any( duplicated(t) ) ){
+            stop("At least one specification for a cell is duplicated in one of the cell tables.")
+          }
+          if(length(t$cellIdx) != length(unique(t$cellIdx))) {
+            stop("A cell name was duplicated in one of the cell tables.  All cell names must be unique.")
+          }
+        }
+      ) # close lapply
+    }, # close method
+
+
+    #' @method Method systERSModel$initializeWaterCells_stream
+    #' @description Instantiate the water cells in the stream process domain
+    #' @importFrom plyr llply
+    #' @return List of stream water cells
+    initializeWaterCells_stream = function(){
+      tbl <- self$cellsTableList$cells_water_stream
+      if(!is.null(tbl)){
+        return(
+          plyr::llply(
+            1:nrow(tbl),
+            function(rowNum){
+              Cell_Water_Stream$new(
+                cellIdx = tbl$cellIdx[rowNum],
+                currency = tbl$currency[rowNum],
+                processDomain = tbl$processDomain[rowNum],
+
+                channelWidth = tbl$channelWidth[rowNum],
+                channelLength = tbl$channelLength[rowNum],
+                channelDepth = tbl$channelDepth[rowNum]
+              )
+            }
+          ) # close llply
+        ) # close return
+      } else {return(NULL)} # close if
+    }, # close method
+
+    #' @method Method systERSModel$initializeSoluteCells_stream
+    #' @description Instantiate the solute cells in the stream process domain
+    #' @importFrom plyr llply
+    #' @return List of stream solute cells
+    initializeSoluteCells_stream = function(){
+      tbl <- self$cellsTable_solute_stream
+      if(!is.null(tbl)){
+        return(
+          plyr::llply(
+            1:nrow(tbl),
+            function(rowNum){
+              Cell_Solute$new(
+                cellIdx = tbl$cellIdx[rowNum],
+                processDomain = tbl$processDomain[rowNum],
+                currency = tbl$currency[rowNum],
+
+                concentration = tbl$concentration[rowNum],
+                linkedCell = self$cells[[ tbl$linkedCell[rowNum] ]]
+              )
+            }
+          ) # close llply
+        ) # close return
+      } else{ return(NULL) } # close if
+    }, # close method
+
+    #' @method Method systERSModel$initializeWaterCells_soil
+    #' @description Instantiate the soil water cells in the stream process domain
+    #' @importFrom plyr llply
+    #' @return List of soil water cells
+    initializeWaterCells_soil = function(){
+      tbl <- self$cellsTableList$cells_water_soil
+      if(!is.null(tbl)){
+        return(
+          plyr::llply(
+            1:nrow(tbl),
+            function(rowNum){
+              Cell_Water_Soil$new(
+                cellIdx = tbl$cellIdx[rowNum],
+                currency = tbl$currency[rowNum],
+                processDomain = tbl$processDomain[rowNum],
+
+                cellLength = tbl$cellLength[rowNum],
+                cellHeight = tbl$cellHeight[rowNum],
+                cellWidth = tbl$cellWidth[rowNum],
+                cellSoilType = tbl$cellSoilType[rowNum],
+                initWaterVolume = tbl$initWaterVolume[rowNum]
+              )
+            }
+          ) # close llply
+        ) # close return
+      } else {return(NULL)} # close if
+    }, # close method
+
+    #' @method Method systERSModel$initializeSoluteCells_soil
+    #' @description Instantiate the solute cells in the soil process domain
+    #' @importFrom plyr llply
+    #' @return List of soil solute cells
+    initializeSoluteCells_soil = function(){
+      tbl <- self$cellsTable_solute_soil
+      if(!is.null(tbl)){
+        return(
+          plyr::llply(
+            1:nrow(tbl),
+            function(rowNum){
+              Cell_Solute$new(
+                cellIdx = tbl$cellIdx[rowNum],
+                processDomain = tbl$processDomain[rowNum],
+                currency = tbl$currency[rowNum],
+
+                concentration = tbl$concentration[rowNum],
+                linkedCell = self$cells[[ tbl$linkedCell[rowNum] ]]
+              )
+            }
+          ) # close llply
+        ) # close return
+      } else{ return(NULL) } # close if
+    }, # close method
+
+
+    #' @method Method systERSModel$linkSoluteCellsToWaterCells_stream
+    #' @description Link the solute cells to the water cells in the stream process
+    #'   domain
+    #' @return Water cells with their \code{linkedSoluteCells} attribute populated
+    #'   with a list of solute cells that are linked to the water cell
+    linkSoluteCellsToWaterCells_stream =
+      function(){
+        streamWaterCells <- self$cells[sapply(self$cells, function(c) "Cell_Water_Stream" %in% class(c))]
+        lapply(
+          streamWaterCells,
+          function(c) {
+            # identify the water cells to which the solute cells are connected
+            cellIdxs <- self$cellsTable_solute_stream$cellIdx[self$cellsTable_solute_stream$linkedCell == c$cellIdx]
+            soluteCells <- self$cells[cellIdxs]
+            names(soluteCells) <- cellIdxs
+            # link the solute cells to the water cells
+            c$linkedSoluteCells <- soluteCells
+            return(c)
+          }
+        ) # close lapply
+      }, # close method
+
+    #' @method Method systERSModel$linkSoluteCellsToWaterCells_soil
+    #' @description Link the solute cells to the soil water cells in the stream process
+    #'   domain
+    #' @return Soil water cells with their \code{linkedSoluteCells} attribute populated
+    #'   with a list of solute cells that are linked to the soil water cell
+    linkSoluteCellsToWaterCells_soil =
+      function(){
+        soilWaterCells <- self$cells[sapply(self$cells, function(c) "Cell_Water_Soil" %in% class(c))]
+        lapply(
+          soilWaterCells,
+          function(c) {
+
+
+            # identify the water cells to which the solute cells are connected
+            cellIdxs <- self$cellsTable_solute_soil$cellIdx[self$cellsTable_solute_soil$linkedCell == c$cellIdx]
+            soluteCells <- self$cells[cellIdxs]
+            names(soluteCells) <- cellIdxs
+            # link the solute cells to the water cells
+            c$linkedSoluteCells <- soluteCells
+            return(c)
+          }
+        ) # close lapply
+      }, # close method
+
+
+    #' @method Method systERSModel$errorCheckBoundaryInputs
+    #' @description Error check to see if any boundary specifications are duplicated
+    #'   or have references to cells that do not exist.
+    #' @return Nothing if no error is detected.  If an error is detected, a message
+    #'   is thrown.
+    errorCheckBoundaryInputs =
+      function(){
+        lapply(
+          1:length(self$boundsTableList),
+          function(i) {
+            tblName <- names(self$boundsTableList)[i]
+            tbl <- self$boundsTableList[[i]]
+            if( any( duplicated(tbl) ) ){
+              stop(paste0("At least one specification for a boundary is duplicated in the table", tblName, "."))
+            }
+            if(length(tbl$boundaryIdx) != length(unique(tbl$boundaryIdx))) {
+              stop(paste0("A boundary name was duplicated in the table:", tblName, ".  All boundary names must be unique."))
+            }
+            if( any(!(unique(tbl$downstreamCellIdx[!is.na(tbl$downstreamCellIdx)]) %in% unique(sapply(self$cells, function(cell) cell$cellIdx)))) ){
+              stop(paste0("In the table ", tblName, ", a name of a downstream cell was provided that refers to a cell that has not been instantiated."))
+            }
+            if( any(!(unique(tbl$upstreamCellIdx[!is.na(tbl$upstreamCellIdx)]) %in% unique(sapply(self$cells, function(cell) cell$cellIdx)))) ){
+              stop(paste0("In the table ", tblName, ", a name of a upstream cell was provided that refers to a cell that has not been instantiated."))
+            }
+          }
+        ) # close lapply
+      }, # close method
+>>>>>>> 66d4599ecf18c8ec0939ed4a7a1f120c2089514c
 
 
 
@@ -673,6 +943,7 @@ systERSModel <-
           return()
         },
 
+<<<<<<< HEAD
         #' @method Method systERSModel$update
         #'
         #' @description Runs the update method on all cells and boundaries in the model.
@@ -682,6 +953,76 @@ systERSModel <-
           lapply(
             self$bounds[sapply(self$bounds, function(b) any(class(b) %in% "Boundary_Transport_Water"))],
             function(b) b$populateDependencies()
+=======
+          if(!(locationOfBoundInNetwork %in% c("upstream", "downstream"))) stop("External model boundaries must have a 'locationOfBoundInNetwork' with a value of either 'upstream' or 'downstream'.")
+          if(locationOfBoundInNetwork == "upstream") {
+            upstreamCell <- NA
+            downstreamCell <- tbl$cellIdx[rowNum]
+          }
+          if(locationOfBoundInNetwork == "downstream") {
+            upstreamCell <- tbl$cellIdx[rowNum]
+            downstreamCell <- NA
+          }
+
+          if(tbl$processDomain[rowNum] == "stream"){
+            b <-
+              Boundary_Transport_Water_Stream$new(
+                boundaryIdx = tbl$boundaryIdx[rowNum],
+                currency = tbl$currency[rowNum],
+                upstreamCell = self$cells[[upstreamCell]],
+                downstreamCell = self$cells[[downstreamCell]],
+                discharge = tbl$discharge[rowNum],
+                timeInterval = self$timeInterval
+              )
+          } else if (tbl$processDomain[rowNum] == "soil"){
+            b <-
+              Boundary_Transport_Water_Soil$new(
+                boundaryIdx = tbl$boundaryIdx[rowNum],
+                currency = tbl$currency[rowNum],
+                upstreamCell = self$cells[[upstreamCell]],
+                downstreamCell = self$cells[[downstreamCell]],
+                discharge = tbl$discharge[rowNum],
+                timeInterval = self$timeInterval
+              )
+          } else {
+            b <-
+              Boundary_Transport_Water$new(
+                boundaryIdx = tbl$boundaryIdx[rowNum],
+                currency = tbl$currency[rowNum],
+                upstreamCell = self$cells[[upstreamCell]],
+                downstreamCell = self$cells[[downstreamCell]],
+                discharge = tbl$discharge[rowNum],
+                timeInterval = self$timeInterval
+              )
+          }
+          return(b)
+
+        }
+      ) # close llply
+    }, # close method
+
+
+
+    #' @method Method systERSModel$initializeInternalWaterTransportBoundaries
+    #' @description Instantiate the transport boundaries that are internal to the
+    #'   physical edges of the model
+    #' @importFrom plyr llply
+    #' @return Water transport boundaries within the upstream and downstream extents
+    #'   of the model topology
+    initializeInternalWaterTransportBoundaries = function(){
+      tbl <- self$boundsTableList[["bounds_transport_water_int"]]
+      plyr::llply(
+        1:nrow(tbl),
+        function(rowNum) {
+          if(tbl$processDomainName[rowNum] == "stream"){
+            Boundary_Transport_Water_Stream$new(
+              boundaryIdx = tbl$boundaryIdx[rowNum],
+              currency = tbl$currency[rowNum],
+              upstreamCell = self$cells[[  tbl$upstreamCellIdx[rowNum] ]],
+              downstreamCell = self$cells[[ tbl$downstreamCellIdx[rowNum] ]],
+              discharge = tbl$discharge[rowNum],
+              timeInterval = self$timeInterval
+>>>>>>> 66d4599ecf18c8ec0939ed4a7a1f120c2089514c
             )
           return()
         },
@@ -698,6 +1039,157 @@ systERSModel <-
           self$iterationNum <- self$iterationNum + 1
 
         }
+<<<<<<< HEAD
+=======
+      ) # close llply
+    }, # close method
+
+
+
+    #' @method Method systERSModel$initializeSoluteTransportBoundaries
+    #' @description Instantiate the solute transport boundaries
+    #' @importFrom plyr llply
+    #' @return Solute transport boundaries
+    #'
+    initializeSoluteTransportBoundaries =
+      function( ){
+        tbl <- self$solute_transport_df
+        plyr::llply(
+          1:nrow(tbl),
+          function(rowNum) {
+            browser()
+            Boundary_Transport_Solute$new(
+              boundaryIdx = tbl$boundaryIdx[rowNum],
+              currency = tbl$currency[rowNum],
+              linkedBound = self$bounds[[ tbl$linkedBound[rowNum] ]],
+              # concentration = tbl$concentration[rowNum],
+              load = tbl$load[rowNum],
+              upstreamCell = self$cells[[  tbl$upstreamCellIdx[rowNum] ]],
+              downstreamCell = self$cells[[ tbl$downstreamCellIdx[rowNum] ]],
+              timeInterval = self$timeInterval
+            )
+          }
+        )
+      }, # close method
+
+
+
+    #' @method Method systERSModel$initializeSoluteReactionBoundaries
+    #' @description Instantiate the solute reaction boundaries.  Current
+    #'   model version only supports stream reaction boundaries.
+    #' @importFrom plyr llply
+    #' @return A list of solute reaction boundaries
+    initializeSoluteReactionBoundaries = function(){
+      tbl <- self$boundsTableList[["bounds_reaction_solute_int"]]
+      plyr::llply(
+        1:nrow(tbl),
+        function(rowNum) {
+          browser()
+          if(tbl$processDomain[rowNum] == "stream"){
+            Boundary_Reaction_Solute_Stream$new(
+              boundaryIdx = tbl$boundaryIdx[rowNum],
+              currency = tbl$currency[rowNum],
+              upstreamCell = self$cells[[ tbl$upstreamCellIdx[rowNum] ]],
+              downstreamCell = NULL,
+              timeInterval = self$timeInterval,
+              pcntToRemove = tbl$pcntToRemove[rowNum],
+              qStorage = tbl$qStorage[rowNum],
+              volWaterInStorage = tbl$volWaterInStorage[rowNum],
+              alpha = tbl$alpha[rowNum],
+              tauMin = tbl$tauMin[rowNum],
+              tauMax = tbl$tauMax[rowNum],
+              tauRxn = tbl$tauRxn[rowNum],
+              k = tbl$k[rowNum],
+              processMethodName = tbl$processMethodName[rowNum]
+            )
+          } else if(tbl$processDomain[rowNum] == "soil"){
+            Boundary_Reaction_Solute_Soil$new(
+              boundaryIdx = tbl$boundaryIdx[rowNum],
+              currency = tbl$currency[rowNum],
+              upstreamCell = self$cells[[ tbl$upstreamCellIdx[rowNum] ]],
+              downstreamCell = NULL,
+              timeInterval = self$timeInterval,
+              pcntToRemove = tbl$pcntToRemove[rowNum],
+              qStorage = tbl$qStorage[rowNum],
+              volWaterInStorage = tbl$volWaterInStorage[rowNum],
+              alpha = tbl$alpha[rowNum],
+              tauMin = tbl$tauMin[rowNum],
+              tauMax = tbl$tauMax[rowNum],
+              tauRxn = tbl$tauRxn[rowNum],
+              k = tbl$k[rowNum],
+              processMethodName = tbl$processMethodName[rowNum]
+            )
+          }
+        }
+      ) # close llply
+    }, # close method
+
+
+
+    #' @method Method systERSModel$linkBoundsToCells
+    #' @description Creates a list of boundaries attached to each cell and
+    #'   then adds the list of bounds connected to each cell as an attribute
+    #'   of the cell.
+    #' @return Cells with \code{linkedBoundsList} attribute populated
+    linkBoundsToCells = function(){
+
+      lapply(
+        self$bounds, function(bound) {
+          bound$upstreamCell$linkedBoundsList$downstreamBounds <- c(bound$upstreamCell$linkedBoundsList$downstreamBounds, bound)
+          bound$downstreamCell$linkedBoundsList$upstreamBounds <- c(bound$downstreamCell$linkedBoundsList$upstreamBounds, bound)
+        }
+      )
+
+      return()
+    },
+
+
+
+    #' @method Method systERSModel$trade
+    #' @description Runs the trade method on all boundaries in the model in
+    #'   the order in which they occur in the \code{bounds} list.
+    #' @return Updated boundary values.
+    trade = function(){
+      lapply(self$bounds, function(bound) bound$trade())
+      return()
+    },
+
+
+    #' @method Method systERSModel$store
+    #'
+    #' @description Runs the store method on all cells in the model.
+    #' @return Updated store values.
+    store = function(){
+      lapply(self$bounds, function(bound) bound$store())
+      return()
+    },
+
+    #' @method Method systERSModel$update
+    #'
+    #' @description Runs the update method on all cells and boundaries in the model.
+    #' @return Updates all values in cells and boundaries based on trades and stores.
+    update = function(){
+      lapply(self$cells, function(c) c$update())
+      lapply(
+        self$bounds[sapply(self$bounds, function(b) any(class(b) %in% "Boundary_Transport_Water"))],
+        function(b) b$populateDependencies()
+      )
+      return()
+    },
+
+    #' @method Method systERSModel$iterate
+    #' @description Iterates the model by calling all trades, stores, and
+    #'   updates.
+    #' @return All cells and boundaries will values updated to reflect the
+    #'   trades, stores, and updates that occurred during the time step.
+    iterate = function(){
+      self$trade()
+      self$store()
+      self$update()
+      self$iterationNum <- self$iterationNum + 1
+
+    }
+>>>>>>> 66d4599ecf18c8ec0939ed4a7a1f120c2089514c
 
       ) # closes public list
   ) # closes systERS model
