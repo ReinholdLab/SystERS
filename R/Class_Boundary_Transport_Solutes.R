@@ -41,6 +41,7 @@ Boundary_Transport_Solute <-
           function(..., linkedBound, load){
             super$initialize(...)
 
+            browser()
             self$linkedBound <- linkedBound
             self$load <- load
             self$amount <- self$load * self$timeInterval
@@ -59,6 +60,7 @@ Boundary_Transport_Solute <-
           # boundary to which this solute transport boundary is linked
           discharge <- self$linkedBound$discharge # L s-1
 
+          browser()
           if(!self$usModBound) {
             upstreamConcentration <- self$upstreamCell$concentration # g  m-3
             # multiply discharge by concentration to get load
@@ -69,6 +71,7 @@ Boundary_Transport_Solute <-
           self$amount <- self$load * self$timeInterval # g
 
           if(!self$usModBound){
+
             # solute mass to remain
             soluteToRemain <- self$upstreamCell$amount - self$amount
             if(soluteToRemain < 0) stop(

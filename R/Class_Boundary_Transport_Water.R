@@ -55,9 +55,6 @@ Boundary_Transport_Water <-
 
 
 
-
-
-
 ########  STREAM-SPECIFIC BOUNDARIES   ########
 
 #' @title Class Boundary_Transport_Water_Stream (R6)
@@ -197,7 +194,6 @@ Boundary_Transport_Water_Stream <-
 
 
 
-
 ########  SOIL-SPECIFIC BOUNDARIES   ########
 
 #' @title Class Boundary_Transport_Water_Soil (R6)
@@ -255,7 +251,6 @@ Boundary_Transport_Water_Soil <-
         populateDependenciesInternalBound = function(){
           # To get spillOver...
 
-
           dsWaterVolume <- self$downstreamCell$waterVolume
           dsSaturationVolume <- self$downstreamCell$saturationVolume
           usSpillOver <- self$upstreamCell$cellSpillOver
@@ -301,8 +296,9 @@ Boundary_Transport_Water_Soil <-
           waterVolume <- connectedCell$waterVolume
           saturationVolume <- connectedCell$saturationVolume
 
+
           self$spillOver <-
-            if(self$usModBound) {
+          if(self$usModBound) {
               if ((self$discharge + waterVolume) > saturationVolume) {
                 spillOver <- (self$discharge + waterVolume) - saturationVolume
                 self$downstreamCell$cellSpillOver <- spillOver
@@ -312,14 +308,6 @@ Boundary_Transport_Water_Soil <-
             spillOver <- self$upstreamCell$cellSpillOver
             self$downstreamCell$cellSpillOver <- spillOver
           }
-<<<<<<< HEAD
-
-
-
-          paste("SpillOver is:", print(self$spillOver))
-
-=======
->>>>>>> 66d4599ecf18c8ec0939ed4a7a1f120c2089514c
         },
 
 
@@ -333,21 +321,6 @@ Boundary_Transport_Water_Soil <-
         trade   = function(){
           browser()
           # volume of water to trade
-<<<<<<< HEAD
-          self$discharge <- self$spillOver
-          self$volume <- self$discharge * self$timeInterval #L
-
-          # if(!self$usModBound){
-          #   # volume of water to remain
-          #   volumeToRemain <- self$upstreamCell$waterVolume - self$volume
-          #   if(volumeToRemain < 0) stop(
-          #     paste(
-          #       "You are about to remove more water volume from a cell than it held at the start of the timestep.
-          #      Boundary is ", print(self$boundaryIdx)
-          #     ) # close paste
-          #   ) # close warning
-          # } # close if statement
-=======
           if(self$spillOver > 0) {
             self$discharge <- self$spillOver
             if(self$usModBound){
@@ -370,7 +343,6 @@ Boundary_Transport_Water_Soil <-
           # } else {
           #   self$waterVolume <- self$waterVolume + self$cellInput
           # }
->>>>>>> 66d4599ecf18c8ec0939ed4a7a1f120c2089514c
 
 
           return(list(discharge = self$discharge, spillOver = self$spillOver))
@@ -379,6 +351,5 @@ Boundary_Transport_Water_Soil <-
 
 
   ) # close R6 class
-
 
 
