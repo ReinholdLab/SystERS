@@ -71,7 +71,10 @@ Boundary_Transport_Solute <-
           if(!self$usModBound){
 
             # solute mass to remain
-            soluteToRemain <- self$amount - self$upstreamCell$amount # I switched this because the solute amount entering is greater than what was in the cell
+            soluteToRemain <- self$upstreamCell$amount - self$amount #self$upstreamCell$amount is the initial amount of solute
+            #being calculated in Cell_Solute
+
+            # I switched this because the solute amount entering is greater than what was in the cell
             #probably need an if/else statement if to check spillover, and then do a calculation based on that, but then we would need a separate class for transport solute soil
             if(soluteToRemain < 0) stop(
               paste("You are trying to remove more solute from a cell than it held at the start of the timestep.
