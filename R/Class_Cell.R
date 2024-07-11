@@ -232,7 +232,7 @@ Cell_Solute <-
             self$linkedCell <- linkedCell
 
             self$concentration <- concentration
-            self$amount <- self$concentration * self$linkedCell$waterVolume
+            self$amount <- self$concentration * self$linkedCell$waterVolume #initial amount of solute in the cell
           },
 
         #' @method Method Cell_Solute$update
