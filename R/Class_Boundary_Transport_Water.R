@@ -43,7 +43,6 @@ Boundary_Transport_Water <-
         #' @description Runs the store method on water cells in the model.
         #' @return Updated store values.
         store = function(){
-          browser()
 
           self$upstreamCell$waterVolume <- self$upstreamCell$waterVolume - self$volume
           self$downstreamCell$waterVolume <- self$downstreamCell$waterVolume + self$volume
@@ -256,11 +255,11 @@ Boundary_Transport_Water_Soil <-
           dsSaturationVolume <- self$downstreamCell$saturationVolume
           usSpillOver <- self$upstreamCell$cellSpillOver
 
-          self$spillOver <- if ((usSpillOver + dsWaterVolume) > dsSaturationVolume) {
-            spillOver <- (usSpillOver + dsWaterVolume) - dsSaturationVolume
-            self$downstreamCell$cellSpillOver <- spillOver
-          } else {spillOver <- 0
-            self$downstreamCell$cellSpillOver <- spillOver
+          if ((usSpillOver + dsWaterVolume) > dsSaturationVolume) {
+            self$spillOver <- (usSpillOver + dsWaterVolume) - dsSaturationVolume
+            self$downstreamCell$cellSpillOver <- self$spillOver
+          } else {self$spillOver <- 0
+            self$downstreamCell$cellSpillOver <- self$spillOver
             self$downstreamCell$cellInput <- usSpillOver}
 
           },
@@ -327,19 +326,21 @@ Boundary_Transport_Water_Soil <-
               #   self$downstreamCell$waterVolume <- self$downstreamCell$saturationVolume
               # } else if ((self$volume + self$spillOver) < self$downstreamCell$saturationVolume) {
               #   self$downstreamCell$waterVolume <- self$volume + self$spillOver}
-            } else {self$discharge -> self$discharge}} else {
-              self$discharge -> self$discharge
+            } else {self$discharge <- self$discharge}} else {
+              self$discharge <- self$discharge
               self$downstreamCell$cellInput <- self$discharge
             }
 
-          # if(self$spillOver > 0) {
-          #   self$discharge <- self$spillOver
-          #   if(self$usModBound){
+
+          #   if(!self$usModBound){
+          #     if(self$spillOver > 0) {
+          #       self$discharge <- self$spillOver
+          #       self$upstreamCell$cellInput <- self$discharge
           #     if((self$volume + self$spillOver) > self$downstreamCell$saturationVolume) {
           #       self$downstreamCell$waterVolume <- self$downstreamCell$saturationVolume
           #     } else if ((self$volume + self$spillOver) < self$downstreamCell$saturationVolume) {
           #       self$downstreamCell$waterVolume <- self$volume + self$spillOver}
-          #   } else if (self$dsModBound) {
+          #   } else if (!self$dsModBound) {
           #     if((self$volume + self$spillOver) > self$upstreamCell$saturationVolume) {
           #       self$upstreamCell$waterVolume <- self$upstreamCell$saturationVolume
           #     } else if ((self$volume + self$spillOver) < self$upstreamCell$saturationVolume) {

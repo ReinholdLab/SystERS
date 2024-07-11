@@ -55,6 +55,7 @@ Boundary_Transport_Solute <-
         #'   Returns a list of length 2 corresponding to both \code{load} and
         #'   \code{amount}.
         trade = function(){
+          browser()
           # get the discharge and solute concentration in the water transport
           # boundary to which this solute transport boundary is linked
           discharge <- self$linkedBound$discharge # L s-1
@@ -63,6 +64,7 @@ Boundary_Transport_Solute <-
             upstreamConcentration <- self$upstreamCell$concentration # g  m-3
             # multiply discharge by concentration to get load
             self$load <- self$linkedBound$discharge * upstreamConcentration # g s-1
+            self$upstreamCell$amount <- self$upstreamCell$linkedCell$waterVolume * upstreamConcentration
           }
 
           # mass to of solute to trade
@@ -76,12 +78,12 @@ Boundary_Transport_Solute <-
 
             # I switched this because the solute amount entering is greater than what was in the cell
             #probably need an if/else statement if to check spillover, and then do a calculation based on that, but then we would need a separate class for transport solute soil
-            if(soluteToRemain < 0) stop(
-              paste("You are trying to remove more solute from a cell than it held at the start of the timestep.
-                      Boundary is ",
-              print(self$boundaryIdx)
-              )
-            )
+            # if(soluteToRemain < 0) stop(
+            #   paste("You are trying to remove more solute from a cell than it held at the start of the timestep.
+            #           Boundary is ",
+            #   print(self$boundaryIdx)
+            #   )
+            # )
           }
 
           return(list(load = self$load, amount = self$amount))
