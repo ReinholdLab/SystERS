@@ -233,11 +233,7 @@ Cell_Solute <-
             self$linkedCell <- linkedCell
 
             self$concentration <- concentration
-            if(self$processDomain == 'stream'){
               self$amount <- self$concentration * self$linkedCell$waterVolume #initial amount of solute in the cell
-            } else if (self$processDomain == 'soil') {
-                self$amount <- self$concentration * self$linkedCell$saturationVolume
-            }
           },
 
         #' @method Method Cell_Solute$update
