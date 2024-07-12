@@ -43,7 +43,6 @@ Boundary_Transport_Water <-
         #' @description Runs the store method on water cells in the model.
         #' @return Updated store values.
         store = function(){
-
           self$upstreamCell$waterVolume <- self$upstreamCell$waterVolume - self$volume
           self$downstreamCell$waterVolume <- self$downstreamCell$waterVolume + self$volume
 
@@ -230,7 +229,6 @@ Boundary_Transport_Water_Soil <-
         initialize =
           function(...){
             super$initialize(...)
-
             if(any(self$usModBound, self$dsModBound )) {
               self$populateDependencies <- self$populateDependenciesExternalBound
             } else{
@@ -255,12 +253,12 @@ Boundary_Transport_Water_Soil <-
           dsSaturationVolume <- self$downstreamCell$saturationVolume
           usSpillOver <- self$upstreamCell$cellSpillOver
 
-          if ((usSpillOver + dsWaterVolume) > dsSaturationVolume) {
-            self$spillOver <- (usSpillOver + dsWaterVolume) - dsSaturationVolume
-            self$downstreamCell$cellSpillOver <- self$spillOver
-          } else {self$spillOver <- 0
-            self$downstreamCell$cellSpillOver <- self$spillOver
-            self$downstreamCell$cellInput <- usSpillOver}
+          # if ((usSpillOver + dsWaterVolume) > dsSaturationVolume) {
+          #   self$spillOver <- (usSpillOver + dsWaterVolume) - dsSaturationVolume
+          #   self$downstreamCell$cellSpillOver <- self$spillOver
+          # } else {self$spillOver <- 0
+          #   self$downstreamCell$cellSpillOver <- self$spillOver
+          #   self$downstreamCell$cellInput <- usSpillOver}
 
           },
 
@@ -274,6 +272,7 @@ Boundary_Transport_Water_Soil <-
         #'   Boundary_Transport_Water_Stream$populateDependenciesExternalBound
         #' @return Populates boundary dependencies
         populateDependenciesExternalBound = function(){
+
           # To get velocity, divide Q by the mean of x-sec area of u/s and d/s
           # cell.  Upstream model boundaries (ie, most upstream) will thus
           # have a velocity equal only to the d/s cell (because there is no
@@ -293,18 +292,18 @@ Boundary_Transport_Water_Soil <-
           waterVolume <- connectedCell$waterVolume
           saturationVolume <- connectedCell$saturationVolume
 
-          if(self$usModBound) {
-              if ((self$discharge + waterVolume) > saturationVolume) {
-                self$spillOver <- (self$discharge + waterVolume) - saturationVolume
-                self$downstreamCell$cellSpillOver <- self$spillOver
-                self$downstreamCell$waterVolume <- self$downstreamCell$saturationVolume
-              } else {spillOver <- 0
-              self$downstreamCell$cellSpillOver <- spillOver
-              self$downstreamCell$waterVolume <- self$discharge + self$downstreamCell$waterVolume}}
-          else if (self$dsModBound){
-            self$spillOver <- self$upstreamCell$cellSpillOver
-            self$downstreamCell$cellSpillOver <- self$spillOver
-          }
+          # if(self$usModBound) {
+          #     if ((self$discharge + waterVolume) > saturationVolume) {
+          #       self$spillOver <- (self$discharge + waterVolume) - saturationVolume
+          #       self$downstreamCell$cellSpillOver <- self$spillOver
+          #       self$downstreamCell$waterVolume <- self$downstreamCell$saturationVolume
+          #     } else {spillOver <- 0
+          #     self$downstreamCell$cellSpillOver <- spillOver
+          #     self$downstreamCell$waterVolume <- self$discharge + self$downstreamCell$waterVolume}}
+          # else if (self$dsModBound){
+          #   self$spillOver <- self$upstreamCell$cellSpillOver
+          #   self$downstreamCell$cellSpillOver <- self$spillOver
+          # }
         },
 
 
@@ -316,20 +315,33 @@ Boundary_Transport_Water_Soil <-
         #'   (\code{discharge, volume}).
 
         trade   = function(){
-          # volume of water to trade
-          if(!self$usModBound) {
-            if(self$spillOver > 0) {
-              self$discharge <- self$spillOver
-              self$upstreamCell$cellInput <- self$discharge
 
-              # if((self$volume + self$spillOver) > self$downstreamCell$saturationVolume) {
-              #   self$downstreamCell$waterVolume <- self$downstreamCell$saturationVolume
-              # } else if ((self$volume + self$spillOver) < self$downstreamCell$saturationVolume) {
-              #   self$downstreamCell$waterVolume <- self$volume + self$spillOver}
-            } else {self$discharge <- self$discharge}} else {
-              self$discharge <- self$discharge
-              self$downstreamCell$cellInput <- self$discharge
+          # volume of water to trade
+
+          if(self$usModBound) {
+              if ((self$discharge + self$downstreamCell$waterVolume) > self$downstreamCell$saturationVolume) {
+                if ((self$downstreamCell$waterVolume < self$downstreamCell$saturationVolume)) {
+                self$spillOver <- (self$discharge + self$downstreamCell$waterVolume) - self$downstreamCell$saturationVolume
+                self$downstreamCell$cellSpillOver <- self$spillOver
+                } else {
+                  self$spillOver <- (self$discharge - self$downstreamCell$saturationVolume)
+                  self$downstreamCell$cellSpillOver <- self$spillOver
+                }
+              } else {spillOver <- 0
+              self$downstreamCell$cellSpillOver <- spillOver
+              }}
+          else if (self$dsModBound){
+            self$spillOver <- self$upstreamCell$cellSpillOver
+          }
+
+          if(!self$usModBound) {
+            if(self$upstreamCell$cellSpillOver > 0) {
+              self$discharge <- self$spillOver
             }
+            else {self$discharge <- self$discharge}
+          } else {
+            self$discharge <- self$discharge
+          }
 
 
           #   if(!self$usModBound){

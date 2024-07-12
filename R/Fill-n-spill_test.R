@@ -101,6 +101,7 @@ Cell_Water_Soil <- R6::R6Class(
         #search a list based on soil type for value
 
       self$saturationVolume <- self$cellPorosity * self$cellVolume
+      self$cellSpillOver <- 0
 
 
 
@@ -134,6 +135,16 @@ Cell_Water_Soil <- R6::R6Class(
     #'   with changes in discharge.
     #' @return Updates cell values based on trades and stores.
     update = function(){
+      # self$linkedBound$discharge
+      # self$cellInput <- self$linkedBoundsList$upstreamBounds[[1]]$discharge
+      #
+      # if ((self$cellInput + waterVolume) > saturationVolume) {
+      #         self$cellSpillOver <- (self$cellInput + waterVolume) - saturationVolume
+      #         self$waterVolume <- self$saturationVolume}
+      # else {
+      #   self$cellSpillOver <- 0
+      #   self$waterVolume <- self$waterVolume + self$cellInput
+      # }
 
       self$waterVolume <- if(self$cellSpillOver > 0) {
         self$waterVolume <- self$saturationVolume
@@ -141,7 +152,7 @@ Cell_Water_Soil <- R6::R6Class(
         self$waterVolume <- self$waterVolume + self$cellInput
       }
 
-      self$populateDependencies()
+      # self$populateDependencies()
 
       return(self$waterVolume)
     }

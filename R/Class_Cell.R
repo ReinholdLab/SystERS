@@ -212,6 +212,7 @@ Cell_Solute <-
         #' @field linkedCell The water cell to which the solute cell is linked
         linkedCell = NULL,
 
+
         #' @param ... Parameters inherit from Class \code{\link{Cell}}
         #' @param cellIdx Character string denoting the index for the cell
         #' @param processDomain Character string indicating process domain of cell (soil, groundwater, or stream)
@@ -232,7 +233,11 @@ Cell_Solute <-
             self$linkedCell <- linkedCell
 
             self$concentration <- concentration
-            self$amount <- self$concentration * self$linkedCell$waterVolume #initial amount of solute in the cell
+            if(self$processDomain == 'stream'){
+              self$amount <- self$concentration * self$linkedCell$waterVolume #initial amount of solute in the cell
+            } else if (self$processDomain == 'soil') {
+                self$amount <- self$concentration * self$linkedCell$saturationVolume
+            }
           },
 
         #' @method Method Cell_Solute$update

@@ -21,6 +21,8 @@ Boundary_Transport_Solute <-
         #' @field linkedBound The boundary containing the water that is
         #'   advecting the solute in this boundary
         linkedBound = NULL,
+        #' @field processDomain Character string indicating process domain of cell (soil, groundwater, or stream)
+        processDomain = NULL,
 
 
         #' @description Instantiate a transport boundary for solutes between
@@ -34,12 +36,15 @@ Boundary_Transport_Solute <-
         #' @param timeInterval  Model time step
         #' @param linkedBound Water boundary to which this solute boundary is
         #'   linked
+        #' @param processDomain Character string indicating process domain of cell (soil, groundwater, or stream)
         #' @param load The rate ([mols per time] or [mass per time]) at which
         #'   solute moves through this boundary
         #' @return A transport boundary for solutes between cells
         initialize =
-          function(..., linkedBound, load){
+          function(..., linkedBound, load, processDomain){
             super$initialize(...)
+
+            self$processDomain <- processDomain
 
             self$linkedBound <- linkedBound
             self$load <- load
@@ -55,35 +60,62 @@ Boundary_Transport_Solute <-
         #'   Returns a list of length 2 corresponding to both \code{load} and
         #'   \code{amount}.
         trade = function(){
-          browser()
-          # get the discharge and solute concentration in the water transport
-          # boundary to which this solute transport boundary is linked
-          discharge <- self$linkedBound$discharge # L s-1
+          if(self$processDomain == 'stream'){
+            # get the discharge and solute concentration in the water transport
+            # boundary to which this solute transport boundary is linked
+            discharge <- self$linkedBound$discharge # L s-1
 
-          if(!self$usModBound) {
-            upstreamConcentration <- self$upstreamCell$concentration # g  m-3
-            # multiply discharge by concentration to get load
-            self$load <- self$linkedBound$discharge * upstreamConcentration # g s-1
-            self$upstreamCell$amount <- self$upstreamCell$linkedCell$waterVolume * upstreamConcentration
+            if(!self$usModBound) {
+              upstreamConcentration <- self$upstreamCell$concentration # g  m-3
+              # multiply discharge by concentration to get load
+              self$load <- self$linkedBound$discharge * upstreamConcentration # g s-1
+            }
+
+            # mass to of solute to trade
+            self$amount <- self$load * self$timeInterval # g
+
+            if(!self$usModBound){
+
+              # solute mass to remain
+              soluteToRemain <- self$upstreamCell$amount - self$amount #self$upstreamCell$amount is the initial amount of solute
+              #being calculated in Cell_Solute
+
+
+              if(soluteToRemain < 0) stop(
+                paste("You are trying to remove more solute from a cell than it held at the start of the timestep.
+                        Boundary is ",
+                print(self$boundaryIdx)
+                )
+              )
           }
+          } else if (self$processDomain == 'soil') {
+            discharge <- self$linkedBound$discharge # L s-1
+            # get the discharge and solute concentration in the water transport
+            # boundary to which this solute transport boundary is linked
 
-          # mass to of solute to trade
-          self$amount <- self$load * self$timeInterval # g
+            if(!self$usModBound) {
+              upstreamConcentration <- self$upstreamCell$concentration # g  m-3
+              # multiply discharge by concentration to get load
+              self$load <- self$linkedBound$discharge * upstreamConcentration # g s-1
+            }
 
-          if(!self$usModBound){
+            # mass to of solute to trade
+            self$amount <- self$load * self$timeInterval # g
 
-            # solute mass to remain
-            soluteToRemain <- self$upstreamCell$amount - self$amount #self$upstreamCell$amount is the initial amount of solute
-            #being calculated in Cell_Solute
+            if(!self$usModBound){
 
-            # I switched this because the solute amount entering is greater than what was in the cell
-            #probably need an if/else statement if to check spillover, and then do a calculation based on that, but then we would need a separate class for transport solute soil
-            # if(soluteToRemain < 0) stop(
-            #   paste("You are trying to remove more solute from a cell than it held at the start of the timestep.
-            #           Boundary is ",
-            #   print(self$boundaryIdx)
-            #   )
-            # )
+              # solute mass to remain
+              soluteToRemain <- self$upstreamCell$amount - self$amount #self$upstreamCell$amount is the initial amount of solute
+              #being calculated in Cell_Solute
+
+
+              # if(soluteToRemain < 0) stop(
+              #   paste("You are trying to remove more solute from a cell than it held at the start of the timestep.
+              #         Boundary is ",
+              #         print(self$boundaryIdx)
+              #   )
+              # )
+            }
           }
 
           return(list(load = self$load, amount = self$amount))
@@ -102,4 +134,7 @@ Boundary_Transport_Solute <-
 
       ) # close public
   ) # close R6 class
+
+
+
 

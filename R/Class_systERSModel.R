@@ -667,7 +667,8 @@ systERSModel <-
               load = tbl$load[rowNum],
               upstreamCell = self$cells[[  tbl$upstreamCellIdx[rowNum] ]],
               downstreamCell = self$cells[[ tbl$downstreamCellIdx[rowNum] ]],
-              timeInterval = self$timeInterval
+              timeInterval = self$timeInterval,
+              processDomain = tbl$processDomain[rowNum]
             )
           }
         )
