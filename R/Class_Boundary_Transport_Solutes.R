@@ -75,12 +75,12 @@ Boundary_Transport_Solute <-
             soluteToRemain <- self$amount - self$upstreamCell$amount # I switched this because the solute amount entering is greater than what was in the cell
 
             #probably need an if/else statement if to check spillover, and then do a calculation based on that, but then we would need a separate class for transport solute soil
-            if(soluteToRemain < 0) stop(
-              paste("You are trying to remove more solute from a cell than it held at the start of the timestep.
-                      Boundary is ",
-              print(self$boundaryIdx)
-              )
-            )
+            # if(soluteToRemain < 0) stop(
+            #   paste("You are trying to remove more solute from a cell than it held at the start of the timestep.
+            #           Boundary is ",
+            #   print(self$boundaryIdx)
+            #   )
+            # )
           }
 
           return(list(load = self$load, amount = self$amount))
