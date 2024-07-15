@@ -43,10 +43,7 @@ Boundary_Transport_Water <-
         #' @description Runs the store method on water cells in the model.
         #' @return Updated store values.
         store = function(){
-<<<<<<< HEAD
 
-=======
->>>>>>> fa35ef6256879841e326ae8f2600d7c64d475b0c
           self$upstreamCell$waterVolume <- self$upstreamCell$waterVolume - self$volume
           self$downstreamCell$waterVolume <- self$downstreamCell$waterVolume + self$volume
 

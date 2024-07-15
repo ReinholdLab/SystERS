@@ -60,6 +60,8 @@ Boundary_Reaction_Solute <-
         #' @field rxnVals A data frame storing the key reaction boundary inputs
         #'   and outputs
         rxnVals = NULL,
+        #' @field qStorage Volumetric rate of water entering the storage zone
+        qStorage = NULL,
         #' @field pcntToRemove If process method is set to \code{pcnt}, then the
         #'   percent of solute amount (mass or mols) to remove from storage must
         #'   be specified
@@ -74,6 +76,7 @@ Boundary_Reaction_Solute <-
         #' @param timeInterval  Model time step
         #' @param volWaterInStorage The volume of water in the reactive storage
         #'   zone
+        #'
         #' @param processMethodName How to process the solute, either
         #'   \code{pcnt} or \code{RT-PL}
         #' @param tauMin Minimum residence time of water to consider; bound on
@@ -302,8 +305,6 @@ Boundary_Reaction_Solute_Stream <-
         damkohlerNumScaledToTimeStep = NULL,
         #' @field concentrationStorage Concentration of solute in storage
         concentrationStorage = NULL,
-        #' @field qStorage Volumetric rate of water entering the storage zone
-        qStorage = NULL,
         #'
         #' @param ... Parameters inherit from Class
         #'   \code{\link{Boundary_Reaction_Solute}} and thus
@@ -464,8 +465,6 @@ Boundary_Reaction_Solute_Soil <-
         damkohlerNumScaledToTimeStep = NULL,
         #' @field concentrationStorage Concentration of solute in storage
         concentrationStorage = NULL,
-        #' @field qStorage Volumetric rate of water entering the storage zone
-        qStorage = NULL,
         #'
         #' @param ... Parameters inherit from Class
         #'   \code{\link{Boundary_Reaction_Solute}} and thus
@@ -521,75 +520,6 @@ Boundary_Reaction_Solute_Soil <-
             )
           }
 
-          # Calculate fraction removed and remaining from the cell
-
-          # upstreamWaterBounds <- self$upstreamCell$linkedCell$linkedBoundsList$upstreamBounds
-          # hydraulicLoad <- self$upstreamCell$linkedCell$hydraulicLoad
-
-          # channelHeight <- self$upstreamCell$linkedCell$cellHeight
-          #
-          # k_s <- self$qStorage * self$fractionRemovedStorage / channelHeight
-          #
-          # self$fractionRemaining <- exp(-1 * k_s  * self$timeInterval)
-          #
-          # self$fractionRemoved <- 1 - self$fractionRemaining
-          #
-          # # Error check: do the fraction of solute removed and remaining from the CELL sum to one?
-          # self$mustBeOne <- round(sum(self$fractionRemoved, self$fractionRemaining), 3)
-          # if( self$mustBeOne != 1 ) {
-          #   msgGeneral <- "The fraction of solute removed and remaining in the cell do not sum to one."
-          #   msgDetail <- paste(
-          #     msgGeneral,
-          #     "\nBoundary:", self$boundaryIdx,
-          #     "\nFraction removed from storage:", self$fractionRemovedStorage,
-          #     "\nFraction remaining in storage:", self$fractionRemainingStorage
-          #   )
-          #   tmp <- data.frame(
-          #     fracRemnStrg = self$fractionRemainingStorage,
-          #     fracRemovStrg = self$fractionRemovedStorage,
-          #     fracRemov = self$fractionRemoved,
-          #     fracRmn = self$fractionRemaining)
-          #   stop(
-          #     noquote( strsplit (msgDetail, "\n") [[1]]),
-          #     print( tmp )
-          #   )
-          # }
-          #
-          # self$startingAmount <- self$upstreamCell$amount # mols or mass of solute in primary flow field at start of time step
-          #
-          # self$amountToRemove <- self$startingAmount * self$fractionRemoved
-          # self$amountToRemain <- self$startingAmount - self$amountToRemove
-          #
-          # # throw error if you are removing more solute than is available
-          # if(self$amountToRemain < 0){
-          #   stop(
-          #     paste("You are trying to remove more solute from a cell than it held at the start of the timestep.
-          #             Boundary is ",
-          #           print(self$boundaryIdx)
-          #     )
-          #   )
-          # }
-          #
-          # # hydraulicLoad <- self$upstreamCell$linkedCell$hydraulicLoad
-          # # steadyStateFracRemaining <- exp(-1 * self$qStorage * self$fractionRemovedStorage  / hydraulicLoad)
-          # steadyStateFracRemoved <- 1 - 0.5 #steadyStateFracRemaining
-          #
-          # self$damkohlerNum <- -1*(log(1-steadyStateFracRemoved))
-          # self$damkohlerNumScaledToTimeStep <- -1*(log(1-self$fractionRemoved))
-          # self$damkohlerNumStorage <- -1*(log(1-self$fractionRemovedStorage))
-          #
-          # self$rxnVals <-
-          #   data.frame(
-          #     boundary = self$boundaryIdx,
-          #     processMethodName = self$processMethodName,
-          #     fracRemoved = self$fractionRemoved,
-          #     fracRemaning = self$fractionRemaining,
-          #     fracRemovedFromStrg = self$fractionRemovedStorage,
-          #     fracRemainingInStrg = self$fractionRemainingStorage,
-          #     mustBeOne = self$mustBeOne,
-          #     startingAmount = self$startingAmount,
-          #     amountToRemove = self$amountToRemove
-          #   )
           return(list(amountToRemove = self$amountToRemove, amountToRemain = self$amountToRemain))
         }
       ) # close public
