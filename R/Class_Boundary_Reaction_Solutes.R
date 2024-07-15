@@ -54,8 +54,6 @@ Boundary_Reaction_Solute <-
         #'   i.e., a value that specifies how long solute must be in the
         #'   reactive storage zone before it has the capacity to react.
         tauRxn = NULL,
-        #' @field qStorage Volumetric rate of water entering the storage zone
-        qStorage = NULL,
         #' @field volWaterInStorage Volume of water in the transient storage
         #'   zone (equal to the volume of the alluvial aquifer X porosity)
         volWaterInStorage = NULL,
@@ -91,13 +89,12 @@ Boundary_Reaction_Solute <-
         #'   This parameter is only passed to the \code{RT-PL} Method and cannot
         #'   be applied to the \code{pcnt} Method.  The default value is
         #'   \code{0}.
-        #' @param qStorage Volumetric rate of water entering the storage zone
         #' @param pcntToRemove Percent of solute amount (mass or mols) to remove
         #'   from storage
         #' @return The object of class \code{Boundary_Reaction_Solute}.
         initialize =
           function(..., processMethodName, tauMin, tauMax,
-                   alpha, k, tauRxn, qStorage, pcntToRemove, volWaterInStorage){
+                   alpha, k, tauRxn, pcntToRemove, volWaterInStorage){
             super$initialize(...)
             self$processDomain <- self$upstreamCell$processDomain
             self$processMethodName <- processMethodName
@@ -114,16 +111,16 @@ Boundary_Reaction_Solute <-
             self$k <- k
             self$volWaterInStorage <- volWaterInStorage
 
-            if(!is.numeric(qStorage)){
-              # I have set tau_a = tauMin and tau_b = tauMax because we want the
-              # entire integral from tauMin to tauMax...
-              ccdfIntegrated <- hydrogeom::powerLawIntCCDF(self$tauMin, self$tauMax, self$tauMin, self$tauMax, self$alpha)
-
-              storage.1d <- self$volWaterInStorage / self$upstreamCell$linkedCell$channelArea
-              self$qStorage <-  storage.1d / ccdfIntegrated
-            } else {
-              self$qStorage <- qStorage
-            }
+            # if(!is.numeric(qStorage)){
+            #   # I have set tau_a = tauMin and tau_b = tauMax because we want the
+            #   # entire integral from tauMin to tauMax...
+            #   ccdfIntegrated <- hydrogeom::powerLawIntCCDF(self$tauMin, self$tauMax, self$tauMin, self$tauMax, self$alpha)
+            #
+            #   storage.1d <- self$volWaterInStorage / self$upstreamCell$linkedCell$channelArea
+            #   self$qStorage <-  storage.1d / ccdfIntegrated
+            # } else {
+            #   self$qStorage <- qStorage
+            # }
           },
 
 
@@ -230,6 +227,7 @@ Boundary_Reaction_Solute <-
               plyr::llply(
                 integTauBins,
                 function(binSet){
+                  browser()
                   integrate(
                     propUptkFunc,
                     lower = binSet[1],
@@ -259,11 +257,15 @@ Boundary_Reaction_Solute <-
         #'   reactions that remove solute from cells.
         #' @return Updated store values.
         store = function(){
+          if(self$processDomain == 'stream') {
           self$upstreamCell$amount <- self$upstreamCell$amount - self$amountToRemove
           return(self$upstreamCell$amount)
+          } else if(self$processDomain == 'soil') {
+            self$upstreamCell$concentration <- (self$upstreamCell$massSoluteInCell - self$upstreamCell$fracMassSpillOver) * self$upstreamCell$linkedCell$waterVolume
+          }
+
+
         }
-
-
       )
   )
 
@@ -300,6 +302,8 @@ Boundary_Reaction_Solute_Stream <-
         damkohlerNumScaledToTimeStep = NULL,
         #' @field concentrationStorage Concentration of solute in storage
         concentrationStorage = NULL,
+        #' @field qStorage Volumetric rate of water entering the storage zone
+        qStorage = NULL,
         #'
         #' @param ... Parameters inherit from Class
         #'   \code{\link{Boundary_Reaction_Solute}} and thus
@@ -309,11 +313,24 @@ Boundary_Reaction_Solute_Stream <-
         #'   a character e.g., \code{water, NO3}
         #' @param upstreamCell  Cell (if one exists) upstream of the boundary
         #' @param timeInterval  Model time step
+        #' @param qStorage Volumetric rate of water entering the storage zone
         #' @return A model boundary that calculates solute removal from stream
         #'   cells in the stream processing domain
         initialize =
-          function(...){
+          function(..., qStorage){
             super$initialize(...)
+
+            if(!is.numeric(qStorage)){
+              # I have set tau_a = tauMin and tau_b = tauMax because we want the
+              # entire integral from tauMin to tauMax...
+              ccdfIntegrated <- hydrogeom::powerLawIntCCDF(self$tauMin, self$tauMax, self$tauMin, self$tauMax, self$alpha)
+
+              storage.1d <- self$volWaterInStorage / self$upstreamCell$linkedCell$channelArea
+              self$qStorage <-  storage.1d / ccdfIntegrated
+            } else {
+              self$qStorage <- qStorage
+            }
+
           }, # close initialize
 
 
@@ -416,8 +433,8 @@ Boundary_Reaction_Solute_Stream <-
 
 
 #' @title Class Boundary_Reaction_Solute_Soil (R6)
-#' A model boundary that calculates solute removal from soil cells
-#' @description Reaction boundary for solute from soil cells
+#' A model boundary that calculates solute removal from Soil cells
+#' @description Reaction boundary for solute from Soil cells
 #' @importFrom R6 R6Class
 #' @export
 Boundary_Reaction_Solute_Soil <-
@@ -429,15 +446,15 @@ Boundary_Reaction_Solute_Soil <-
 
     public =
       list(
-        #' @description Instantiate a solute reaction boundary in the soil
+        #' @description Instantiate a solute reaction boundary in the Soil
         #'   processing domain
-        #' @field fractionRemoved Fraction of solute removed from soil cell
+        #' @field fractionRemoved Fraction of solute removed from Soil cell
         fractionRemoved = NULL,
         #' @field fractionRemaining Fraction of solute remaining in
-        #'   soil cell
+        #'   Soil cell
         fractionRemaining = NULL,
         #' @field damkohlerNum Damkohler number for the boundary.  This
-        #'   Damkohler represents the change over the entire soil reach.
+        #'   Damkohler represents the change over the entire Soil reach.
         damkohlerNum = NULL,
         #' @field damkohlerNumStorage Damkohler number for the transient storage
         #'   zone (i.e. hyporheic zone)
@@ -447,6 +464,8 @@ Boundary_Reaction_Solute_Soil <-
         damkohlerNumScaledToTimeStep = NULL,
         #' @field concentrationStorage Concentration of solute in storage
         concentrationStorage = NULL,
+        #' @field qStorage Volumetric rate of water entering the storage zone
+        qStorage = NULL,
         #'
         #' @param ... Parameters inherit from Class
         #'   \code{\link{Boundary_Reaction_Solute}} and thus
@@ -456,14 +475,29 @@ Boundary_Reaction_Solute_Soil <-
         #'   a character e.g., \code{water, NO3}
         #' @param upstreamCell  Cell (if one exists) upstream of the boundary
         #' @param timeInterval  Model time step
-        #' @return A model boundary that calculates solute removal from soil
-        #'   cells in the soil processing domain
+        #' @param qStorage Volumetric rate of water entering the storage zone
+        #' @return A model boundary that calculates solute removal from Soil
+        #'   cells in the Soil processing domain
         initialize =
-          function(...){
+          function(..., qStorage){
             super$initialize(...)
-            # print("Process domain is soil and the reaction class hasn't been
-            #         developed yet.")
-            }, # close initialize
+
+            if(self$processMethodName == 'RT-PL') {
+              if(!is.numeric(qStorage)){
+                # I have set tau_a = tauMin and tau_b = tauMax because we want the
+                # entire integral from tauMin to tauMax...
+                ccdfIntegrated <- hydrogeom::powerLawIntCCDF(self$tauMin, self$tauMax, self$tauMin, self$tauMax, self$alpha)
+
+                storage.1d <- self$volWaterInStorage / (self$upstreamCell$linkedCell$cellWidth * self$upstreamCell$linkedCell$cellLength)
+                self$qStorage <-  storage.1d / ccdfIntegrated
+              } else {
+                self$qStorage <- qStorage
+              }
+            } else {
+              self$qStorage <- self$fractionRemainingStorage
+            }
+
+          }, # close initialize
 
 
         #' @method Method Boundary_Reaction_Solute_Soil$trade
@@ -492,75 +526,75 @@ Boundary_Reaction_Solute_Soil <-
           # upstreamWaterBounds <- self$upstreamCell$linkedCell$linkedBoundsList$upstreamBounds
           # hydraulicLoad <- self$upstreamCell$linkedCell$hydraulicLoad
 
-          # channelDepth <- self$upstreamCell$linkedCell$channelDepth
-
-          k_s <- self$qStorage * self$fractionRemovedStorage
-          # / channelDepth
-
-          self$fractionRemaining <- exp(-1 * k_s  * self$timeInterval)
-
-          self$fractionRemoved <- 1 - self$fractionRemaining
-
-          # Error check: do the fraction of solute removed and remaining from the CELL sum to one?
-          self$mustBeOne <- 1
-          if( self$mustBeOne != 1 ) {
-            msgGeneral <- "The fraction of solute removed and remaining in the cell do not sum to one."
-            msgDetail <- paste(
-              msgGeneral,
-              "\nBoundary:", self$boundaryIdx,
-              "\nFraction removed from storage:", self$fractionRemovedStorage,
-              "\nFraction remaining in storage:", self$fractionRemainingStorage
-            )
-            tmp <- data.frame(
-              fracRemnStrg = self$fractionRemainingStorage,
-              fracRemovStrg = self$fractionRemovedStorage,
-              fracRemov = self$fractionRemoved,
-              fracRmn = self$fractionRemaining)
-            stop(
-              noquote( strsplit (msgDetail, "\n") [[1]]),
-              print( tmp )
-            )
-          }
-
-          self$startingAmount <- self$upstreamCell$amount # mols or mass of solute in primary flow field at start of time step
-
-          self$amountToRemove <- 1
-          self$amountToRemain <- 1
-
-          # throw error if you are removing more solute than is available
-          if(self$amountToRemain < 0){
-            stop(
-              paste("You are trying to remove more solute from a cell than it held at the start of the timestep.
-                      Boundary is ",
-                    print(self$boundaryIdx)
-              )
-            )
-          }
-
-
-          # hydraulicLoad <- self$upstreamCell$linkedCell$hydraulicLoad
-          steadyStateFracRemaining <- exp(-1 * self$qStorage * self$fractionRemovedStorage)
-                                          # / hydraulicLoad)
-          steadyStateFracRemoved <- 1 - steadyStateFracRemaining
-
-          self$damkohlerNum <- -1*(log(1-steadyStateFracRemoved))
-          self$damkohlerNumScaledToTimeStep <- -1*(log(1-self$fractionRemoved))
-          self$damkohlerNumStorage <- -1*(log(1-self$fractionRemovedStorage))
-
-          self$rxnVals <-
-            data.frame(
-              boundary = self$boundaryIdx,
-              processMethodName = self$processMethodName,
-              fracRemoved = 1,
-              fracRemaning = 1,
-              fracRemovedFromStrg = 1,
-              fracRemainingInStrg = 1,
-              mustBeOne = self$mustBeOne,
-              startingAmount = 1,
-              amountToRemove = 1
-            )
+          # channelHeight <- self$upstreamCell$linkedCell$cellHeight
+          #
+          # k_s <- self$qStorage * self$fractionRemovedStorage / channelHeight
+          #
+          # self$fractionRemaining <- exp(-1 * k_s  * self$timeInterval)
+          #
+          # self$fractionRemoved <- 1 - self$fractionRemaining
+          #
+          # # Error check: do the fraction of solute removed and remaining from the CELL sum to one?
+          # self$mustBeOne <- round(sum(self$fractionRemoved, self$fractionRemaining), 3)
+          # if( self$mustBeOne != 1 ) {
+          #   msgGeneral <- "The fraction of solute removed and remaining in the cell do not sum to one."
+          #   msgDetail <- paste(
+          #     msgGeneral,
+          #     "\nBoundary:", self$boundaryIdx,
+          #     "\nFraction removed from storage:", self$fractionRemovedStorage,
+          #     "\nFraction remaining in storage:", self$fractionRemainingStorage
+          #   )
+          #   tmp <- data.frame(
+          #     fracRemnStrg = self$fractionRemainingStorage,
+          #     fracRemovStrg = self$fractionRemovedStorage,
+          #     fracRemov = self$fractionRemoved,
+          #     fracRmn = self$fractionRemaining)
+          #   stop(
+          #     noquote( strsplit (msgDetail, "\n") [[1]]),
+          #     print( tmp )
+          #   )
+          # }
+          #
+          # self$startingAmount <- self$upstreamCell$amount # mols or mass of solute in primary flow field at start of time step
+          #
+          # self$amountToRemove <- self$startingAmount * self$fractionRemoved
+          # self$amountToRemain <- self$startingAmount - self$amountToRemove
+          #
+          # # throw error if you are removing more solute than is available
+          # if(self$amountToRemain < 0){
+          #   stop(
+          #     paste("You are trying to remove more solute from a cell than it held at the start of the timestep.
+          #             Boundary is ",
+          #           print(self$boundaryIdx)
+          #     )
+          #   )
+          # }
+          #
+          # # hydraulicLoad <- self$upstreamCell$linkedCell$hydraulicLoad
+          # # steadyStateFracRemaining <- exp(-1 * self$qStorage * self$fractionRemovedStorage  / hydraulicLoad)
+          # steadyStateFracRemoved <- 1 - 0.5 #steadyStateFracRemaining
+          #
+          # self$damkohlerNum <- -1*(log(1-steadyStateFracRemoved))
+          # self$damkohlerNumScaledToTimeStep <- -1*(log(1-self$fractionRemoved))
+          # self$damkohlerNumStorage <- -1*(log(1-self$fractionRemovedStorage))
+          #
+          # self$rxnVals <-
+          #   data.frame(
+          #     boundary = self$boundaryIdx,
+          #     processMethodName = self$processMethodName,
+          #     fracRemoved = self$fractionRemoved,
+          #     fracRemaning = self$fractionRemaining,
+          #     fracRemovedFromStrg = self$fractionRemovedStorage,
+          #     fracRemainingInStrg = self$fractionRemainingStorage,
+          #     mustBeOne = self$mustBeOne,
+          #     startingAmount = self$startingAmount,
+          #     amountToRemove = self$amountToRemove
+          #   )
           return(list(amountToRemove = self$amountToRemove, amountToRemain = self$amountToRemain))
         }
       ) # close public
   ) # close class
+
+
+
 
