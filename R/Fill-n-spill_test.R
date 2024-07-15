@@ -75,9 +75,6 @@ Cell_Water_Soil <- R6::R6Class(
       self$cellSoilType <- gsub("([A-Za-z])\\s+([A-Za-z])", "\\1\\2", cellSoilType)
       self$cellSoilType <- tolower(self$cellSoilType)
       self$waterVolume <- initWaterVolume #define the initial water volume
-      # do we need to add cellInput here and calculate spillOver here?
-      #Or should this be using discharge in the Class_Boundary_Transport_Water class as the input?
-      # self$cellInput <- cellInput
 
       #Currently from https://stormwater.pca.state.mn.us/index.php/Soil_water_storage_properties. Probably better resources?
       self$cellTypePorosity <- list(
@@ -92,17 +89,17 @@ Cell_Water_Soil <- R6::R6Class(
         sandyclay = 0.47,
         clay = 0.47)
 
+      #search a list based on soil type for value
       self$cellPorosity <-
         if (self$cellSoilType %in% names(self$cellTypePorosity)) {
           cellPorosity <- self$cellTypePorosity[[self$cellSoilType]]
           } else {
           return(print("Err: Soil type not in dictionary."))
           }
-        #search a list based on soil type for value
+
 
       self$saturationVolume <- self$cellPorosity * self$cellVolume
-
-
+      self$cellSpillOver <- 0
 
     },
 
@@ -134,6 +131,16 @@ Cell_Water_Soil <- R6::R6Class(
     #'   with changes in discharge.
     #' @return Updates cell values based on trades and stores.
     update = function(){
+      # self$linkedBound$discharge
+      # self$cellInput <- self$linkedBoundsList$upstreamBounds[[1]]$discharge
+      #
+      # if ((self$cellInput + waterVolume) > saturationVolume) {
+      #         self$cellSpillOver <- (self$cellInput + waterVolume) - saturationVolume
+      #         self$waterVolume <- self$saturationVolume}
+      # else {
+      #   self$cellSpillOver <- 0
+      #   self$waterVolume <- self$waterVolume + self$cellInput
+      # }
 
       self$waterVolume <- if(self$cellSpillOver > 0) {
         self$waterVolume <- self$saturationVolume

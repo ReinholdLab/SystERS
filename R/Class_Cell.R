@@ -211,6 +211,11 @@ Cell_Solute <-
         amount = NULL,
         #' @field linkedCell The water cell to which the solute cell is linked
         linkedCell = NULL,
+        #' @field massSoluteInCell The original mass of solute in the soil Cell
+        massSoluteInCell = NULL,
+        #' @field fracMassSpillOver The fraction of mass of solute leaving the soil cell
+        fracMassSpillOver = NULL,
+
 
         #' @param ... Parameters inherit from Class \code{\link{Cell}}
         #' @param cellIdx Character string denoting the index for the cell
@@ -219,6 +224,8 @@ Cell_Solute <-
         #' @param concentration the concentration of the solute in user specified units
         #'   (mass or mols per unit volume)
         #' @param linkedCell the cell containing the water in which this solute is located
+        #' @param massSoluteInCell The original mass of solute in the soil cell
+        #' @param fracMassSpillOver The fraction of solute mass leaving the soil cell
         #' @return The object of class \code{Cell_Solute}.
 
         initialize =
@@ -241,7 +248,11 @@ Cell_Solute <-
         #' @return Updates cell values based on trades and stores.
         update = function(){
 
+          if(self$processDomain == 'stream') {
           self$concentration <- self$amount / self$linkedCell$waterVolume
+          } else if(self$processDomain == 'soil') {
+            self$concentration <- (self$massSoluteInCell - self$fracMassSpillOver) / self$linkedCell$waterVolume
+          }
 
           return()
         }

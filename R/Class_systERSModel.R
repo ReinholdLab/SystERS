@@ -659,16 +659,43 @@ systERSModel <-
         plyr::llply(
           1:nrow(tbl),
           function(rowNum) {
-            Boundary_Transport_Solute$new(
-              boundaryIdx = tbl$boundaryIdx[rowNum],
-              currency = tbl$currency[rowNum],
-              linkedBound = self$bounds[[ tbl$linkedBound[rowNum] ]],
-              # concentration = tbl$concentration[rowNum],
-              load = tbl$load[rowNum],
-              upstreamCell = self$cells[[  tbl$upstreamCellIdx[rowNum] ]],
-              downstreamCell = self$cells[[ tbl$downstreamCellIdx[rowNum] ]],
-              timeInterval = self$timeInterval
-            )
+            if(tbl$processDomain[rowNum] == "stream"){
+              Boundary_Transport_Solute_Stream$new(
+                boundaryIdx = tbl$boundaryIdx[rowNum],
+                currency = tbl$currency[rowNum],
+                linkedBound = self$bounds[[ tbl$linkedBound[rowNum] ]],
+                # concentration = tbl$concentration[rowNum],
+                load = tbl$load[rowNum],
+                upstreamCell = self$cells[[  tbl$upstreamCellIdx[rowNum] ]],
+                downstreamCell = self$cells[[ tbl$downstreamCellIdx[rowNum] ]],
+                timeInterval = self$timeInterval,
+                processDomain = tbl$processDomain[rowNum]
+              )
+            } else if (tbl$processDomain[rowNum] == "soil"){
+              Boundary_Transport_Solute_Soil$new(
+                boundaryIdx = tbl$boundaryIdx[rowNum],
+                currency = tbl$currency[rowNum],
+                linkedBound = self$bounds[[ tbl$linkedBound[rowNum] ]],
+                # concentration = tbl$concentration[rowNum],
+                load = tbl$load[rowNum],
+                upstreamCell = self$cells[[  tbl$upstreamCellIdx[rowNum] ]],
+                downstreamCell = self$cells[[ tbl$downstreamCellIdx[rowNum] ]],
+                timeInterval = self$timeInterval,
+                processDomain = tbl$processDomain[rowNum]
+              )
+            } else {
+              Boundary_Transport_Solute$new(
+                boundaryIdx = tbl$boundaryIdx[rowNum],
+                currency = tbl$currency[rowNum],
+                linkedBound = self$bounds[[ tbl$linkedBound[rowNum] ]],
+                # concentration = tbl$concentration[rowNum],
+                load = tbl$load[rowNum],
+                upstreamCell = self$cells[[  tbl$upstreamCellIdx[rowNum] ]],
+                downstreamCell = self$cells[[ tbl$downstreamCellIdx[rowNum] ]],
+                timeInterval = self$timeInterval,
+                processDomain = tbl$processDomain[rowNum]
+              )
+            }
           }
         )
       }, # close method
@@ -704,6 +731,23 @@ systERSModel <-
             )
           } else if(tbl$processDomain[rowNum] == "soil"){
             Boundary_Reaction_Solute_Soil$new(
+              boundaryIdx = tbl$boundaryIdx[rowNum],
+              currency = tbl$currency[rowNum],
+              upstreamCell = self$cells[[ tbl$upstreamCellIdx[rowNum] ]],
+              downstreamCell = NULL,
+              timeInterval = self$timeInterval,
+              pcntToRemove = tbl$pcntToRemove[rowNum],
+              qStorage = tbl$qStorage[rowNum],
+              volWaterInStorage = tbl$volWaterInStorage[rowNum],
+              alpha = tbl$alpha[rowNum],
+              tauMin = tbl$tauMin[rowNum],
+              tauMax = tbl$tauMax[rowNum],
+              tauRxn = tbl$tauRxn[rowNum],
+              k = tbl$k[rowNum],
+              processMethodName = tbl$processMethodName[rowNum]
+            )
+          } else {
+            Boundary_Reaction_Solute$new(
               boundaryIdx = tbl$boundaryIdx[rowNum],
               currency = tbl$currency[rowNum],
               upstreamCell = self$cells[[ tbl$upstreamCellIdx[rowNum] ]],
