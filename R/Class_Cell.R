@@ -476,6 +476,8 @@ Cell_Water_Soil_Rxn <- R6::R6Class(
 
     },
 
+    # trade method?
+
 
     #' @method Method Cell_Water_Soil_Rxn$update
     #' @description Runs the trade method on all cells of class
@@ -485,6 +487,7 @@ Cell_Water_Soil_Rxn <- R6::R6Class(
     #' @return Updates cell values based on trades and stores.
     update = function(){
 
+      self$initSoluteMass <- self$initSoluteMass
       return()
 
 
