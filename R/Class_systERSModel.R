@@ -54,6 +54,10 @@ systERSModel <-
         #'   solute cells and their attributes in the groundwater processing
         #'   domain
         cellsTable_solute_groundwater = NULL,
+        #' @field cellsTable_soil_reaction Table with the names of the solute
+        #'   solute cells and their attributes in the reaction processing
+        #'   domian
+        cellsTable_soil_reaction = NULL,
         #' @field cellsTableList List storing all of the cell tables
         cellsTableList = NULL,
         #' @field boundsTableList List storing all of the cell tables
@@ -97,6 +101,9 @@ systERSModel <-
         #'   cells and their attributes in the groundwater processing domain
         #' @param cellsTable_solute_groundwater Table with the names of the solute
         #'   cells and their attributes in the groundwater processing domain
+        #' @param cellsTable_soil_reaction Table with the names of the solute
+        #'   solute cells and their attributes in the reaction processing
+        #'   domian
         #' @param unitsTable Table of units for model parameters and outputs
         #' @param timeInterval Model time step
         #' @return The object of class \code{systERSModel}
@@ -114,6 +121,7 @@ systERSModel <-
               cellsTable_solute_soil = NULL,
               cellsTable_water_groundwater = NULL,
               cellsTable_solute_groundwater = NULL,
+              cellsTable_soil_reaction = NULL,
               unitsTable = NULL,
               timeInterval
            ) {
@@ -136,6 +144,7 @@ systERSModel <-
 
             self$cellsTable_water_soil <- cellsTable_water_soil
             self$cellsTable_solute_soil <- cellsTable_solute_soil
+            self$cellsTable_soil_reaction <- cellsTable_soil_reaction
 
             self$cellsTable_water_groundwater <- cellsTable_water_groundwater
             self$cellsTable_solute_groundwater <- cellsTable_solute_groundwater
@@ -147,6 +156,7 @@ systERSModel <-
                 cells_solute_stream = self$cellsTable_solute_stream,
                 cells_water_soil = self$cellsTable_water_soil,
                 cells_solute_soil = self$cellsTable_solute_soil,
+                cells_soil_reaction = self$cellsTable_soil_reaction,
                 cells_water_groundwater = self$cellsTable_water_groundwater,
                 cells_solute_groundwater = self$cellsTable_solute_groundwater
               )
@@ -223,6 +233,7 @@ systERSModel <-
     #' @description Create a list of the model cells
     #' @return A list of model cells
     cellFactory = function(){
+
       # Error check to see if any cell specifications are duplicated
       self$errorCheckCellInputs()
 
@@ -249,12 +260,17 @@ systERSModel <-
         self$cells <- c(self$cells, cells_solute_soil)
       }
 
+      cells_soil_reaction <- self$initializeSoluteRxnCells_soil()
+      names(cells_soil_reaction) <- self$cellsTable_soil_reaction$cellIdx
+      self$cells <- c(self$cells, cells_soil_reaction)
+
       #Soil cells - write initialize function
 
       if(!is.null(cells_water_stream)) {
         self$linkSoluteCellsToWaterCells_stream()
       } else if (!is.null(cells_water_soil)) {
         self$linkSoluteCellsToWaterCells_soil()
+        self$linkReactionCellsToSoilSoluteCells()
       }
       return()
 
@@ -265,6 +281,7 @@ systERSModel <-
     #' @description Create a list of the model boundaries
     #' @return A list of model boundaries
     boundaryFactory = function(){
+
       # Run a few checks on the boundary inputs
       self$errorCheckBoundaryInputs()
 
@@ -440,6 +457,7 @@ systERSModel <-
     #' @importFrom plyr llply
     #' @return List of soil solute cells
     initializeSoluteCells_soil = function(){
+
       tbl <- self$cellsTable_solute_soil
       if(!is.null(tbl)){
         return(
@@ -459,6 +477,57 @@ systERSModel <-
         ) # close return
       } else{ return(NULL) } # close if
     }, # close method
+
+    initializeSoluteRxnCells_soil = function() {
+
+      tbl <- self$cellsTable_soil_reaction
+      if(!is.null(tbl)){
+        return(
+          plyr::llply(
+            1:nrow(tbl),
+            function(rowNum){
+              Cell_Water_Soil_Rxn$new(
+                cellIdx = tbl$cellIdx[rowNum],
+                processDomain = tbl$processDomain[rowNum],
+                currency = tbl$currency[rowNum],
+                linkedCell = self$cells[[ tbl$linkedCell[rowNum] ]],
+
+                reactionConstant = tbl$reactionConstant[rowNum],
+                reactionVolume = tbl$reactionVolume[rowNum],
+                initSoluteMass = tbl$initSoluteMass[rowNum]
+
+              )
+            }
+          ) # close llply
+        ) # close return
+      } else{ return(NULL) } # close if
+    }, # close method
+
+
+
+    #' @method Method systERSModel$linkReactionCellsToSoilSoluteCells
+    #' @description Link the reaction cells to the solute cells in the soil process
+    #'   domain
+    #' @return Soil cells with their \code{linkedSoluteCells} attribute populated
+    #'   with a list of solute cells that are linked to the reaction cell
+    linkReactionCellsToSoilSoluteCells =
+      function(){
+
+        soluteCells <- self$cells[sapply(self$cells, function(c) "Cell_Solute" %in% class(c))]
+        lapply(
+          soluteCells,
+          function(c) {
+
+            # identify the water cells to which the solute cells are connected
+            cellIdxs <- self$cellsTable_soil_reaction$cellIdx[self$cellsTable_soil_reaction$linkedCell == c$cellIdx]
+            reactionCells <- self$cells[cellIdxs]
+            names(reactionCells) <- cellIdxs
+            # link the solute cells to the water cells
+            c$linkedReactionCells <- reactionCells
+            return(c)
+          }
+        ) # close lapply
+      }, # close method
 
 
     #' @method Method systERSModel$linkSoluteCellsToWaterCells_stream
@@ -494,8 +563,6 @@ systERSModel <-
         lapply(
           soilWaterCells,
           function(c) {
-
-
             # identify the water cells to which the solute cells are connected
             cellIdxs <- self$cellsTable_solute_soil$cellIdx[self$cellsTable_solute_soil$linkedCell == c$cellIdx]
             soluteCells <- self$cells[cellIdxs]
@@ -518,6 +585,7 @@ systERSModel <-
         lapply(
           1:length(self$boundsTableList),
           function(i) {
+
             tblName <- names(self$boundsTableList)[i]
             tbl <- self$boundsTableList[[i]]
             if( any( duplicated(tbl) ) ){
@@ -550,6 +618,7 @@ systERSModel <-
       plyr::llply(
         1:nrow(tbl),
         function(rowNum) {
+
 
 
           locationOfBoundInNetwork <- tbl$locationOfBoundInNetwork[rowNum]
@@ -776,6 +845,7 @@ systERSModel <-
     #'   of the cell.
     #' @return Cells with \code{linkedBoundsList} attribute populated
     linkBoundsToCells = function(){
+
 
       lapply(
         self$bounds, function(bound) {

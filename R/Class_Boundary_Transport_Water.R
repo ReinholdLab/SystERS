@@ -318,15 +318,20 @@ Boundary_Transport_Water_Soil <-
           if(!self$usModBound) {
             if(self$upstreamCell$cellSpillOver > 0) {
               self$discharge <- self$spillOver
+              self$upstreamCell$cellInput <- self$discharge
               self$upstreamCell$waterVolume <- self$upstreamCell$saturationVolume
             } else {
               self$discharge <- self$discharge
+              self$upstreamCell$cellInput <- self$discharge
               self$upstreamCell$waterVolume <- self$upstreamCell$waterVolume + self$discharge
               }
             } else {
             self$discharge <- self$discharge
+            self$downstreamCell$cellInput <- self$discharge
             self$downstreamCell$waterVolume <- self$downstreamCell$waterVolume + self$discharge
-          }
+            }
+
+
 
 
           return(list(discharge = self$discharge, spillOver = self$spillOver))

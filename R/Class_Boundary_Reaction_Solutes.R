@@ -230,7 +230,6 @@ Boundary_Reaction_Solute <-
               plyr::llply(
                 integTauBins,
                 function(binSet){
-                  browser()
                   integrate(
                     propUptkFunc,
                     lower = binSet[1],
@@ -518,6 +517,10 @@ Boundary_Reaction_Solute_Soil <-
             warning(
               noquote( strsplit (msgDetail, "\n") [[1]])
             )
+
+            ##add first-order decay
+
+
           }
 
           return(list(amountToRemove = self$amountToRemove, amountToRemain = self$amountToRemain))

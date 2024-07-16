@@ -226,6 +226,7 @@ Boundary_Transport_Solute_Soil <-
 
 
           if(!self$usModBound) {
+
             #initial volume and mass
             totalVolume <- self$upstreamCell$linkedCell$waterVolume
             self$massSoluteInCell <- self$upstreamCell$concentration*totalVolume
@@ -240,7 +241,7 @@ Boundary_Transport_Solute_Soil <-
             #mass balance check
             massDifference <- self$massSoluteInCell - self$fracMassSpillOver
             if(massDifference < 0) {
-              stop(print ("You are removing more solute from the cell then what it held origianlly"))
+              stop(print ("You are removing more solute from the cell then what it held origianlly."))
             }
           }
 
