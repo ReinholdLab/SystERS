@@ -2,8 +2,6 @@
 #' Reaction boundary for a solute
 #' @description Reaction boundary for a solute
 #' @importFrom R6 R6Class
-#' @importFrom hydrogeom powerLawIntCCDF
-#' @importFrom hydrogeom powerLawPDF
 #' @export
 
 Boundary_Reaction_Solute <-
@@ -12,6 +10,44 @@ Boundary_Reaction_Solute <-
 
     #' @inherit Boundary return details
     inherit = Boundary,
+
+    public =
+      list(
+        #' @field processDomain Character string indicating process domain of
+        #'   cell (soil, groundwater, or stream)
+        processDomain = NULL,
+
+        #' @param processDomain Character string indicating process domain of
+        #'   cell (soil, groundwater, or stream)
+
+        initialize =
+          function(..., processDomain){
+            browser()
+            super$initialize(...)
+
+            self$processDomain <- processDomain
+          }
+      )
+  )
+
+
+
+#' @return The object of class \code{Boundary_Reaction_Solute}.
+
+#' @title Class Boundary_Reaction_Solute_Stream (R6)
+#' Reaction boundary for a solute
+#' @description Reaction boundary for a solute
+#' @importFrom R6 R6Class
+#' @importFrom hydrogeom powerLawIntCCDF
+#' @importFrom hydrogeom powerLawPDF
+#' @export
+
+Boundary_Reaction_Solute_Stream <-
+  R6::R6Class(
+    classname = "Boundary_Reaction_Solute_Stream",
+
+    #' @inherit Boundary return details
+    inherit = Boundary_Reaction_Solute,
 
     public =
       list(
@@ -30,13 +66,6 @@ Boundary_Reaction_Solute <-
         amountToRemove = NULL,
         #' @field amountToRemain Amount of solute remaining after the reaction
         amountToRemain = NULL,
-        #' @field processDomain Process domain of cell on which the reaction
-        #'   boundary is interacting
-        processDomain = NULL,
-        #' @field processMethodName How to process the solute, either
-        #'   \code{Boundary_Reaction_Solute$processMethod_RT_PL} or
-        #'   \code{Boundary_Reaction_Solute$processMethod_pcnt}
-        processMethodName = NULL,
         #' @field processMethod Call to the Method  \code{pcnt} or \code{RT-PL}
         processMethod = NULL,
         #' @field tauMin Smallest residence time when solute processing is
@@ -54,18 +83,36 @@ Boundary_Reaction_Solute <-
         #'   i.e., a value that specifies how long solute must be in the
         #'   reactive storage zone before it has the capacity to react.
         tauRxn = NULL,
+        #' @field qStorage Volumetric rate of water entering the storage zone
+        qStorage = NULL,
         #' @field volWaterInStorage Volume of water in the transient storage
         #'   zone (equal to the volume of the alluvial aquifer X porosity)
         volWaterInStorage = NULL,
         #' @field rxnVals A data frame storing the key reaction boundary inputs
         #'   and outputs
         rxnVals = NULL,
-        #' @field qStorage Volumetric rate of water entering the storage zone
-        qStorage = NULL,
         #' @field pcntToRemove If process method is set to \code{pcnt}, then the
         #'   percent of solute amount (mass or mols) to remove from storage must
         #'   be specified
         pcntToRemove = NULL,
+        #' @description Instantiate a solute reaction boundary in the stream
+        #'   processing domain
+        #' @field fractionRemoved Fraction of solute removed from stream cell
+        fractionRemoved = NULL,
+        #' @field fractionRemaining Fraction of solute remaining in
+        #'   stream cell
+        fractionRemaining = NULL,
+        #' @field damkohlerNum Damkohler number for the boundary.  This
+        #'   Damkohler represents the change over the entire stream reach.
+        damkohlerNum = NULL,
+        #' @field damkohlerNumStorage Damkohler number for the transient storage
+        #'   zone (i.e. hyporheic zone)
+        damkohlerNumStorage = NULL,
+        #' @field damkohlerNumScaledToTimeStep A Damkohler for the reach, scaled
+        #'   to the timestep
+        damkohlerNumScaledToTimeStep = NULL,
+        #' @field concentrationStorage Concentration of solute in storage
+        concentrationStorage = NULL,
 
         #' @description Instantiate a reaction boundary for a solute #'
         #' @param ... Parameters inherited from Class \code{\link{Boundary}}
@@ -76,7 +123,6 @@ Boundary_Reaction_Solute <-
         #' @param timeInterval  Model time step
         #' @param volWaterInStorage The volume of water in the reactive storage
         #'   zone
-        #'
         #' @param processMethodName How to process the solute, either
         #'   \code{pcnt} or \code{RT-PL}
         #' @param tauMin Minimum residence time of water to consider; bound on
@@ -92,12 +138,18 @@ Boundary_Reaction_Solute <-
         #'   This parameter is only passed to the \code{RT-PL} Method and cannot
         #'   be applied to the \code{pcnt} Method.  The default value is
         #'   \code{0}.
+        #' @param qStorage Volumetric rate of water entering the storage zone
         #' @param pcntToRemove Percent of solute amount (mass or mols) to remove
         #'   from storage
-        #' @return The object of class \code{Boundary_Reaction_Solute}.
+        #' @param ... Parameters inherit from Class
+        #'   \code{\link{Boundary_Reaction_Solute}} and thus
+        #'   \code{\link{Boundary}}
+        #' @return A model boundary that calculates solute removal from stream
+        #'   cells in the stream processing domain
+
         initialize =
           function(..., processMethodName, tauMin, tauMax,
-                   alpha, k, tauRxn, pcntToRemove, volWaterInStorage){
+                   alpha, k, tauRxn, qStorage, pcntToRemove, volWaterInStorage){
             super$initialize(...)
             self$processDomain <- self$upstreamCell$processDomain
             self$processMethodName <- processMethodName
@@ -114,16 +166,16 @@ Boundary_Reaction_Solute <-
             self$k <- k
             self$volWaterInStorage <- volWaterInStorage
 
-            # if(!is.numeric(qStorage)){
-            #   # I have set tau_a = tauMin and tau_b = tauMax because we want the
-            #   # entire integral from tauMin to tauMax...
-            #   ccdfIntegrated <- hydrogeom::powerLawIntCCDF(self$tauMin, self$tauMax, self$tauMin, self$tauMax, self$alpha)
-            #
-            #   storage.1d <- self$volWaterInStorage / self$upstreamCell$linkedCell$channelArea
-            #   self$qStorage <-  storage.1d / ccdfIntegrated
-            # } else {
-            #   self$qStorage <- qStorage
-            # }
+            if(!is.numeric(qStorage)){
+              # I have set tau_a = tauMin and tau_b = tauMax because we want the
+              # entire integral from tauMin to tauMax...
+              ccdfIntegrated <- hydrogeom::powerLawIntCCDF(self$tauMin, self$tauMax, self$tauMin, self$tauMax, self$alpha)
+
+              storage.1d <- self$volWaterInStorage / self$upstreamCell$linkedCell$channelArea
+              self$qStorage <-  storage.1d / ccdfIntegrated
+            } else {
+              self$qStorage <- qStorage
+            }
           },
 
 
@@ -200,7 +252,7 @@ Boundary_Reaction_Solute <-
               )
 
 
-          # specify the function that does the integration
+            # specify the function that does the integration
             propUptkFunc <-
               function(
                 tau,
@@ -252,86 +304,6 @@ Boundary_Reaction_Solute <-
             return(propUptk)
           }
         },
-
-
-        #' @method Method Boundary_Reaction_Solute$store
-        #' @description Runs the store method on solute cells in the model for
-        #'   reactions that remove solute from cells.
-        #' @return Updated store values.
-        store = function(){
-          if(self$processDomain == 'stream') {
-          self$upstreamCell$amount <- self$upstreamCell$amount - self$amountToRemove
-          return(self$upstreamCell$amount)
-          } else if(self$processDomain == 'soil') {
-            self$upstreamCell$concentration <- (self$upstreamCell$massSoluteInCell - self$upstreamCell$fracMassSpillOver) * self$upstreamCell$linkedCell$waterVolume
-          }
-
-
-        }
-      )
-  )
-
-
-#' @title Class Boundary_Reaction_Solute_Stream (R6)
-#' A model boundary that calculates solute removal from stream cells
-#' @description Reaction boundary for solute from stream cells
-#' @importFrom R6 R6Class
-#' @export
-Boundary_Reaction_Solute_Stream <-
-  R6::R6Class(
-    classname = "Boundary_Reaction_Solute_Stream",
-
-    #' @inherit Boundary_Reaction_Solute return details
-    inherit = Boundary_Reaction_Solute,
-
-    public =
-      list(
-        #' @description Instantiate a solute reaction boundary in the stream
-        #'   processing domain
-        #' @field fractionRemoved Fraction of solute removed from stream cell
-        fractionRemoved = NULL,
-        #' @field fractionRemaining Fraction of solute remaining in
-        #'   stream cell
-        fractionRemaining = NULL,
-        #' @field damkohlerNum Damkohler number for the boundary.  This
-        #'   Damkohler represents the change over the entire stream reach.
-        damkohlerNum = NULL,
-        #' @field damkohlerNumStorage Damkohler number for the transient storage
-        #'   zone (i.e. hyporheic zone)
-        damkohlerNumStorage = NULL,
-        #' @field damkohlerNumScaledToTimeStep A Damkohler for the reach, scaled
-        #'   to the timestep
-        damkohlerNumScaledToTimeStep = NULL,
-        #' @field concentrationStorage Concentration of solute in storage
-        concentrationStorage = NULL,
-        #'
-        #' @param ... Parameters inherit from Class
-        #'   \code{\link{Boundary_Reaction_Solute}} and thus
-        #'   \code{\link{Boundary}}
-        #' @param boundaryIdx String indexing the boundary
-        #' @param currency String naming the currency handled by the boundary as
-        #'   a character e.g., \code{water, NO3}
-        #' @param upstreamCell  Cell (if one exists) upstream of the boundary
-        #' @param timeInterval  Model time step
-        #' @param qStorage Volumetric rate of water entering the storage zone
-        #' @return A model boundary that calculates solute removal from stream
-        #'   cells in the stream processing domain
-        initialize =
-          function(..., qStorage){
-            super$initialize(...)
-
-            if(!is.numeric(qStorage)){
-              # I have set tau_a = tauMin and tau_b = tauMax because we want the
-              # entire integral from tauMin to tauMax...
-              ccdfIntegrated <- hydrogeom::powerLawIntCCDF(self$tauMin, self$tauMax, self$tauMin, self$tauMax, self$alpha)
-
-              storage.1d <- self$volWaterInStorage / self$upstreamCell$linkedCell$channelArea
-              self$qStorage <-  storage.1d / ccdfIntegrated
-            } else {
-              self$qStorage <- qStorage
-            }
-
-          }, # close initialize
 
 
         #' @method Method Boundary_Reaction_Solute_Stream$trade
@@ -404,6 +376,7 @@ Boundary_Reaction_Solute_Stream <-
             )
           }
 
+
           hydraulicLoad <- self$upstreamCell$linkedCell$hydraulicLoad
           steadyStateFracRemaining <- exp(-1 * self$qStorage * self$fractionRemovedStorage  / hydraulicLoad)
           steadyStateFracRemoved <- 1 - steadyStateFracRemaining
@@ -425,11 +398,19 @@ Boundary_Reaction_Solute_Stream <-
               amountToRemove = self$amountToRemove
             )
           return(list(amountToRemove = self$amountToRemove, amountToRemain = self$amountToRemain))
+        },
+
+
+        #' @method Method Boundary_Reaction_Solute$store
+        #' @description Runs the store method on solute cells in the model for
+        #'   reactions that remove solute from cells.
+        #' @return Updated store values.
+        store = function(){
+          self$upstreamCell$amount <- self$upstreamCell$amount - self$amountToRemove
+          return(self$upstreamCell$amount)
         }
-      ) # close public
-  ) # close class
-
-
+      )
+  )
 
 
 #' @title Class Boundary_Reaction_Solute_Soil (R6)
@@ -448,22 +429,14 @@ Boundary_Reaction_Solute_Soil <-
       list(
         #' @description Instantiate a solute reaction boundary in the Soil
         #'   processing domain
-        #' @field fractionRemoved Fraction of solute removed from Soil cell
-        fractionRemoved = NULL,
-        #' @field fractionRemaining Fraction of solute remaining in
-        #'   Soil cell
-        fractionRemaining = NULL,
-        #' @field damkohlerNum Damkohler number for the boundary.  This
-        #'   Damkohler represents the change over the entire Soil reach.
-        damkohlerNum = NULL,
-        #' @field damkohlerNumStorage Damkohler number for the transient storage
-        #'   zone (i.e. hyporheic zone)
-        damkohlerNumStorage = NULL,
-        #' @field damkohlerNumScaledToTimeStep A Damkohler for the reach, scaled
-        #'   to the timestep
-        damkohlerNumScaledToTimeStep = NULL,
-        #' @field concentrationStorage Concentration of solute in storage
-        concentrationStorage = NULL,
+        #' @field qStorage Volumetric rate of water entering the storage zone
+        qStorage = NULL,
+        #' @field massOutofCell Solute mass at the end of the time step.
+        massOutofCell = NULL,
+        #' @field soluteMassToReact The initial mass of solute in the cell
+        soluteMassToReact = NULL,
+        #' @field reactionConstant The first order decay reaction constant set by user
+        reactionConstant = NULL,
         #'
         #' @param ... Parameters inherit from Class
         #'   \code{\link{Boundary_Reaction_Solute}} and thus
@@ -474,28 +447,22 @@ Boundary_Reaction_Solute_Soil <-
         #' @param upstreamCell  Cell (if one exists) upstream of the boundary
         #' @param timeInterval  Model time step
         #' @param qStorage Volumetric rate of water entering the storage zone
+        #' @param massOutofCell Solute mass at the end of the time step.
+        #' @param soluteMassToReact The inital mass of solute in the cell
+        #' @param reactionConstant The first order decay reaction constant set by user
         #' @return A model boundary that calculates solute removal from Soil
         #'   cells in the Soil processing domain
         initialize =
-          function(..., qStorage){
+          function(..., qStorage, reactionConstant){
+            browser()
+
             super$initialize(...)
 
-            if(self$processMethodName == 'RT-PL') {
-              if(!is.numeric(qStorage)){
-                # I have set tau_a = tauMin and tau_b = tauMax because we want the
-                # entire integral from tauMin to tauMax...
-                ccdfIntegrated <- hydrogeom::powerLawIntCCDF(self$tauMin, self$tauMax, self$tauMin, self$tauMax, self$alpha)
-
-                storage.1d <- self$volWaterInStorage / (self$upstreamCell$linkedCell$cellWidth * self$upstreamCell$linkedCell$cellLength)
-                self$qStorage <-  storage.1d / ccdfIntegrated
-              } else {
-                self$qStorage <- qStorage
-              }
-            } else {
-              self$qStorage <- self$fractionRemainingStorage
-            }
+            self$qStorage <- 5
+            self$reactionConstant <- reactionConstant
 
           }, # close initialize
+
 
 
         #' @method Method Boundary_Reaction_Solute_Soil$trade
@@ -503,27 +470,27 @@ Boundary_Reaction_Solute_Soil <-
         #'   to Soil cells
         #' @return Trades for reaction boundaries attached to Soil cells
         trade = function(){
+          browser()
 
-          self$processMethod()
-          # Error check: do the fraction of solute removed and remaining from STORAGE sum to one?
-          if( round(sum(self$fractionRemovedStorage, self$fractionRemainingStorage), 3) != 1 ) {
-            msgGeneral <- "The fraction of solute removed and remaining from storage do not sum to one."
-            msgDetail <- paste(
-              msgGeneral,
-              "\nBoundary:", self$boundaryIdx,
-              "\nFraction removed from storage:", self$fractionRemovedStorage,
-              "\nFraction remaining in storage:", self$fractionRemainingStorage
+
+          self$soluteMassToReact <- self$upstreamCell$linkedReactionCells$soil_rxn_001$initSoluteMass
+
+          reactedMass <- self$soluteMassToReact * exp((-self$reactionConstant)*self$timeInterval)
+          self$massOutofCell <- self$soluteMassToReact - reactedMass
+
+          # Volumtric rate of water moving in/out with regrads to massOutofCell - email sent to Rob/Stephanie
+          # need to make this loop back to the same solute cell - I'll work on this
+          # lateral and upward water movement in cell_soil - I'll work on this
+
+
+          if(self$massOutofCell > self$soluteMassToReact) {
+            stop(
+              print("More reacted mass is moving out of the cell then what was there originally.")
             )
-            warning(
-              noquote( strsplit (msgDetail, "\n") [[1]])
-            )
-
-            ##add first-order decay
-
-
           }
 
-          return(list(amountToRemove = self$amountToRemove, amountToRemain = self$amountToRemain))
+
+          return(list(massOutofCell = self$massOutofCell, soluteMassToReact = self$soluteMassToReact))
         }
       ) # close public
   ) # close class

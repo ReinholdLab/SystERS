@@ -187,6 +187,7 @@ systERSModel <-
             boundsTablesToKeep <- sapply(self$boundsTableList, function(df) !is.null(df))
             self$boundsTableList <- self$boundsTableList[boundsTablesToKeep]
 
+
             self$solute_transport_df <-
               rbind(
                 self$boundsTableList[["bounds_transport_solute_int"]],
@@ -234,41 +235,46 @@ systERSModel <-
     #' @return A list of model cells
     cellFactory = function(){
 
+
       # Error check to see if any cell specifications are duplicated
       self$errorCheckCellInputs()
 
       # generate the cells from the cells tables
-      cells_water_stream <- self$initializeWaterCells_stream()
-      names(cells_water_stream) <- self$cellsTable_water_stream$cellIdx
-      self$cells <- cells_water_stream
+      if(!is.null(self$cellsTable_water_stream)){
+        cells_water_stream <- self$initializeWaterCells_stream()
+        names(cells_water_stream) <- self$cellsTable_water_stream$cellIdx
+        self$cells <- cells_water_stream
+      }
 
-      if(is.null(self$cellsTable_solute_stream)) {
-      } else {
+      if(!is.null(self$cellsTable_solute_stream)) {
         cells_solute_stream <- self$initializeSoluteCells_stream()
         names(cells_solute_stream) <- self$cellsTable_solute_stream$cellIdx
         self$cells <- c(self$cells, cells_solute_stream)
       }
 
-      cells_water_soil <- self$initializeWaterCells_soil()
-      names(cells_water_soil) <- self$cellsTable_water_soil$cellIdx
-      self$cells <- cells_water_soil
+      if(!is.null(self$cellsTable_water_soil)) {
+        cells_water_soil <- self$initializeWaterCells_soil()
+        names(cells_water_soil) <- self$cellsTable_water_soil$cellIdx
+        self$cells <- cells_water_soil
+      }
 
-      if(is.null(self$cellsTable_solute_soil)) {
-      } else {
+      if(!is.null(self$cellsTable_solute_soil)) {
         cells_solute_soil <- self$initializeSoluteCells_soil()
         names(cells_solute_soil) <- self$cellsTable_solute_soil$cellIdx
         self$cells <- c(self$cells, cells_solute_soil)
       }
 
-      cells_soil_reaction <- self$initializeSoluteRxnCells_soil()
-      names(cells_soil_reaction) <- self$cellsTable_soil_reaction$cellIdx
-      self$cells <- c(self$cells, cells_soil_reaction)
+      if(!is.null(self$cellsTable_soil_reaction)) {
+        cells_soil_reaction <- self$initializeSoluteRxnCells_soil()
+        names(cells_soil_reaction) <- self$cellsTable_soil_reaction$cellIdx
+        self$cells <- c(self$cells, cells_soil_reaction)
+      }
 
       #Soil cells - write initialize function
 
-      if(!is.null(cells_water_stream)) {
+      if(!is.null(self$cellsTable_solute_stream)) {
         self$linkSoluteCellsToWaterCells_stream()
-      } else if (!is.null(cells_water_soil)) {
+      } else if (!is.null(self$cellsTable_solute_soil)) {
         self$linkSoluteCellsToWaterCells_soil()
         self$linkReactionCellsToSoilSoluteCells()
       }
@@ -410,7 +416,8 @@ systERSModel <-
           plyr::llply(
             1:nrow(tbl),
             function(rowNum){
-              Cell_Solute$new(
+
+              Cell_Solute_Stream$new(
                 cellIdx = tbl$cellIdx[rowNum],
                 processDomain = tbl$processDomain[rowNum],
                 currency = tbl$currency[rowNum],
@@ -457,14 +464,13 @@ systERSModel <-
     #' @importFrom plyr llply
     #' @return List of soil solute cells
     initializeSoluteCells_soil = function(){
-
       tbl <- self$cellsTable_solute_soil
       if(!is.null(tbl)){
         return(
           plyr::llply(
             1:nrow(tbl),
             function(rowNum){
-              Cell_Solute$new(
+              Cell_Solute_Soil$new(
                 cellIdx = tbl$cellIdx[rowNum],
                 processDomain = tbl$processDomain[rowNum],
                 currency = tbl$currency[rowNum],
@@ -517,7 +523,6 @@ systERSModel <-
         lapply(
           soluteCells,
           function(c) {
-
             # identify the water cells to which the solute cells are connected
             cellIdxs <- self$cellsTable_soil_reaction$cellIdx[self$cellsTable_soil_reaction$linkedCell == c$cellIdx]
             reactionCells <- self$cells[cellIdxs]
@@ -619,8 +624,6 @@ systERSModel <-
         1:nrow(tbl),
         function(rowNum) {
 
-
-
           locationOfBoundInNetwork <- tbl$locationOfBoundInNetwork[rowNum]
 
           if(!(locationOfBoundInNetwork %in% c("upstream", "downstream"))) stop("External model boundaries must have a 'locationOfBoundInNetwork' with a value of either 'upstream' or 'downstream'.")
@@ -683,6 +686,7 @@ systERSModel <-
       plyr::llply(
         1:nrow(tbl),
         function(rowNum) {
+          browser()
           if(tbl$processDomainName[rowNum] == "stream"){
             Boundary_Transport_Water_Stream$new(
               boundaryIdx = tbl$boundaryIdx[rowNum],
@@ -724,10 +728,12 @@ systERSModel <-
     #'
     initializeSoluteTransportBoundaries =
       function( ){
+        browser()
         tbl <- self$solute_transport_df
         plyr::llply(
           1:nrow(tbl),
           function(rowNum) {
+            browser()
             if(tbl$processDomain[rowNum] == "stream"){
               Boundary_Transport_Solute_Stream$new(
                 boundaryIdx = tbl$boundaryIdx[rowNum],
@@ -746,7 +752,7 @@ systERSModel <-
                 currency = tbl$currency[rowNum],
                 linkedBound = self$bounds[[ tbl$linkedBound[rowNum] ]],
                 # concentration = tbl$concentration[rowNum],
-                load = tbl$load[rowNum],
+                # load = tbl$load[rowNum],
                 upstreamCell = self$cells[[  tbl$upstreamCellIdx[rowNum] ]],
                 downstreamCell = self$cells[[ tbl$downstreamCellIdx[rowNum] ]],
                 timeInterval = self$timeInterval,
@@ -781,8 +787,10 @@ systERSModel <-
       plyr::llply(
         1:nrow(tbl),
         function(rowNum) {
+          browser()
           if(tbl$processDomain[rowNum] == "stream"){
             Boundary_Reaction_Solute_Stream$new(
+              processDomain = tbl$processDomain[rowNum],
               boundaryIdx = tbl$boundaryIdx[rowNum],
               currency = tbl$currency[rowNum],
               upstreamCell = self$cells[[ tbl$upstreamCellIdx[rowNum] ]],
@@ -800,20 +808,14 @@ systERSModel <-
             )
           } else if(tbl$processDomain[rowNum] == "soil"){
             Boundary_Reaction_Solute_Soil$new(
+              processDomain = tbl$processDomain[rowNum],
               boundaryIdx = tbl$boundaryIdx[rowNum],
               currency = tbl$currency[rowNum],
               upstreamCell = self$cells[[ tbl$upstreamCellIdx[rowNum] ]],
               downstreamCell = NULL,
               timeInterval = self$timeInterval,
-              pcntToRemove = tbl$pcntToRemove[rowNum],
               qStorage = tbl$qStorage[rowNum],
-              volWaterInStorage = tbl$volWaterInStorage[rowNum],
-              alpha = tbl$alpha[rowNum],
-              tauMin = tbl$tauMin[rowNum],
-              tauMax = tbl$tauMax[rowNum],
-              tauRxn = tbl$tauRxn[rowNum],
-              k = tbl$k[rowNum],
-              processMethodName = tbl$processMethodName[rowNum]
+              reactionConstant = tbl$reactionConstant[rowNum]
             )
           } else {
             Boundary_Reaction_Solute$new(

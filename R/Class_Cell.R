@@ -204,17 +204,8 @@ Cell_Solute <-
     inherit = Cell,
     public =
       list(
-        #' @field concentration Solute concentration in user specified units;
-        #'   user must ensure consistency in units
-        concentration = NULL,
-        #' @field amount Solute amount in user specified units (mass or mols)
-        amount = NULL,
         #' @field linkedCell The water cell to which the solute cell is linked
         linkedCell = NULL,
-        #' @field massSoluteInCell The original mass of solute in the soil Cell
-        massSoluteInCell = NULL,
-        #' @field fracMassSpillOver The fraction of mass of solute leaving the soil cell
-        fracMassSpillOver = NULL,
         #' @field linkedReactionCells solute cells that are linked to the reaction
         #'   cell
         linkedReactionCells = NULL,
@@ -224,43 +215,126 @@ Cell_Solute <-
         #' @param cellIdx Character string denoting the index for the cell
         #' @param processDomain Character string indicating process domain of cell (soil, groundwater, or stream)
         #' @param currency Character string with either water or name of solute
-        #' @param concentration the concentration of the solute in user specified units
-        #'   (mass or mols per unit volume)
         #' @param linkedCell the cell containing the water in which this solute is located
-        #' @param massSoluteInCell The original mass of solute in the soil cell
-        #' @param fracMassSpillOver The fraction of solute mass leaving the soil cell
         #' @return The object of class \code{Cell_Solute}.
 
         initialize =
-          function(
-            ...,
-            linkedCell,
-            concentration
-          ){
+          function(..., linkedCell){
             super$initialize(...)
 
             self$linkedCell <- linkedCell
+          }
+      )
+  )
+
+
+#' @title Class Cell_Solute_Stream (R6)
+#' A stream cell containing a solute.  Must be linked to a solute cell.
+#' @description Instantiate a \code{Cell_Solute_Stream} object. Class
+#'   \code{Cell_Solute_Stream} inherits from class \code{Cell_Solute}.
+#' @importFrom R6 R6Class
+#' @export
+
+Cell_Solute_Stream <-
+  R6::R6Class(
+    classname = "Cell_Solute_Stream",
+
+    #' @inherit Cell return details
+    inherit = Cell_Solute,
+    public =
+      list(
+        #' @field concentration Solute concentration in user specified units;
+        #'   user must ensure consistency in units
+        concentration = NULL,
+        #' @field amount Solute amount in user specified units (mass or mols)
+        amount = NULL,
+
+
+        #' @param ... Parameters inherit from Class \code{\link{Cell_Solute}}
+        #' @param cellIdx Character string denoting the index for the cell
+        #' @param processDomain Character string indicating process domain of cell (soil, groundwater, or stream)
+        #' @param currency Character string with either water or name of solute
+        #' @param concentration the concentration of the solute in user specified units
+        #'   (mass or mols per unit volume)
+        #' @param linkedCell the cell containing the water in which this solute is located
+        #' @return The object of class \code{Cell_Solute_Stream}.
+
+        initialize =
+          function(..., concentration){
+            super$initialize(...)
 
             self$concentration <- concentration
             self$amount <- self$concentration * self$linkedCell$waterVolume #initial amount of solute in the cell
           },
 
-        #' @method Method Cell_Solute$update
+        #' @method Method Cell_Solute_Stream$update
         #' @description Runs the update method on all cells of class
-        #'   \code{Cell_Solute}.
+        #'   \code{Cell_Solute_Stream}.
         #' @return Updates cell values based on trades and stores.
         update = function(){
 
-          if(self$processDomain == 'stream') {
           self$concentration <- self$amount / self$linkedCell$waterVolume
-          } else if(self$processDomain == 'soil') {
-            self$concentration <- (self$massSoluteInCell - self$fracMassSpillOver) / self$linkedCell$waterVolume
-          }
 
           return()
         }
 
 
+      )
+  )
+
+
+#' @title Class Cell_Solute_Soil (R6)
+#' A soil cell containing a solute.  Must be linked to a solute cell.
+#' @description Instantiate a \code{Cell_Solute_Soil} object. Class
+#'   \code{Cell_Solute_Soil} inherits from class \code{Cell_Solute}.
+#' @importFrom R6 R6Class
+#' @export
+
+Cell_Solute_Soil <-
+  R6::R6Class(
+    classname = "Cell_Solute_Soil",
+
+    #' @inherit Cell return details
+    inherit = Cell_Solute,
+    public =
+      list(
+        #' @field concentration Solute concentration in user specified units;
+        #'   user must ensure consistency in units
+        concentration = NULL,
+        #' @field massSoluteInCell The original mass of solute in the soil Cell
+        massSoluteInCell = NULL,
+        #' @field fracMassSpillOver The fraction of mass of solute leaving the soil cell
+        fracMassSpillOver = NULL,
+
+
+        #' @param ... Parameters inherit from Class \code{\link{Cell_Solute}}
+        #' @param cellIdx Character string denoting the index for the cell
+        #' @param processDomain Character string indicating process domain of cell (soil, groundwater, or stream)
+        #' @param currency Character string with either water or name of solute
+        #' @param concentration the concentration of the solute in user specified units
+        #'   (mass or mols per unit volume)
+        #' @param linkedCell the cell containing the water in which this solute is located
+        #' @param massSoluteInCell The original mass of solute in the soil cell
+        #' @param fracMassSpillOver The fraction of solute mass leaving the soil cell
+        #' @return The object of class \code{Cell_Solute_Soil}.
+
+        initialize =
+          function(..., concentration){
+            super$initialize(...)
+
+
+            self$concentration <- concentration
+          },
+
+          #' @method Method Cell_Solute$update
+          #' @description Runs the update method on all cells of class
+          #'   \code{Cell_Solute}.
+          #' @return Updates cell values based on trades and stores.
+          update = function(){
+
+            self$concentration <- (self$massSoluteInCell - self$fracMassSpillOver) / self$linkedCell$waterVolume
+            return()
+          }
       )
   )
 
@@ -305,7 +379,12 @@ Cell_Water_Soil <- R6::R6Class(
     cellSpillOver = NULL,
     #' @field cellTypePorosity List of soil types and matching porosity values.
     cellTypePorosity = NULL,
-
+    #' @field cellTypeHydraulicConductivity List of average hydraulic conductivity
+    #' for soil types with units of m s-1. Values found on https://structx.com/Soil_Properties_007.html
+    cellTypeHydraulicConductivity = NULL,
+    #' @field cellHydraulicConductivity The average hydraulic conductivity
+    #' assigned based on soil type with units of m s-1.
+    cellHydraulicConductivity = NULL,
 
     #' @description Create a new water cell
     #' @param saturationVolume The max volume of water that can be in the cell.
@@ -325,7 +404,11 @@ Cell_Water_Soil <- R6::R6Class(
     #' @param waterVolume The volume of water already present in the cell.
     #' @param cellInput The volume of water entering the soil cell.
     #' @param cellSpillOver The volume of water exiting the soil cell.
-    #' @param cellTypePorosity
+    #' @param cellTypePorosity List of soil types and matching porosity values.
+    #' @param cellTypeHydraulicConductivity List of average hydraulic conductivity
+    #' for soil types with units of m s-1. Values found on https://structx.com/Soil_Properties_007.html
+    #' @param cellHydraulicConductivity The average hydraulic conductivity
+    #' assigned based on soil type with units of m s-1.
     #' @return The object of class \code{Cell_Water_Soil}.
 
 
@@ -356,10 +439,29 @@ Cell_Water_Soil <- R6::R6Class(
         sandyclay = 0.47,
         clay = 0.47)
 
+      self$cellTypeHydraulicConductivity <- list( #with units of m s-1
+        sand = 1.76e-4,
+        loamysand = 1.56e-4, #from first loamy row
+        sandyloam = 3.45e-5,
+        loam = 6.94e-6, #from second loamy row
+        siltloam = 7.19e-6,
+        sandyclayloam = 6.31e-6,
+        clayloam = 2.45e-6,
+        siltyclayloam = 1.70e-6,
+        sandyclay = 2.17e-6, #from ninth row (sandy clayey loam)
+        clay = 1.28e-6)
+
       #search a list based on soil type for value
       self$cellPorosity <-
         if (self$cellSoilType %in% names(self$cellTypePorosity)) {
           cellPorosity <- self$cellTypePorosity[[self$cellSoilType]]
+        } else {
+          return(print("Err: Soil type not in dictionary."))
+        }
+
+      self$cellHydraulicConductivity <-
+        if (self$cellSoilType %in% names(self$cellTypeHydraulicConductivity)) {
+          cellHydraulicConductivity <- self$cellTypeHydraulicConductivity[[self$cellSoilType]]
         } else {
           return(print("Err: Soil type not in dictionary."))
         }

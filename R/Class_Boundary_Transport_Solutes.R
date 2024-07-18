@@ -12,14 +12,14 @@ Boundary_Transport_Solute <-
 
     public =
       list(
-        #' @field load Load (amount per time) of solute moved through this
+        # @field load Load (amount per time) of solute moved through this
         #'   boundary
-        load = NULL,
-        #' @field amount Amount of solute (mass or mols) moved through this
+        #load = NULL,
+        # @field amount Amount of solute (mass or mols) moved through this
         #'   boundary
-        amount = NULL,
+        #amount = NULL,
         #' @field linkedBound The boundary containing the water that is
-        #'   advecting the solute in this boundary
+        #' #'   advecting the solute in this boundary
         linkedBound = NULL,
         #' @field processDomain processDomain Character string indicating process domain of
         #'   cell (soil, groundwater, or stream)
@@ -43,28 +43,18 @@ Boundary_Transport_Solute <-
         #'   cell (soil, groundwater, or stream)
         #' @return A transport boundary for solutes between cells
         initialize =
-          function(..., linkedBound, load, processDomain){
+          function(..., linkedBound, processDomain){
+            browser()
             super$initialize(...)
 
             self$processDomain <- processDomain
 
             self$linkedBound <- linkedBound
-            self$load <- load
-            self$amount <- self$load * self$timeInterval
-          }, # close initialize
+            # self$load <- load
+            # self$amount <- self$load * self$timeInterval
+          } # close initialize
 
 
-        #' @method Method Boundary_Transport_Solute$store
-        #' @description Runs the store method on solute cells in the model for
-        #'   solute transport boundaries.
-        #' @return Updated store values.
-        store = function(){
-
-          self$upstreamCell$amount <- self$upstreamCell$amount - self$amount
-          self$downstreamCell$amount <- self$downstreamCell$amount + self$amount
-          return(c(self$upstreamCell$amount, self$downstreamCell$amount))
-
-        }
 
       ) # close public
   ) # close R6 class
@@ -90,12 +80,9 @@ Boundary_Transport_Solute_Stream <-
         #' @field amount Amount of solute (mass or mols) moved through this
         #'   boundary
         amount = NULL,
-        #' @field linkedBound The boundary containing the water that is
-        #'   advecting the solute in this boundary
-        linkedBound = NULL,
-        #' @field processDomain processDomain Character string indicating process domain of
-        #'   cell (soil, groundwater, or stream)
-        processDomain = NULL,
+        #' #' @field linkedBound The boundary containing the water that is
+        #' #'   advecting the solute in this boundary
+        #' linkedBound = NULL,
 
 
         #' @description Instantiate a transport boundary for solutes between
@@ -115,9 +102,13 @@ Boundary_Transport_Solute_Stream <-
         #'   cell (soil, groundwater, or stream)
         #' @return A transport boundary for solutes between cells
         initialize =
-          function(...){
+          function(..., load){
+            browser()
             super$initialize(...)
 
+
+            self$load <- load
+            self$amount <- self$load * self$timeInterval
 
           }, # close initialize
 
@@ -147,7 +138,7 @@ Boundary_Transport_Solute_Stream <-
 
             # solute mass to remain
             # soluteToRemain <- (self$upstreamConcentration * self$linkedBound$Discharge) - self$amount
-            soluteToRemain <- self$amount - self$upstreamCell$amount # I switched this because the solute amount entering is greater than what was in the cell
+            soluteToRemain <- self$upstreamCell$amount - self$amount # I switched this because the solute amount entering is greater than what was in the cell
 
 
 
@@ -160,7 +151,20 @@ Boundary_Transport_Solute_Stream <-
           }
 
           return(list(load = self$load, amount = self$amount))
-        } # close trade function definition
+        }, # close trade function definition
+
+
+        #' @method Method Boundary_Transport_Solute$store
+        #' @description Runs the store method on solute cells in the model for
+        #'   solute transport boundaries.
+        #' @return Updated store values.
+        store = function(){
+
+          self$upstreamCell$amount <- self$upstreamCell$amount - self$amount
+          self$downstreamCell$amount <- self$downstreamCell$amount + self$amount
+          return(c(self$upstreamCell$amount, self$downstreamCell$amount))
+
+        }
 
       ) # close public
   ) # close R6 class
@@ -182,9 +186,6 @@ Boundary_Transport_Solute_Soil <-
     public =
       list(
         linkedBound = NULL,
-        #' @field processDomain processDomain Character string indicating process domain of
-        #'   cell (soil, groundwater, or stream)
-        processDomain = NULL,
         #' @field massSoluteInCell The original mass of solute in the soil Cell
         massSoluteInCell = NULL,
         #' @field fracMassSpillOver The fraction of mass of solute leaving the soil cell
