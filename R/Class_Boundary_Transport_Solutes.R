@@ -12,12 +12,6 @@ Boundary_Transport_Solute <-
 
     public =
       list(
-        # @field load Load (amount per time) of solute moved through this
-        #'   boundary
-        #load = NULL,
-        # @field amount Amount of solute (mass or mols) moved through this
-        #'   boundary
-        #amount = NULL,
         #' @field linkedBound The boundary containing the water that is
         #' #'   advecting the solute in this boundary
         linkedBound = NULL,
@@ -44,14 +38,11 @@ Boundary_Transport_Solute <-
         #' @return A transport boundary for solutes between cells
         initialize =
           function(..., linkedBound, processDomain){
-            browser()
             super$initialize(...)
 
             self$processDomain <- processDomain
 
             self$linkedBound <- linkedBound
-            # self$load <- load
-            # self$amount <- self$load * self$timeInterval
           } # close initialize
 
 
@@ -103,7 +94,6 @@ Boundary_Transport_Solute_Stream <-
         #' @return A transport boundary for solutes between cells
         initialize =
           function(..., load){
-            browser()
             super$initialize(...)
 
 
@@ -185,7 +175,6 @@ Boundary_Transport_Solute_Soil <-
 
     public =
       list(
-        linkedBound = NULL,
         #' @field massSoluteInCell The original mass of solute in the soil Cell
         massSoluteInCell = NULL,
         #' @field fracMassSpillOver The fraction of mass of solute leaving the soil cell
@@ -237,7 +226,9 @@ Boundary_Transport_Solute_Soil <-
             volumeSpillOver <- self$upstreamCell$linkedCell$cellSpillOver
             self$fracMassSpillOver <- (volumeSpillOver/totalVolume) * self$massSoluteInCell
             self$upstreamCell$fracMassSpillOver <- self$fracMassSpillOver
-            # concentrationSpillOver <- fracMassSpillOver * volumeSpillOver
+            #fraction Mass remaining needs to be the initMassInCell for the solute rxn cell
+
+
 
             #mass balance check
             massDifference <- self$massSoluteInCell - self$fracMassSpillOver
@@ -249,7 +240,19 @@ Boundary_Transport_Solute_Soil <-
 
 
           return(list(massSoluteInCell = self$massSoluteInCell, fracMassSpillOver = self$fracMassSpillOver))
-        } # close trade function definition
+        }, # close trade function definition
+
+
+
+        #' @method Method Boundary_Transport_Solute_Soil$store
+        #' @description Runs the store method on solute cells in the model for
+        #'   solute transport boundaries.
+        #' @return Updated store values.
+        store = function(){
+
+          return()
+
+        }
 
       ) # close public
   ) # close R6 class

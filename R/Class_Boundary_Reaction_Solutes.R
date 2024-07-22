@@ -22,7 +22,6 @@ Boundary_Reaction_Solute <-
 
         initialize =
           function(..., processDomain){
-            browser()
             super$initialize(...)
 
             self$processDomain <- processDomain
@@ -68,6 +67,9 @@ Boundary_Reaction_Solute_Stream <-
         amountToRemain = NULL,
         #' @field processMethod Call to the Method  \code{pcnt} or \code{RT-PL}
         processMethod = NULL,
+        #' @field processMethodName How to process the solute, either
+        #'   \code{pcnt} or \code{RT-PL}
+        processMethodName = NULL,
         #' @field tauMin Smallest residence time when solute processing is
         #'   possible; must be >= tauMin
         tauMin = NULL,
@@ -437,6 +439,8 @@ Boundary_Reaction_Solute_Soil <-
         soluteMassToReact = NULL,
         #' @field reactionConstant The first order decay reaction constant set by user
         reactionConstant = NULL,
+        #' @field reactionCell The reaction cell attached to the solute cell.
+        reactionCell = NULL,
         #'
         #' @param ... Parameters inherit from Class
         #'   \code{\link{Boundary_Reaction_Solute}} and thus
@@ -450,11 +454,11 @@ Boundary_Reaction_Solute_Soil <-
         #' @param massOutofCell Solute mass at the end of the time step.
         #' @param soluteMassToReact The inital mass of solute in the cell
         #' @param reactionConstant The first order decay reaction constant set by user
+        #' @param reactionCell The reaction cell attached to the solute cell.
         #' @return A model boundary that calculates solute removal from Soil
         #'   cells in the Soil processing domain
         initialize =
           function(..., qStorage, reactionConstant){
-            browser()
 
             super$initialize(...)
 
@@ -470,16 +474,15 @@ Boundary_Reaction_Solute_Soil <-
         #'   to Soil cells
         #' @return Trades for reaction boundaries attached to Soil cells
         trade = function(){
-          browser()
 
 
-          self$soluteMassToReact <- self$upstreamCell$linkedReactionCells$soil_rxn_001$initSoluteMass
+          self$soluteMassToReact <- self$upstreamCell$initSoluteMass
 
           reactedMass <- self$soluteMassToReact * exp((-self$reactionConstant)*self$timeInterval)
           self$massOutofCell <- self$soluteMassToReact - reactedMass
 
           # Volumtric rate of water moving in/out with regrads to massOutofCell - email sent to Rob/Stephanie
-          # need to make this loop back to the same solute cell - I'll work on this
+          # need to make this loop back to the same solute cell - I'll work on this - done
           # lateral and upward water movement in cell_soil - I'll work on this
 
 
@@ -491,9 +494,21 @@ Boundary_Reaction_Solute_Soil <-
 
 
           return(list(massOutofCell = self$massOutofCell, soluteMassToReact = self$soluteMassToReact))
+        },
+
+        #' @method Method Boundary_Reaction_Solute_Soil$store
+        #' @description Runs the store method on solute cells in the model for
+        #'   reactions that remove solute from cells.
+        #' @return Updated store values.
+        store = function(){
+
+          self$upstreamCell$initSoluteMass <- self$upstreamCell$initSoluteMass - self$massOutofCell
+
+          return()
         }
-      ) # close public
-  ) # close class
+      )
+  )
+
 
 
 

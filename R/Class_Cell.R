@@ -189,156 +189,6 @@ Cell_Water_Stream <-
   )
 
 
-#' @title Class Cell_Solute (R6)
-#' A cell containing a solute.  Must be linked to a water cell.
-#' @description Instantiate a \code{Cell_Solute} object. Class
-#'   \code{Cell_Solute} inherits from class \code{Cell}.
-#' @importFrom R6 R6Class
-#' @export
-
-Cell_Solute <-
-  R6::R6Class(
-    classname = "Cell_Solute",
-
-    #' @inherit Cell return details
-    inherit = Cell,
-    public =
-      list(
-        #' @field linkedCell The water cell to which the solute cell is linked
-        linkedCell = NULL,
-        #' @field linkedReactionCells solute cells that are linked to the reaction
-        #'   cell
-        linkedReactionCells = NULL,
-
-
-        #' @param ... Parameters inherit from Class \code{\link{Cell}}
-        #' @param cellIdx Character string denoting the index for the cell
-        #' @param processDomain Character string indicating process domain of cell (soil, groundwater, or stream)
-        #' @param currency Character string with either water or name of solute
-        #' @param linkedCell the cell containing the water in which this solute is located
-        #' @return The object of class \code{Cell_Solute}.
-
-        initialize =
-          function(..., linkedCell){
-            super$initialize(...)
-
-            self$linkedCell <- linkedCell
-          }
-      )
-  )
-
-
-#' @title Class Cell_Solute_Stream (R6)
-#' A stream cell containing a solute.  Must be linked to a solute cell.
-#' @description Instantiate a \code{Cell_Solute_Stream} object. Class
-#'   \code{Cell_Solute_Stream} inherits from class \code{Cell_Solute}.
-#' @importFrom R6 R6Class
-#' @export
-
-Cell_Solute_Stream <-
-  R6::R6Class(
-    classname = "Cell_Solute_Stream",
-
-    #' @inherit Cell return details
-    inherit = Cell_Solute,
-    public =
-      list(
-        #' @field concentration Solute concentration in user specified units;
-        #'   user must ensure consistency in units
-        concentration = NULL,
-        #' @field amount Solute amount in user specified units (mass or mols)
-        amount = NULL,
-
-
-        #' @param ... Parameters inherit from Class \code{\link{Cell_Solute}}
-        #' @param cellIdx Character string denoting the index for the cell
-        #' @param processDomain Character string indicating process domain of cell (soil, groundwater, or stream)
-        #' @param currency Character string with either water or name of solute
-        #' @param concentration the concentration of the solute in user specified units
-        #'   (mass or mols per unit volume)
-        #' @param linkedCell the cell containing the water in which this solute is located
-        #' @return The object of class \code{Cell_Solute_Stream}.
-
-        initialize =
-          function(..., concentration){
-            super$initialize(...)
-
-            self$concentration <- concentration
-            self$amount <- self$concentration * self$linkedCell$waterVolume #initial amount of solute in the cell
-          },
-
-        #' @method Method Cell_Solute_Stream$update
-        #' @description Runs the update method on all cells of class
-        #'   \code{Cell_Solute_Stream}.
-        #' @return Updates cell values based on trades and stores.
-        update = function(){
-
-          self$concentration <- self$amount / self$linkedCell$waterVolume
-
-          return()
-        }
-
-
-      )
-  )
-
-
-#' @title Class Cell_Solute_Soil (R6)
-#' A soil cell containing a solute.  Must be linked to a solute cell.
-#' @description Instantiate a \code{Cell_Solute_Soil} object. Class
-#'   \code{Cell_Solute_Soil} inherits from class \code{Cell_Solute}.
-#' @importFrom R6 R6Class
-#' @export
-
-Cell_Solute_Soil <-
-  R6::R6Class(
-    classname = "Cell_Solute_Soil",
-
-    #' @inherit Cell return details
-    inherit = Cell_Solute,
-    public =
-      list(
-        #' @field concentration Solute concentration in user specified units;
-        #'   user must ensure consistency in units
-        concentration = NULL,
-        #' @field massSoluteInCell The original mass of solute in the soil Cell
-        massSoluteInCell = NULL,
-        #' @field fracMassSpillOver The fraction of mass of solute leaving the soil cell
-        fracMassSpillOver = NULL,
-
-
-        #' @param ... Parameters inherit from Class \code{\link{Cell_Solute}}
-        #' @param cellIdx Character string denoting the index for the cell
-        #' @param processDomain Character string indicating process domain of cell (soil, groundwater, or stream)
-        #' @param currency Character string with either water or name of solute
-        #' @param concentration the concentration of the solute in user specified units
-        #'   (mass or mols per unit volume)
-        #' @param linkedCell the cell containing the water in which this solute is located
-        #' @param massSoluteInCell The original mass of solute in the soil cell
-        #' @param fracMassSpillOver The fraction of solute mass leaving the soil cell
-        #' @return The object of class \code{Cell_Solute_Soil}.
-
-        initialize =
-          function(..., concentration){
-            super$initialize(...)
-
-
-            self$concentration <- concentration
-          },
-
-          #' @method Method Cell_Solute$update
-          #' @description Runs the update method on all cells of class
-          #'   \code{Cell_Solute}.
-          #' @return Updates cell values based on trades and stores.
-          update = function(){
-
-            self$concentration <- (self$massSoluteInCell - self$fracMassSpillOver) / self$linkedCell$waterVolume
-            return()
-          }
-      )
-  )
-
-
 #' @title Class Cell_Water_Soil (R6) Soil cell
 #' @description Instantiate a soil cell. Inherits from class
 #'   \code{\link{Cell_Water}}.
@@ -513,6 +363,157 @@ Cell_Water_Soil <- R6::R6Class(
     }
   )
 )
+
+
+
+#' @title Class Cell_Solute (R6)
+#' A cell containing a solute.  Must be linked to a water cell.
+#' @description Instantiate a \code{Cell_Solute} object. Class
+#'   \code{Cell_Solute} inherits from class \code{Cell}.
+#' @importFrom R6 R6Class
+#' @export
+
+Cell_Solute <-
+  R6::R6Class(
+    classname = "Cell_Solute",
+
+    #' @inherit Cell return details
+    inherit = Cell,
+    public =
+      list(
+        #' @field linkedCell The water cell to which the solute cell is linked
+        linkedCell = NULL,
+        #' @field linkedReactionCells solute cells that are linked to the reaction
+        #'   cell
+        linkedReactionCells = NULL,
+
+
+        #' @param ... Parameters inherit from Class \code{\link{Cell}}
+        #' @param cellIdx Character string denoting the index for the cell
+        #' @param processDomain Character string indicating process domain of cell (soil, groundwater, or stream)
+        #' @param currency Character string with either water or name of solute
+        #' @param linkedCell the cell containing the water in which this solute is located
+        #' @return The object of class \code{Cell_Solute}.
+
+        initialize =
+          function(..., linkedCell){
+            super$initialize(...)
+
+            self$linkedCell <- linkedCell
+          }
+      )
+  )
+
+
+#' @title Class Cell_Solute_Stream (R6)
+#' A stream cell containing a solute.  Must be linked to a solute cell.
+#' @description Instantiate a \code{Cell_Solute_Stream} object. Class
+#'   \code{Cell_Solute_Stream} inherits from class \code{Cell_Solute}.
+#' @importFrom R6 R6Class
+#' @export
+
+Cell_Solute_Stream <-
+  R6::R6Class(
+    classname = "Cell_Solute_Stream",
+
+    #' @inherit Cell return details
+    inherit = Cell_Solute,
+    public =
+      list(
+        #' @field concentration Solute concentration in user specified units;
+        #'   user must ensure consistency in units
+        concentration = NULL,
+        #' @field amount Solute amount in user specified units (mass or mols)
+        amount = NULL,
+
+
+        #' @param ... Parameters inherit from Class \code{\link{Cell_Solute}}
+        #' @param cellIdx Character string denoting the index for the cell
+        #' @param processDomain Character string indicating process domain of cell (soil, groundwater, or stream)
+        #' @param currency Character string with either water or name of solute
+        #' @param concentration the concentration of the solute in user specified units
+        #'   (mass or mols per unit volume)
+        #' @param linkedCell the cell containing the water in which this solute is located
+        #' @return The object of class \code{Cell_Solute_Stream}.
+
+        initialize =
+          function(..., concentration){
+            super$initialize(...)
+
+            self$concentration <- concentration
+            self$amount <- self$concentration * self$linkedCell$waterVolume #initial amount of solute in the cell
+          },
+
+        #' @method Method Cell_Solute_Stream$update
+        #' @description Runs the update method on all cells of class
+        #'   \code{Cell_Solute_Stream}.
+        #' @return Updates cell values based on trades and stores.
+        update = function(){
+
+          self$concentration <- self$amount / self$linkedCell$waterVolume
+
+          return()
+        }
+
+
+      )
+  )
+
+
+#' @title Class Cell_Solute_Soil (R6)
+#' A soil cell containing a solute.  Must be linked to a solute cell.
+#' @description Instantiate a \code{Cell_Solute_Soil} object. Class
+#'   \code{Cell_Solute_Soil} inherits from class \code{Cell_Solute}.
+#' @importFrom R6 R6Class
+#' @export
+
+Cell_Solute_Soil <-
+  R6::R6Class(
+    classname = "Cell_Solute_Soil",
+
+    #' @inherit Cell return details
+    inherit = Cell_Solute,
+    public =
+      list(
+        #' @field concentration Solute concentration in user specified units;
+        #'   user must ensure consistency in units
+        concentration = NULL,
+        #' @field massSoluteInCell The original mass of solute in the soil Cell
+        massSoluteInCell = NULL,
+        #' @field fracMassSpillOver The fraction of mass of solute leaving the soil cell
+        fracMassSpillOver = NULL,
+
+
+        #' @param ... Parameters inherit from Class \code{\link{Cell_Solute}}
+        #' @param cellIdx Character string denoting the index for the cell
+        #' @param processDomain Character string indicating process domain of cell (soil, groundwater, or stream)
+        #' @param currency Character string with either water or name of solute
+        #' @param concentration the concentration of the solute in user specified units
+        #'   (mass or mols per unit volume)
+        #' @param linkedCell the cell containing the water in which this solute is located
+        #' @param massSoluteInCell The original mass of solute in the soil cell
+        #' @param fracMassSpillOver The fraction of solute mass leaving the soil cell
+        #' @return The object of class \code{Cell_Solute_Soil}.
+
+        initialize =
+          function(..., concentration){
+            super$initialize(...)
+
+
+            self$concentration <- concentration
+          },
+
+          #' @method Method Cell_Solute$update
+          #' @description Runs the update method on all cells of class
+          #'   \code{Cell_Solute}.
+          #' @return Updates cell values based on trades and stores.
+          update = function(){
+
+            self$concentration <- (self$massSoluteInCell - self$fracMassSpillOver) / self$linkedCell$waterVolume
+            return()
+          }
+      )
+  )
 
 
 

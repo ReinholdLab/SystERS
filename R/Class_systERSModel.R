@@ -686,7 +686,6 @@ systERSModel <-
       plyr::llply(
         1:nrow(tbl),
         function(rowNum) {
-          browser()
           if(tbl$processDomainName[rowNum] == "stream"){
             Boundary_Transport_Water_Stream$new(
               boundaryIdx = tbl$boundaryIdx[rowNum],
@@ -728,12 +727,10 @@ systERSModel <-
     #'
     initializeSoluteTransportBoundaries =
       function( ){
-        browser()
         tbl <- self$solute_transport_df
         plyr::llply(
           1:nrow(tbl),
           function(rowNum) {
-            browser()
             if(tbl$processDomain[rowNum] == "stream"){
               Boundary_Transport_Solute_Stream$new(
                 boundaryIdx = tbl$boundaryIdx[rowNum],
@@ -787,7 +784,6 @@ systERSModel <-
       plyr::llply(
         1:nrow(tbl),
         function(rowNum) {
-          browser()
           if(tbl$processDomain[rowNum] == "stream"){
             Boundary_Reaction_Solute_Stream$new(
               processDomain = tbl$processDomain[rowNum],
