@@ -499,8 +499,7 @@ systERSModel <-
                 linkedCell = self$cells[[ tbl$linkedCell[rowNum] ]],
 
                 reactionConstant = tbl$reactionConstant[rowNum],
-                reactionVolume = tbl$reactionVolume[rowNum],
-                initSoluteMass = tbl$initSoluteMass[rowNum]
+                reactionVolume = tbl$reactionVolume[rowNum]
 
               )
             }

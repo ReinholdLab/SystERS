@@ -256,7 +256,7 @@ Cell_Water_Soil <- R6::R6Class(
     #' @param cellSpillOver The volume of water exiting the soil cell.
     #' @param cellTypePorosity List of soil types and matching porosity values.
     #' @param cellTypeHydraulicConductivity List of average hydraulic conductivity
-    #' for soil types with units of m s-1. Values found on https://structx.com/Soil_Properties_007.html
+    #' for soil types with units of m s-1.
     #' @param cellHydraulicConductivity The average hydraulic conductivity
     #' assigned based on soil type with units of m s-1.
     #' @return The object of class \code{Cell_Water_Soil}.
@@ -289,17 +289,20 @@ Cell_Water_Soil <- R6::R6Class(
         sandyclay = 0.47,
         clay = 0.47)
 
+      #Average hydraulic conductivity
+      # Brady, N. C., & Weil, R. R. (2002). The Nature and Properties of Soils (13th ed.). Prentice Hall.
+      # Sumner, M. E. (2000). Handbook of Soil Science. CRC Press.
       self$cellTypeHydraulicConductivity <- list( #with units of m s-1
-        sand = 1.76e-4,
-        loamysand = 1.56e-4, #from first loamy row
-        sandyloam = 3.45e-5,
-        loam = 6.94e-6, #from second loamy row
-        siltloam = 7.19e-6,
-        sandyclayloam = 6.31e-6,
-        clayloam = 2.45e-6,
-        siltyclayloam = 1.70e-6,
-        sandyclay = 2.17e-6, #from ninth row (sandy clayey loam)
-        clay = 1.28e-6)
+        sand = 1e-2,
+        loamysand = 1e-3, #from first loamy row
+        sandyloam = 1e-4,
+        loam = 1e-5, #from second loamy row
+        siltloam = 1e-6,
+        sandyclayloam = 1e-7,
+        clayloam = 1e-8,
+        siltyclayloam = 1e-9,
+        sandyclay = 1e-10, #from ninth row (sandy clayey loam)
+        clay = 1e-11)
 
       #search a list based on soil type for value
       self$cellPorosity <-
@@ -562,24 +565,24 @@ Cell_Water_Soil_Rxn <- R6::R6Class(
     #' @return The ojbect of class \code{Cell_Water_Soil_Rxn}.
 
 
-    initialize = function(..., reactionConstant, initSoluteMass, linkedCell,
+    initialize = function(..., reactionConstant, linkedCell,
                           reactionVolume) {
 
       super$initialize(...)
+
+      browser()
 
       self$linkedCell <- linkedCell
 
       self$reactionConstant <- reactionConstant
 
       self$reactionVolume <- reactionVolume
-      self$initSoluteMass <- initSoluteMass
-
-
+      self$initSoluteMass <- self$linkedCell$concentration #the reaction cell
+      #should have a fraction of the total solute cell concentration; the transport
+      #boundary should have the other fraction
 
 
     },
-
-    # trade method?
 
 
     #' @method Method Cell_Water_Soil_Rxn$update
@@ -590,9 +593,7 @@ Cell_Water_Soil_Rxn <- R6::R6Class(
     #' @return Updates cell values based on trades and stores.
     update = function(){
 
-      self$initSoluteMass <- self$initSoluteMass
       return()
-
 
     }
   )

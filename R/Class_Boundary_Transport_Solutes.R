@@ -212,8 +212,6 @@ Boundary_Transport_Solute_Soil <-
         #'   Returns a list of length 2 corresponding to both \code{load} and
         #'   \code{amount}.
         trade = function(){
-          # What we need: CspillOver/Vspillover/t
-
 
           if(!self$usModBound) {
 
@@ -229,7 +227,6 @@ Boundary_Transport_Solute_Soil <-
             #fraction Mass remaining needs to be the initMassInCell for the solute rxn cell
 
 
-
             #mass balance check
             massDifference <- self$massSoluteInCell - self$fracMassSpillOver
             if(massDifference < 0) {
@@ -240,7 +237,7 @@ Boundary_Transport_Solute_Soil <-
 
 
           return(list(massSoluteInCell = self$massSoluteInCell, fracMassSpillOver = self$fracMassSpillOver))
-        }, # close trade function definition
+        },
 
 
 
