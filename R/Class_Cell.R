@@ -235,6 +235,16 @@ Cell_Water_Soil <- R6::R6Class(
     #' @field cellHydraulicConductivity The average hydraulic conductivity
     #' assigned based on soil type with units of m s-1.
     cellHydraulicConductivity = NULL,
+    #' @field cellMaxTemp The max air temperature
+    cellMaxTemp = NULL,
+    #' @field cellMinTemp The min air temperature
+    cellMinTemp = NULL,
+    #' @field cellMeanTemp The average air temperature
+    cellMeanTemp = NULL,
+    #' @field cellSolarRadiation The solar radiation
+    cellSolarRadiation = NULL,
+    #' @field cellET Evapotranspiration of soil cell
+    cellET = NULL,
 
     #' @description Create a new water cell
     #' @param saturationVolume The max volume of water that can be in the cell.
@@ -259,11 +269,17 @@ Cell_Water_Soil <- R6::R6Class(
     #' for soil types with units of m s-1.
     #' @param cellHydraulicConductivity The average hydraulic conductivity
     #' assigned based on soil type with units of m s-1.
+    #' @param cellMaxTemp The max air temperature
+    #' @param cellMinTemp The min air temperature
+    #' @param cellMeanTemp The average air temperature
+    #' @param cellSolarRadiation The solar radiation
+    #' @field cellET Evapotranspiration of soil cell
     #' @return The object of class \code{Cell_Water_Soil}.
 
 
     initialize = function(..., cellLength, cellHeight, cellWidth,
-                          cellSoilType, initWaterVolume) {
+                          cellSoilType, initWaterVolume, cellHydraulicConductivity,
+                          cellMaxTemp, cellMinTemp, cellSolarRadiation) {
 
       super$initialize(...)
       self$cellLength <- cellLength
@@ -292,17 +308,17 @@ Cell_Water_Soil <- R6::R6Class(
       #Average hydraulic conductivity
       # Brady, N. C., & Weil, R. R. (2002). The Nature and Properties of Soils (13th ed.). Prentice Hall.
       # Sumner, M. E. (2000). Handbook of Soil Science. CRC Press.
-      self$cellTypeHydraulicConductivity <- list( #with units of m s-1
-        sand = 1e-2,
-        loamysand = 1e-3, #from first loamy row
-        sandyloam = 1e-4,
-        loam = 1e-5, #from second loamy row
-        siltloam = 1e-6,
-        sandyclayloam = 1e-7,
-        clayloam = 1e-8,
-        siltyclayloam = 1e-9,
-        sandyclay = 1e-10, #from ninth row (sandy clayey loam)
-        clay = 1e-11)
+      # self$cellTypeHydraulicConductivity <- list( #with units of m s-1
+      #   sand = 1e-2,
+      #   loamysand = 1e-3, #from first loamy row
+      #   sandyloam = 1e-4,
+      #   loam = 1e-5, #from second loamy row
+      #   siltloam = 1e-6,
+      #   sandyclayloam = 1e-7,
+      #   clayloam = 1e-8,
+      #   siltyclayloam = 1e-9,
+      #   sandyclay = 1e-10, #from ninth row (sandy clayey loam)
+      #   clay = 1e-11)
 
       #search a list based on soil type for value
       self$cellPorosity <-
@@ -312,12 +328,19 @@ Cell_Water_Soil <- R6::R6Class(
           return(print("Err: Soil type not in dictionary."))
         }
 
-      self$cellHydraulicConductivity <-
-        if (self$cellSoilType %in% names(self$cellTypeHydraulicConductivity)) {
-          cellHydraulicConductivity <- self$cellTypeHydraulicConductivity[[self$cellSoilType]]
-        } else {
-          return(print("Err: Soil type not in dictionary."))
-        }
+      # self$cellHydraulicConductivity <-
+      #   if (self$cellSoilType %in% names(self$cellTypeHydraulicConductivity)) {
+      #     cellHydraulicConductivity <- self$cellTypeHydraulicConductivity[[self$cellSoilType]]
+      #   } else {
+      #     return(print("Err: Soil type not in dictionary."))
+      #   }
+      self$cellHydraulicConductivity <- cellHydraulicConductivity
+      self$cellSolarRadiation <- cellSolarRadiation
+
+      self$cellMaxTemp <- cellMaxTemp
+      self$cellMinTemp <- cellMinTemp
+      self$cellMeanTemp <- (cellMaxTemp + cellMinTemp) / 2
+
 
 
       self$saturationVolume <- self$cellPorosity * self$cellVolume
@@ -355,9 +378,10 @@ Cell_Water_Soil <- R6::R6Class(
     update = function(){
 
       self$waterVolume <- if(self$cellSpillOver > 0) {
-        self$waterVolume <- self$saturationVolume
+        self$waterVolume <- self$saturationVolume - self$cellET
       } else {
-        self$waterVolume <- self$waterVolume + self$cellInput
+        self$waterVolume <- self$waterVolume + self$cellInput - self$cellET
+
       }
 
       self$populateDependencies()
@@ -569,8 +593,6 @@ Cell_Water_Soil_Rxn <- R6::R6Class(
                           reactionVolume) {
 
       super$initialize(...)
-
-      browser()
 
       self$linkedCell <- linkedCell
 

@@ -476,20 +476,22 @@ Boundary_Reaction_Solute_Soil <-
         trade = function(){
 
 
-          self$soluteMassToReact <- self$upstreamCell$initSoluteMass
+          if(!self$usModBound) {
+            self$soluteMassToReact <- self$upstreamCell$initSoluteMass
 
-          reactedMass <- self$soluteMassToReact * exp((-self$reactionConstant)*self$timeInterval)
-          self$massOutofCell <- self$soluteMassToReact - reactedMass
+            reactedMass <- self$soluteMassToReact * exp((-self$reactionConstant)*self$timeInterval)
+            self$massOutofCell <- self$soluteMassToReact - reactedMass
 
-          # Volumtric rate of water moving in/out with regrads to massOutofCell - email sent to Rob/Stephanie
-          # need to make this loop back to the same solute cell - I'll work on this - done
-          # lateral and upward water movement in cell_soil - I'll work on this
+            # Volumtric rate of water moving in/out with regrads to massOutofCell - email sent to Rob/Stephanie - still investigating
+            # need to make this loop back to the same solute cell - I'll work on this - done
+            # lateral and upward water movement in cell_soil - I'll work on this - currently working on ET for top cell
 
 
-          if(self$massOutofCell > self$soluteMassToReact) {
-            stop(
-              print("More reacted mass is moving out of the cell then what was there originally.")
-            )
+            if(self$massOutofCell > self$soluteMassToReact) {
+              stop(
+                print("More reacted mass is moving out of the cell then what was there originally.")
+              )
+            }
           }
 
 

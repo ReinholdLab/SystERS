@@ -35,20 +35,9 @@ Boundary_Transport_Water <-
 
             self$discharge <- as.numeric(discharge) # as.numeric is here in case reading from sparse table
             self$volume <- self$discharge * self$timeInterval
-          }, # close initialize
+          } # close initialize
 
 
-
-        #' @method Method Boundary_Transport_Water$store
-        #' @description Runs the store method on water cells in the model.
-        #' @return Updated store values.
-        store = function(){
-
-          self$upstreamCell$waterVolume <- self$upstreamCell$waterVolume - self$volume
-          self$downstreamCell$waterVolume <- self$downstreamCell$waterVolume + self$volume
-
-          return(c(self$upstreamCell$waterVolume, self$downstreamCell$waterVolume))
-        }
       ) # close public
 
   ) # close R6 class
@@ -185,7 +174,18 @@ Boundary_Transport_Water_Stream <-
           } # close if statement
 
           return(list(discharge = self$discharge, volume = self$volume))
-        } # close function def
+        }, # close function def
+
+        #' @method Method Boundary_Transport_Water$store
+        #' @description Runs the store method on water cells in the model.
+        #' @return Updated store values.
+        store = function(){
+
+          self$upstreamCell$waterVolume <- self$upstreamCell$waterVolume - self$volume
+          self$downstreamCell$waterVolume <- self$downstreamCell$waterVolume + self$volume
+
+          return(c(self$upstreamCell$waterVolume, self$downstreamCell$waterVolume))
+        }
       ) # close public
 
 
@@ -213,7 +213,8 @@ Boundary_Transport_Water_Soil <-
 
         #' @field spillOver Volume of water moving from one cell to another
         spillOver = NULL,
-
+        #' @field ET Evapotranspiration; amount of water leaving the cell at the surface
+        ET = NULL,
         #' @field populateDependencies Updates input and spillOver between upstream and downstream cells.
         populateDependencies = NULL,
 
@@ -221,6 +222,8 @@ Boundary_Transport_Water_Soil <-
         #' @description Instantiate a water transport boundary in the soil processing domain
         #' @param ... Parameters inherit from Class \code{\link{Boundary_Transport_Water}} and thus \code{\link{Boundary}}
         #' @param discharge Rate of water discharge (a.k.a. Q)
+        #' @param spillOver Volume of water moving from one cell to another
+        #' @param ET amount of water leaving the cell at the surface
         #' @param boundaryIdx String indexing the boundary
         #' @param currency String naming the currency handled by the boundary as a character e.g., \code{water, NO3}
         #' @param upstreamCell  Cell (if one exists) upstream of the boundary
@@ -297,17 +300,22 @@ Boundary_Transport_Water_Soil <-
         #'   (\code{discharge, volume}).
 
         trade   = function(){
+          browser()
           # volume of water to trade
+
+          #Hargreaves Equation
+          self$ET <- 0.0135 * (self$upstreamCell$cellMeanTemp + 17.87) * self$upstreamCell$cellSolarRadiation
+          self$discharge <- self$discharge
 
           if(self$usModBound) {
               if ((self$discharge + self$downstreamCell$waterVolume) > self$downstreamCell$saturationVolume) {
-                if (self$downstreamCell$waterVolume < self$downstreamCell$saturationVolume) {
+                # if (self$downstreamCell$waterVolume < self$downstreamCell$saturationVolume) { #watervolume will never be greater than saturationvolume
                 self$spillOver <- (self$discharge + self$downstreamCell$waterVolume) - self$downstreamCell$saturationVolume
                 self$downstreamCell$cellSpillOver <- self$spillOver
-                } else {
-                  self$spillOver <- self$discharge - self$downstreamCell$saturationVolume
-                  self$downstreamCell$cellSpillOver <- self$spillOver
-                }
+                # } else {
+                #   self$spillOver <- self$discharge - self$downstreamCell$saturationVolume
+                #   self$downstreamCell$cellSpillOver <- self$spillOver
+                # }
               } else {spillOver <- 0
               self$downstreamCell$cellSpillOver <- spillOver
               }
@@ -318,12 +326,13 @@ Boundary_Transport_Water_Soil <-
           if(!self$usModBound) {
             if(self$upstreamCell$cellSpillOver > 0) {
               self$discharge <- self$spillOver
+              self$upstreamCell$cellET <- self$ET
               self$upstreamCell$cellInput <- self$discharge
-              self$upstreamCell$waterVolume <- self$upstreamCell$saturationVolume
+              self$upstreamCell$waterVolume <- self$upstreamCell$saturationVolume - self$ET
             } else {
-              self$discharge <- self$discharge
-              self$upstreamCell$cellInput <- self$discharge
-              self$upstreamCell$waterVolume <- self$upstreamCell$waterVolume + self$discharge
+              self$upstreamCell$cellET <- self$ET
+              self$upstreamCell$cellInput <- self$discharge #value for discharge keeps being set to NA...why?
+              self$upstreamCell$waterVolume <- self$upstreamCell$waterVolume + self$discharge - self$ET
               }
             } else {
             self$discharge <- self$discharge
@@ -332,10 +341,19 @@ Boundary_Transport_Water_Soil <-
             }
 
 
-
-
           return(list(discharge = self$discharge, spillOver = self$spillOver))
-        } # close function def
+        }, # close function def
+
+
+        #' @method Method Boundary_Transport_Water$store
+        #' @description Runs the store method on water cells in the model.
+        #' @return Updated store values.
+        store = function(){
+
+
+          return()
+        }
+
       ) # close public
 
 

@@ -212,6 +212,7 @@ Boundary_Transport_Solute_Soil <-
         #'   Returns a list of length 2 corresponding to both \code{load} and
         #'   \code{amount}.
         trade = function(){
+          browser()
 
           if(!self$usModBound) {
 
