@@ -484,7 +484,8 @@ Boundary_Reaction_Solute_Soil <-
 
             # Volumtric rate of water moving in/out with regrads to massOutofCell - email sent to Rob/Stephanie - still investigating
             # need to make this loop back to the same solute cell - I'll work on this - done
-            # lateral and upward water movement in cell_soil - I'll work on this - currently working on ET for top cell
+            # lateral and upward water movement in cell_soil - I'll work on this - ET has been added, still need to add
+            # roots and lateral movement
 
 
             if(self$massOutofCell > self$soluteMassToReact) {

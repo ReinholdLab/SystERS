@@ -243,8 +243,6 @@ Cell_Water_Soil <- R6::R6Class(
     cellMeanTemp = NULL,
     #' @field cellSolarRadiation The solar radiation
     cellSolarRadiation = NULL,
-    #' @field cellET Evapotranspiration of soil cell
-    cellET = NULL,
 
     #' @description Create a new water cell
     #' @param saturationVolume The max volume of water that can be in the cell.
@@ -273,7 +271,6 @@ Cell_Water_Soil <- R6::R6Class(
     #' @param cellMinTemp The min air temperature
     #' @param cellMeanTemp The average air temperature
     #' @param cellSolarRadiation The solar radiation
-    #' @field cellET Evapotranspiration of soil cell
     #' @return The object of class \code{Cell_Water_Soil}.
 
 
@@ -377,16 +374,10 @@ Cell_Water_Soil <- R6::R6Class(
     #' @return Updates cell values based on trades and stores.
     update = function(){
 
-      self$waterVolume <- if(self$cellSpillOver > 0) {
-        self$waterVolume <- self$saturationVolume - self$cellET
-      } else {
-        self$waterVolume <- self$waterVolume + self$cellInput - self$cellET
-
-      }
-
+      self$waterVolume <- self$waterVolume
       self$populateDependencies()
 
-      return(self$waterVolume)
+      return()
     }
   )
 )

@@ -37,7 +37,6 @@ Boundary_Transport_Water <-
             self$volume <- self$discharge * self$timeInterval
           } # close initialize
 
-
       ) # close public
 
   ) # close R6 class
@@ -300,52 +299,46 @@ Boundary_Transport_Water_Soil <-
         #'   (\code{discharge, volume}).
 
         trade   = function(){
-          browser()
           # volume of water to trade
 
-          #Hargreaves Equation
-          self$ET <- 0.0135 * (self$upstreamCell$cellMeanTemp + 17.87) * self$upstreamCell$cellSolarRadiation
-          self$discharge <- self$discharge
-
-          if(self$usModBound) {
-              if ((self$discharge + self$downstreamCell$waterVolume) > self$downstreamCell$saturationVolume) {
-                # if (self$downstreamCell$waterVolume < self$downstreamCell$saturationVolume) { #watervolume will never be greater than saturationvolume
-                self$spillOver <- (self$discharge + self$downstreamCell$waterVolume) - self$downstreamCell$saturationVolume
-                self$downstreamCell$cellSpillOver <- self$spillOver
-                # } else {
-                #   self$spillOver <- self$discharge - self$downstreamCell$saturationVolume
-                #   self$downstreamCell$cellSpillOver <- self$spillOver
-                # }
-              } else {spillOver <- 0
-              self$downstreamCell$cellSpillOver <- spillOver
-              }
-            } else if (self$dsModBound){
-            self$spillOver <- self$upstreamCell$cellSpillOver
+          #calculate spillover
+         if(self$usModBound) { #looking at downstream cell
+            if ((self$discharge + self$downstreamCell$waterVolume) > self$downstreamCell$saturationVolume) {
+              self$spillOver <- (self$discharge + self$downstreamCell$waterVolume) - self$downstreamCell$saturationVolume
+              self$downstreamCell$cellSpillOver <- self$spillOver
+            } else {
+              self$spillOver <- 0
+              self$downstreamCell$cellSpillOver <- self$spillOver
+              self$downstreamCell$cellInput <- self$discharge
             }
+          } else if (self$dsModBound){
+            self$spillOver <- self$upstreamCell$cellSpillOver
+            self$discharge <- self$upstreamCell$cellInput
+          }
 
-          if(!self$usModBound) {
-            if(self$upstreamCell$cellSpillOver > 0) {
-              self$discharge <- self$spillOver
-              self$upstreamCell$cellET <- self$ET
-              self$upstreamCell$cellInput <- self$discharge
+          #set water volume
+          if(!self$usModBound) { #looking at upstream cell
+            #Hargreaves Equation
+            self$ET <- 0.0135 * (self$upstreamCell$cellMeanTemp + 17.87) * self$upstreamCell$cellSolarRadiation
+            if(self$upstreamCell$cellSpillOver > 0) { #spillOver is occurring
+              # self$upstreamCell$cellInput <- self$cellInput
               self$upstreamCell$waterVolume <- self$upstreamCell$saturationVolume - self$ET
-            } else {
-              self$upstreamCell$cellET <- self$ET
-              self$upstreamCell$cellInput <- self$discharge #value for discharge keeps being set to NA...why?
+            } else { #spillOver is not occurring
               self$upstreamCell$waterVolume <- self$upstreamCell$waterVolume + self$discharge - self$ET
-              }
-            } else {
+            }
+          } else { #downstream Cell
+            self$ET <- 0
             self$discharge <- self$discharge
             self$downstreamCell$cellInput <- self$discharge
-            self$downstreamCell$waterVolume <- self$downstreamCell$waterVolume + self$discharge
-            }
+            self$downstreamCell$waterVolume <- self$downstreamCell$waterVolume
+          }
 
 
-          return(list(discharge = self$discharge, spillOver = self$spillOver))
+          return(list(discharge = self$discharge, spillOver = self$spillOver, ET = self$ET))
         }, # close function def
 
 
-        #' @method Method Boundary_Transport_Water$store
+        #' @method Method Boundary_Transport_Water_Soil$store
         #' @description Runs the store method on water cells in the model.
         #' @return Updated store values.
         store = function(){
