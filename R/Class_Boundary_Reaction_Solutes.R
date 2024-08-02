@@ -475,9 +475,8 @@ Boundary_Reaction_Solute_Soil <-
         #' @return Trades for reaction boundaries attached to Soil cells
         trade = function(){
 
-
           if(!self$usModBound) {
-            self$soluteMassToReact <- self$upstreamCell$initSoluteMass
+            self$soluteMassToReact <- self$upstreamCell$concentration
 
             reactedMass <- self$soluteMassToReact * exp((-self$reactionConstant)*self$timeInterval)
             self$massOutofCell <- self$soluteMassToReact - reactedMass
@@ -505,7 +504,7 @@ Boundary_Reaction_Solute_Soil <-
         #' @return Updated store values.
         store = function(){
 
-          self$upstreamCell$initSoluteMass <- self$upstreamCell$initSoluteMass - self$massOutofCell
+          self$upstreamCell$concentration <- self$upstreamCell$concentration - self$massOutofCell
 
           return()
         }

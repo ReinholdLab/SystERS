@@ -403,7 +403,7 @@ Cell_Solute <-
         linkedCell = NULL,
         #' @field linkedReactionCells solute cells that are linked to the reaction
         #'   cell
-        linkedReactionCells = NULL,
+        # linkedReactionCells = NULL,
 
 
         #' @param ... Parameters inherit from Class \code{\link{Cell}}
@@ -500,6 +500,14 @@ Cell_Solute_Soil <-
         massSoluteInCell = NULL,
         #' @field fracMassSpillOver The fraction of mass of solute leaving the soil cell
         fracMassSpillOver = NULL,
+        #' @field reactionVolume The volume of water in the rxn cell
+        reactionVolume = NULL,
+        #' @field initSoluteMass The mass of the solute in the reaction cell
+        initSoluteMass = NULL,
+        #' @field reactionConstant First-order reaction constant in the rxn cell
+        reactionConstant = NULL,
+        #' @field soluteMassReacted The final mass of the solute after rxn
+        soluteMassReacted = NULL,
 
 
         #' @param ... Parameters inherit from Class \code{\link{Cell_Solute}}
@@ -511,14 +519,24 @@ Cell_Solute_Soil <-
         #' @param linkedCell the cell containing the water in which this solute is located
         #' @param massSoluteInCell The original mass of solute in the soil cell
         #' @param fracMassSpillOver The fraction of solute mass leaving the soil cell
+        #' @param reactionVolume The volume of water in the rxn cell
+        #' @param initSoluteMass The mass of the solute in the reaction cell
+        #' @param reactionConstant The first-order reaction constant n the rxn cell
+        #' @param soluteMassReacted The final mass of the solute after rxn
         #' @return The object of class \code{Cell_Solute_Soil}.
 
         initialize =
-          function(..., concentration){
+          function(..., concentration, reactionConstant, reactionVolume){
+
             super$initialize(...)
 
 
-            self$concentration <- concentration
+            self$concentration <- concentration  #need to separate this into micropore concentration (fraction
+            #of what is in the cell) and macropore concentration...I think
+            # self$reactionConstant <- reactionConstant This already exists in the reaction boundary class
+
+            self$reactionVolume <- reactionVolume
+
           },
 
           #' @method Method Cell_Solute$update
@@ -526,6 +544,7 @@ Cell_Solute_Soil <-
           #'   \code{Cell_Solute}.
           #' @return Updates cell values based on trades and stores.
           update = function(){
+            browser()
 
             self$concentration <- (self$massSoluteInCell - self$fracMassSpillOver) / self$linkedCell$waterVolume
             return()
@@ -534,83 +553,6 @@ Cell_Solute_Soil <-
   )
 
 
-
-#' @title Class Cell_Water_Soil_Rxn (R6) Soil_Rxn cell
-#' @description Instantiate a Soil_Rxn cell. Inherits from class
-#'   \code{\link{Cell_Water}}.
-#' @importFrom R6 R6Class
-#' @export
-
-Cell_Water_Soil_Rxn <- R6::R6Class(
-  classname = "Cell_Water_Soil_Rxn",
-
-  #' @inherit Cell return details
-  inherit = Cell, #is this the best cell to inherit from? cell_solute or cell_water_soil
-
-  public = list(
-    #' @field cellIdx Cell index
-    cellIdx = NULL,
-    #' @field processDomain Process domain of the cell
-    processDomain = NULL,
-    #' @field currency Currency of the cell
-    currency = NULL,
-    #' @field linkedBoundsList List of boundaries linked to cell
-    linkedBoundsList = NULL,
-    #' @field reactionVolume The volume of water in the rxn cell
-    reactionVolume = NULL,
-    #' @field initSoluteMass The mass of the solute in the reaction cell
-    initSoluteMass = NULL,
-    #' @field reactionConstant First-order reaction constant in the rxn cell
-    reactionConstant = NULL,
-    #' @field soluteMassReacted The final mass of the solute after rxn
-    soluteMassReacted = NULL,
-    #' @field linkedCell The water cell to which the solute cell is linked
-    linkedCell = NULL,
-
-
-    #' @param ... Parameters inherit from Class \code{\link{Cell}}
-    #' @param cellIdx Character string denoting the index for the cell
-    #' @param processDomain Character string indicating process domain of cell (soil, groundwater, or stream)
-    #' @param currency Character string with either water or name of solute
-    #' @param reactionVolume The volume of water in the rxn cell
-    #' @param initSoluteMass The mass of the solute in the reaction cell
-    #' @param reactionConstant The first-order reaction constant n the rxn cell
-    #' @param soluteMassReacted The final mass of the solute after rxn
-    #' @param linkedCell the cell containing the water in which this solute is located
-    #' @return The ojbect of class \code{Cell_Water_Soil_Rxn}.
-
-
-    initialize = function(..., reactionConstant, linkedCell,
-                          reactionVolume) {
-
-      super$initialize(...)
-
-      self$linkedCell <- linkedCell
-
-      self$reactionConstant <- reactionConstant
-
-      self$reactionVolume <- reactionVolume
-      self$initSoluteMass <- self$linkedCell$concentration #the reaction cell
-      #should have a fraction of the total solute cell concentration; the transport
-      #boundary should have the other fraction
-
-
-    },
-
-
-    #' @method Method Cell_Water_Soil_Rxn$update
-    #' @description Runs the trade method on all cells of class
-    #'   \code{Cell_Water_Soil_Rxn}.  In this current version of the model,
-    #'   this simply adjusts the solute amount in the soil cell
-    #'   based on the reaction constant.
-    #' @return Updates cell values based on trades and stores.
-    update = function(){
-
-      return()
-
-    }
-  )
-)
 
 
 

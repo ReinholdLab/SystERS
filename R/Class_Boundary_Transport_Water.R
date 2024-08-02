@@ -300,6 +300,7 @@ Boundary_Transport_Water_Soil <-
 
         trade   = function(){
           # volume of water to trade
+          #split transpiration and evaportation
 
           #calculate spillover
          if(self$usModBound) { #looking at downstream cell
