@@ -212,8 +212,10 @@ Boundary_Transport_Water_Soil <-
 
         #' @field spillOver Volume of water moving from one cell to another
         spillOver = NULL,
-        #' @field ET Evapotranspiration; amount of water leaving the cell at the surface
-        ET = NULL,
+        #' @field evaporation Evaporation; amount of water leaving the cell at the surface
+        evaporation = NULL,
+        #' @field transpiration Amount of water leaving via plant transpiration
+        transpiration = NULL,
         #' @field populateDependencies Updates input and spillOver between upstream and downstream cells.
         populateDependencies = NULL,
 
@@ -222,7 +224,8 @@ Boundary_Transport_Water_Soil <-
         #' @param ... Parameters inherit from Class \code{\link{Boundary_Transport_Water}} and thus \code{\link{Boundary}}
         #' @param discharge Rate of water discharge (a.k.a. Q)
         #' @param spillOver Volume of water moving from one cell to another
-        #' @param ET amount of water leaving the cell at the surface
+        #' @param evaporation amount of water leaving the cell at the surface via evaporation
+        #' @param transpiration amount of water leaving cells via plant root uptake (transpiration)
         #' @param boundaryIdx String indexing the boundary
         #' @param currency String naming the currency handled by the boundary as a character e.g., \code{water, NO3}
         #' @param upstreamCell  Cell (if one exists) upstream of the boundary
@@ -300,7 +303,7 @@ Boundary_Transport_Water_Soil <-
 
         trade   = function(){
           # volume of water to trade
-          #split transpiration and evaportation
+          #split transpiration and evaporation
 
           #calculate spillover
          if(self$usModBound) { #looking at downstream cell
@@ -320,28 +323,36 @@ Boundary_Transport_Water_Soil <-
           #set water volume
           if(!self$usModBound) { #looking at upstream cell
             #Hargreaves Equation
-            self$ET <- 0.0135 * (self$upstreamCell$cellMeanTemp + 17.87) * self$upstreamCell$cellSolarRadiation
+            self$evaporation <- 0.0135 * (self$upstreamCell$cellMeanTemp + 17.87) * self$upstreamCell$cellSolarRadiation
 
             # Set transpiration here based on if rooting depth exceeds or is equal to current cell depth.
-            # if(self$rootDepth >= self$upstreamCell$cellDepth) {
-            #   self$transpiration <-
-            # }
+            if(self$rootDepth >= self$upstreamCell$cellDepth) {
+              self$transpiration <- 10
+            } else {
+              self$transpiration <- 0
+            }
+
 
             if(self$upstreamCell$cellSpillOver > 0) { #spillOver is occurring
               # self$upstreamCell$cellInput <- self$cellInput
-              self$upstreamCell$waterVolume <- self$upstreamCell$saturationVolume - self$ET
+              self$upstreamCell$waterVolume <- self$upstreamCell$saturationVolume - self$evaporation - self$transpiration
             } else { #spillOver is not occurring
-              self$upstreamCell$waterVolume <- self$upstreamCell$waterVolume + self$discharge - self$ET
+              self$upstreamCell$waterVolume <- self$upstreamCell$waterVolume + self$discharge - self$evaporation - self$transpiration
             }
           } else { #downstream Cell
-            self$ET <- 0
+            self$evaporation <- 0
+            if(self$rootDepth >= self$downstreamCell$cellDepth) {
+              self$transpiration <- 10
+            } else {
+              self$transpiration <- 0
+            }
             self$discharge <- self$discharge
             self$downstreamCell$cellInput <- self$discharge
-            self$downstreamCell$waterVolume <- self$downstreamCell$waterVolume
+            self$downstreamCell$waterVolume <- self$downstreamCell$waterVolume - self$transpiration
           }
 
 
-          return(list(discharge = self$discharge, spillOver = self$spillOver, ET = self$ET))
+          return(list(discharge = self$discharge, spillOver = self$spillOver, evaporation = self$evaporation, transpiration = self$transpiration))
         }, # close function def
 
 

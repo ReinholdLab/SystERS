@@ -245,6 +245,8 @@ Cell_Water_Soil <- R6::R6Class(
     cellMeanTemp = NULL,
     #' @field cellSolarRadiation The solar radiation
     cellSolarRadiation = NULL,
+    #' @field rootDepth Root depth in soil profile for transpiration calc.
+    rootDepth = NULL,
 
 
     #' @description Create a new water cell
@@ -275,12 +277,13 @@ Cell_Water_Soil <- R6::R6Class(
     #' @param cellMinTemp The min air temperature
     #' @param cellMeanTemp The average air temperature
     #' @param cellSolarRadiation The solar radiation
+    #' @param rootDepth Depth of roots in soil profile.
     #' @return The object of class \code{Cell_Water_Soil}.
 
 
     initialize = function(..., cellLength, cellHeight, cellWidth, cellDepth,
                           cellSoilType, initWaterVolume, cellHydraulicConductivity,
-                          cellMaxTemp, cellMinTemp, cellSolarRadiation) {
+                          cellMaxTemp, cellMinTemp, cellSolarRadiation, rootDepth) {
       super$initialize(...)
 
       self$cellLength <- cellLength
@@ -293,6 +296,9 @@ Cell_Water_Soil <- R6::R6Class(
       self$cellSoilType <- gsub("([A-Za-z])\\s+([A-Za-z])", "\\1\\2", cellSoilType)
       self$cellSoilType <- tolower(self$cellSoilType)
       self$waterVolume <- initWaterVolume #define the initial water volume
+      self$rootDepth <- if (!is.null(rootDepth)) {
+        rootDepth
+        } else {1}
 
       #Currently from https://stormwater.pca.state.mn.us/index.php/Soil_water_storage_properties. Probably better resources?
       self$cellTypePorosity <- list(

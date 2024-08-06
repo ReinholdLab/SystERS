@@ -450,6 +450,7 @@ systERSModel <-
                 cellMaxTemp = tbl$cellMaxTemp[rowNum],
                 cellMinTemp = tbl$cellMinTemp[rowNum],
                 cellSolarRadiation = tbl$cellSolarRadiation[rowNum],
+                rootDepth = tbl$rootDepth[rowNum]
               )
             }
           ) # close llply
