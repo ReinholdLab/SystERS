@@ -476,7 +476,7 @@ Boundary_Reaction_Solute_Soil <-
         trade = function(){
 
           if(!self$usModBound) {
-            self$soluteMassToReact <- self$upstreamCell$concentration
+            self$soluteMassToReact <- self$upstreamCell$concentration * 0.10 #10% of concentration in cell
 
             reactedMass <- self$soluteMassToReact * exp((-self$reactionConstant)*self$timeInterval)
             self$massOutofCell <- self$soluteMassToReact - reactedMass
