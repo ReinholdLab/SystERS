@@ -321,6 +321,12 @@ Boundary_Transport_Water_Soil <-
           if(!self$usModBound) { #looking at upstream cell
             #Hargreaves Equation
             self$ET <- 0.0135 * (self$upstreamCell$cellMeanTemp + 17.87) * self$upstreamCell$cellSolarRadiation
+
+            # Set transpiration here based on if rooting depth exceeds or is equal to current cell depth.
+            # if(self$rootDepth >= self$upstreamCell$cellDepth) {
+            #   self$transpiration <-
+            # }
+
             if(self$upstreamCell$cellSpillOver > 0) { #spillOver is occurring
               # self$upstreamCell$cellInput <- self$cellInput
               self$upstreamCell$waterVolume <- self$upstreamCell$saturationVolume - self$ET

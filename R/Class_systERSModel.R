@@ -443,12 +443,13 @@ systERSModel <-
                 cellLength = tbl$cellLength[rowNum],
                 cellHeight = tbl$cellHeight[rowNum],
                 cellWidth = tbl$cellWidth[rowNum],
+                cellDepth = tbl$cellDepth[rowNum],
                 cellSoilType = tbl$cellSoilType[rowNum],
                 initWaterVolume = tbl$initWaterVolume[rowNum],
                 cellHydraulicConductivity = tbl$cellHydraulicConductivity[rowNum],
                 cellMaxTemp = tbl$cellMaxTemp[rowNum],
                 cellMinTemp = tbl$cellMinTemp[rowNum],
-                cellSolarRadiation = tbl$cellSolarRadiation[rowNum]
+                cellSolarRadiation = tbl$cellSolarRadiation[rowNum],
               )
             }
           ) # close llply

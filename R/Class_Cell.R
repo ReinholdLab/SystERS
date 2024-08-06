@@ -22,7 +22,7 @@ Cell <-
         #' @param processDomain Character string indicating process domain of cell (soil, groundwater, or stream)
         #' @param currency Character string with either water or name of solute
         #' @return The ojbect of class \code{Cell}.
-        initialize = function(cellIdx, processDomain, currency){
+        initialize = function(cellIdx, processDomain, currency,...){
             self$cellIdx <- cellIdx
             self$processDomain <- processDomain
             self$currency <- currency
@@ -213,6 +213,8 @@ Cell_Water_Soil <- R6::R6Class(
     cellWidth = NULL,
     #' @field cellLength The length of the soil cell.
     cellLength = NULL,
+    #' @field cellDepth Averaged depth cell relative to total soil profile.
+    cellDepth = NULL,
     #' @field cellPorosity The porosity of the soil cell.
     cellPorosity = NULL,
     #' @field cellMatricPotential The matric potential of the soil cell.
@@ -244,6 +246,7 @@ Cell_Water_Soil <- R6::R6Class(
     #' @field cellSolarRadiation The solar radiation
     cellSolarRadiation = NULL,
 
+
     #' @description Create a new water cell
     #' @param saturationVolume The max volume of water that can be in the cell.
     #' @param cellIdx Character string denoting the index for the cell
@@ -255,6 +258,7 @@ Cell_Water_Soil <- R6::R6Class(
     #' @param cellHeight The height of the soil cell.
     #' @param cellWidth The width of the soil cell.
     #' @param cellLength The length of the soil cell.
+    #' @param cellDepth Depth of the specific soil cell.
     #' @param cellPorosity The porosity of the soil cell.
     #' @param cellMatricPotential The matric potential of the soil cell.
     #' @param cellGravimetricPotential The total pressure gradient for the soil cell.
@@ -274,14 +278,15 @@ Cell_Water_Soil <- R6::R6Class(
     #' @return The object of class \code{Cell_Water_Soil}.
 
 
-    initialize = function(..., cellLength, cellHeight, cellWidth,
+    initialize = function(..., cellLength, cellHeight, cellWidth, cellDepth,
                           cellSoilType, initWaterVolume, cellHydraulicConductivity,
                           cellMaxTemp, cellMinTemp, cellSolarRadiation) {
-
       super$initialize(...)
+
       self$cellLength <- cellLength
       self$cellHeight <- cellHeight
       self$cellWidth <- cellWidth
+      self$cellDepth <- cellDepth
       self$cellVolume <- cellLength * cellWidth * cellHeight
       # self$cellMatricPotential <- cellMatricPotential
       # self$cellGravimetricPotential <- cellGravimetricPotential
@@ -339,7 +344,6 @@ Cell_Water_Soil <- R6::R6Class(
       self$cellMeanTemp <- (cellMaxTemp + cellMinTemp) / 2
 
 
-
       self$saturationVolume <- self$cellPorosity * self$cellVolume
       self$cellSpillOver <- 0
 
@@ -361,6 +365,7 @@ Cell_Water_Soil <- R6::R6Class(
 
       dsWaterVolume <- sapply(self$linkedBoundsList$downstreamBounds, function(bound) bound$waterVolume)
       dsSaturationVolume <- sapply(self$linkedBoundsList$downstreamBounds, function(bound) bound$saturationVolume)
+
 
 
     },
@@ -544,7 +549,7 @@ Cell_Solute_Soil <-
           #'   \code{Cell_Solute}.
           #' @return Updates cell values based on trades and stores.
           update = function(){
-            browser()
+
 
             self$concentration <- (self$massSoluteInCell - self$fracMassSpillOver) / self$linkedCell$waterVolume
             return()
