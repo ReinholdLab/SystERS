@@ -71,7 +71,8 @@ Cell_Water <-
         #' @return The object of class \code{Cell_Water}.
 
         initialize =
-          function(..., waterVolume = NULL){
+          function(..., waterVolume){
+            browser()
             super$initialize(...)
 
             self$waterVolume <- waterVolume
@@ -223,8 +224,8 @@ Cell_Water_Soil <- R6::R6Class(
     cellGravimetricPotential = NULL,
     #' @field cellSoilType The soil type of the cell. For notation purposes only.
     cellSoilType = NULL,
-    #' @field waterVolume The volume of water stored in the soil cell.
-    waterVolume = NULL,
+    #' #' @field waterVolume The volume of water stored in the soil cell.
+    #' waterVolume = NULL,
     #' @field cellInput The volume of water entering the soil cell.
     cellInput = NULL,
     #' @field cellSpillOver The volume of water exiting the soil cell.
@@ -282,7 +283,7 @@ Cell_Water_Soil <- R6::R6Class(
 
 
     initialize = function(..., cellLength, cellHeight, cellWidth, cellDepth,
-                          cellSoilType, initWaterVolume, cellHydraulicConductivity,
+                          cellSoilType, cellHydraulicConductivity,
                           cellMaxTemp, cellMinTemp, cellSolarRadiation, rootDepth) {
       super$initialize(...)
 
@@ -295,7 +296,6 @@ Cell_Water_Soil <- R6::R6Class(
       # self$cellGravimetricPotential <- cellGravimetricPotential
       self$cellSoilType <- gsub("([A-Za-z])\\s+([A-Za-z])", "\\1\\2", cellSoilType)
       self$cellSoilType <- tolower(self$cellSoilType)
-      self$waterVolume <- initWaterVolume #define the initial water volume
       self$rootDepth <- if (!is.null(rootDepth)) {
         rootDepth
         } else {25}
@@ -342,6 +342,7 @@ Cell_Water_Soil <- R6::R6Class(
       #   } else {
       #     return(print("Err: Soil type not in dictionary."))
       #   }
+
       self$cellHydraulicConductivity <- cellHydraulicConductivity
       self$cellSolarRadiation <- cellSolarRadiation
 

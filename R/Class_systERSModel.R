@@ -435,6 +435,7 @@ systERSModel <-
           plyr::llply(
             1:nrow(tbl),
             function(rowNum){
+              browser()
               Cell_Water_Soil$new(
                 cellIdx = tbl$cellIdx[rowNum],
                 currency = tbl$currency[rowNum],
@@ -445,7 +446,7 @@ systERSModel <-
                 cellWidth = tbl$cellWidth[rowNum],
                 cellDepth = tbl$cellDepth[rowNum],
                 cellSoilType = tbl$cellSoilType[rowNum],
-                initWaterVolume = tbl$initWaterVolume[rowNum],
+                waterVolume = tbl$waterVolume[rowNum],
                 cellHydraulicConductivity = tbl$cellHydraulicConductivity[rowNum],
                 cellMaxTemp = tbl$cellMaxTemp[rowNum],
                 cellMinTemp = tbl$cellMinTemp[rowNum],
