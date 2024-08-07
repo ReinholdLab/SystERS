@@ -72,7 +72,6 @@ Cell_Water <-
 
         initialize =
           function(..., waterVolume){
-            browser()
             super$initialize(...)
 
             self$waterVolume <- waterVolume
@@ -224,9 +223,7 @@ Cell_Water_Soil <- R6::R6Class(
     cellGravimetricPotential = NULL,
     #' @field cellSoilType The soil type of the cell. For notation purposes only.
     cellSoilType = NULL,
-    #' #' @field waterVolume The volume of water stored in the soil cell.
-    #' waterVolume = NULL,
-    #' @field cellInput The volume of water entering the soil cell.
+   #' @field cellInput The volume of water entering the soil cell.
     cellInput = NULL,
     #' @field cellSpillOver The volume of water exiting the soil cell.
     cellSpillOver = NULL,
@@ -266,7 +263,6 @@ Cell_Water_Soil <- R6::R6Class(
     #' @param cellMatricPotential The matric potential of the soil cell.
     #' @param cellGravimetricPotential The total pressure gradient for the soil cell.
     #' @param cellSoilType The soil type of the cell. For notation purposes only.
-    #' @param waterVolume The volume of water already present in the cell.
     #' @param cellInput The volume of water entering the soil cell.
     #' @param cellSpillOver The volume of water exiting the soil cell.
     #' @param cellTypePorosity List of soil types and matching porosity values.
