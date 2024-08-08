@@ -298,7 +298,7 @@ Cell_Water_Soil <- R6::R6Class(
       self$waterVolume <- initWaterVolume #define the initial water volume
       self$rootDepth <- if (!is.null(rootDepth)) {
         rootDepth
-        } else {1}
+        } else {25}
 
       #Currently from https://stormwater.pca.state.mn.us/index.php/Soil_water_storage_properties. Probably better resources?
       self$cellTypePorosity <- list(
