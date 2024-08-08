@@ -22,7 +22,7 @@ Cell <-
         #' @param processDomain Character string indicating process domain of cell (soil, groundwater, or stream)
         #' @param currency Character string with either water or name of solute
         #' @return The ojbect of class \code{Cell}.
-        initialize = function(cellIdx, processDomain, currency,...){
+        initialize = function(cellIdx, processDomain, currency, ...){
             self$cellIdx <- cellIdx
             self$processDomain <- processDomain
             self$currency <- currency
@@ -55,14 +55,11 @@ Cell_Water <-
 
     public =
       list(
-        #' @field waterVolume volume of water stored in cell
-        waterVolume = NULL,
         #' @field linkedSoluteCells solute cells that are linked to the water
         #'   cell
         linkedSoluteCells = NULL,
 
         #' @description Create a new water cell
-        #' @param waterVolume the volume of water in the cell
         #' @param cellIdx Character string denoting the index for the cell
         #' @param processDomain Character string indicating process domain of
         #'   cell (soil, groundwater, or stream)
@@ -71,10 +68,9 @@ Cell_Water <-
         #' @return The object of class \code{Cell_Water}.
 
         initialize =
-          function(..., waterVolume = NULL){
+          function(...){
             super$initialize(...)
 
-            self$waterVolume <- waterVolume
           }
       )
 )
@@ -122,6 +118,7 @@ Cell_Water_Stream <-
         #' @param processDomain Character string indicating process domain of
         #'   cell (soil, groundwater, or stream)
         #' @param currency Character string with either water or name of solute
+        #' @param waterVolume the volume of water in the cell
         #' @param channelWidth the width of the stream channel surface (distance
         #'   from left bank to right bank)
         #' @param channelLength is the length of the stream channel surface for
@@ -207,6 +204,8 @@ Cell_Water_Soil <- R6::R6Class(
     #' @field cellVolume The volume of the soil cell calculate from from
     #'   the \code{channelLength, channelWidth, channelHeight} parameters.
     cellVolume = NULL,
+    #' @field waterVolume The volume of water in the cell.
+    waterVolume = NULL,
     #' @field cellHeight The height of the soil cell.
     cellHeight = NULL,
     #' @field cellWidth The width of the soil cell.
@@ -223,9 +222,7 @@ Cell_Water_Soil <- R6::R6Class(
     cellGravimetricPotential = NULL,
     #' @field cellSoilType The soil type of the cell. For notation purposes only.
     cellSoilType = NULL,
-    #' @field waterVolume The volume of water stored in the soil cell.
-    waterVolume = NULL,
-    #' @field cellInput The volume of water entering the soil cell.
+   #' @field cellInput The volume of water entering the soil cell.
     cellInput = NULL,
     #' @field cellSpillOver The volume of water exiting the soil cell.
     cellSpillOver = NULL,
@@ -257,6 +254,7 @@ Cell_Water_Soil <- R6::R6Class(
     #' @param currency Character string with either water or name of solute
     #' @param ... Inherited parameters
     #' @param cellVolume The volume of the soil cell.
+    #' @param waterVolume the volume of water in the cell
     #' @param cellHeight The height of the soil cell.
     #' @param cellWidth The width of the soil cell.
     #' @param cellLength The length of the soil cell.
@@ -265,7 +263,6 @@ Cell_Water_Soil <- R6::R6Class(
     #' @param cellMatricPotential The matric potential of the soil cell.
     #' @param cellGravimetricPotential The total pressure gradient for the soil cell.
     #' @param cellSoilType The soil type of the cell. For notation purposes only.
-    #' @param waterVolume The volume of water already present in the cell.
     #' @param cellInput The volume of water entering the soil cell.
     #' @param cellSpillOver The volume of water exiting the soil cell.
     #' @param cellTypePorosity List of soil types and matching porosity values.
@@ -282,7 +279,7 @@ Cell_Water_Soil <- R6::R6Class(
 
 
     initialize = function(..., cellLength, cellHeight, cellWidth, cellDepth,
-                          cellSoilType, initWaterVolume, cellHydraulicConductivity,
+                          cellSoilType, cellHydraulicConductivity, initWaterVolume,
                           cellMaxTemp, cellMinTemp, cellSolarRadiation, rootDepth) {
       super$initialize(...)
 
@@ -291,11 +288,11 @@ Cell_Water_Soil <- R6::R6Class(
       self$cellWidth <- cellWidth
       self$cellDepth <- cellDepth
       self$cellVolume <- cellLength * cellWidth * cellHeight
+      self$waterVolume <- initWaterVolume
       # self$cellMatricPotential <- cellMatricPotential
       # self$cellGravimetricPotential <- cellGravimetricPotential
       self$cellSoilType <- gsub("([A-Za-z])\\s+([A-Za-z])", "\\1\\2", cellSoilType)
       self$cellSoilType <- tolower(self$cellSoilType)
-      self$waterVolume <- initWaterVolume #define the initial water volume
       self$rootDepth <- if (!is.null(rootDepth)) {
         rootDepth
         } else {25}
@@ -342,6 +339,7 @@ Cell_Water_Soil <- R6::R6Class(
       #   } else {
       #     return(print("Err: Soil type not in dictionary."))
       #   }
+
       self$cellHydraulicConductivity <- cellHydraulicConductivity
       self$cellSolarRadiation <- cellSolarRadiation
 

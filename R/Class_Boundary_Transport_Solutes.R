@@ -217,7 +217,7 @@ Boundary_Transport_Solute_Soil <-
 
             #initial volume and mass
             totalVolume <- self$upstreamCell$linkedCell$waterVolume
-            self$massSoluteInCell <- self$upstreamCell$concentration*totalVolume
+            self$massSoluteInCell <- self$upstreamCell$concentration*totalVolume *0.90 #90% of solute concentration moving from what is in cell
             self$upstreamCell$massSoluteInCell <- self$massSoluteInCell
 
             #mass and volume leaving cell
