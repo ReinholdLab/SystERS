@@ -305,6 +305,9 @@ Boundary_Transport_Water_Soil <-
           # volume of water to trade
           #split transpiration and evaporation
 
+
+          browser()
+
           #calculate spillover
          if(self$usModBound) { #looking at downstream cell
             if ((self$discharge + self$downstreamCell$waterVolume) > self$downstreamCell$saturationVolume) {
@@ -326,7 +329,7 @@ Boundary_Transport_Water_Soil <-
             self$evaporation <- 0.0135 * (self$upstreamCell$cellMeanTemp + 17.87) * self$upstreamCell$cellSolarRadiation
 
             # Set transpiration here based on if rooting depth exceeds or is equal to current cell depth.
-            if(self$rootDepth >= self$upstreamCell$cellDepth) {
+            if(self$upstreamCell$rootDepth >= self$upstreamCell$cellDepth) {
               self$transpiration <- 10
             } else {
               self$transpiration <- 0
@@ -341,7 +344,7 @@ Boundary_Transport_Water_Soil <-
             }
           } else { #downstream Cell
             self$evaporation <- 0
-            if(self$rootDepth >= self$downstreamCell$cellDepth) {
+            if(self$downstreamCell$rootDepth >= self$downstreamCell$cellDepth) {
               self$transpiration <- 10
             } else {
               self$transpiration <- 0

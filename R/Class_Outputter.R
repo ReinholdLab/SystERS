@@ -81,6 +81,7 @@ Outputter <-
           # iteration number by the reporting interval.  If the remainder is
           # 0, then we want to output it.  If not, then return NULL.
           if(self$model$iterationNum %% self$reportingInterval == 0){
+            browser()
 
             outList <-
               lapply(self$attributesToReport, function(attribute) self$getCellOrBoundAttributes(self$objectsToReport, attribute) )
