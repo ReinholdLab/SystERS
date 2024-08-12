@@ -293,23 +293,17 @@ Boundary_Transport_Water_Soil <-
 
         },
 
+        #' @description Calculate spillover for boundaries at the
+        #'   edge of the topology (i.e., with either one upstream or one
+        #'   downstream cell).  Sets the \code{spillOver} based on the
+        #'   \code{discharge, waterVolume}.
+        #' @method Method
+        #'   Boundary_Transport_Water_Stream$spillOverCalc
+        #' @return Boundary spillover.
 
-        #' @description Calculates the trades between the stream water cells
-        #'   using the values provided for \code{discharge}.
-        #' @method Method Boundary_Transport_Water_Stream$trade
-        #' @return Updates the \code{volume} in the cell based on
-        #'   \code{discharge}. Returns a list with two elements
-        #'   (\code{discharge, volume}).
+        spillOverCalc = function() {
 
-        trade   = function(){
-          # volume of water to trade
-          #split transpiration and evaporation
-
-
-          browser()
-
-          #calculate spillover
-         if(self$usModBound) { #looking at downstream cell
+          if(self$usModBound) { #looking at downstream cell
             if ((self$discharge + self$downstreamCell$waterVolume) > self$downstreamCell$saturationVolume) {
               self$spillOver <- (self$discharge + self$downstreamCell$waterVolume) - self$downstreamCell$saturationVolume
               self$downstreamCell$cellSpillOver <- self$spillOver
@@ -323,7 +317,18 @@ Boundary_Transport_Water_Soil <-
             self$discharge <- self$upstreamCell$cellInput
           }
 
-          #set water volume
+        },
+
+        #' @description Calculate spillover for boundaries at the
+        #'   edge of the topology (i.e., with either one upstream or one
+        #'   downstream cell).  Sets the \code{spillOver} based on the
+        #'   \code{discharge, waterVolume}.
+        #' @method Method
+        #'   Boundary_Transport_Water_Stream$evapoTransCalc
+        #' @return Boundary spillover.
+
+        evapoTransCalc = function() {
+
           if(!self$usModBound) { #looking at upstream cell
             #Hargreaves Equation
             self$evaporation <- 0.0135 * (self$upstreamCell$cellMeanTemp + 17.87) * self$upstreamCell$cellSolarRadiation
@@ -334,14 +339,6 @@ Boundary_Transport_Water_Soil <-
             } else {
               self$transpiration <- 0
             }
-
-
-            if(self$upstreamCell$cellSpillOver > 0) { #spillOver is occurring
-              # self$upstreamCell$cellInput <- self$cellInput
-              self$upstreamCell$waterVolume <- self$upstreamCell$saturationVolume - self$evaporation - self$transpiration
-            } else { #spillOver is not occurring
-              self$upstreamCell$waterVolume <- self$upstreamCell$waterVolume + self$discharge - self$evaporation - self$transpiration
-            }
           } else { #downstream Cell
             self$evaporation <- 0
             if(self$downstreamCell$rootDepth >= self$downstreamCell$cellDepth) {
@@ -349,6 +346,33 @@ Boundary_Transport_Water_Soil <-
             } else {
               self$transpiration <- 0
             }
+          }
+        },
+
+
+        #' @description Calculates the trades between the stream water cells
+        #'   using the values provided for \code{discharge}.
+        #' @method Method Boundary_Transport_Water_Stream$trade
+        #' @return Updates the \code{volume} in the cell based on
+        #'   \code{discharge}. Returns a list with two elements
+        #'   (\code{discharge, volume}).
+
+        trade   = function(){
+          # volume of water to trade
+          #split transpiration and evaporation
+
+          self$spillOverCalc()
+          self$evapoTransCalc()
+
+          #set water volume
+          if(!self$usModBound) { #looking at upstream cell
+            if(self$upstreamCell$cellSpillOver > 0) { #spillOver is occurring
+              # self$upstreamCell$cellInput <- self$cellInput
+              self$upstreamCell$waterVolume <- self$upstreamCell$saturationVolume - self$evaporation - self$transpiration
+            } else { #spillOver is not occurring
+              self$upstreamCell$waterVolume <- self$upstreamCell$waterVolume + self$discharge - self$evaporation - self$transpiration
+            }
+          } else { #downstream Cell
             self$discharge <- self$discharge
             self$downstreamCell$cellInput <- self$discharge
             self$downstreamCell$waterVolume <- self$downstreamCell$waterVolume - self$transpiration
