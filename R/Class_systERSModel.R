@@ -97,9 +97,6 @@ systERSModel <-
         #'   cells and their attributes in the groundwater processing domain
         #' @param cellsTable_solute_groundwater Table with the names of the solute
         #'   cells and their attributes in the groundwater processing domain
-        #' @param cellsTable_soil_reaction Table with the names of the solute
-        #'   solute cells and their attributes in the reaction processing
-        #'   domian
         #' @param unitsTable Table of units for model parameters and outputs
         #' @param timeInterval Model time step
         #' @return The object of class \code{systERSModel}
