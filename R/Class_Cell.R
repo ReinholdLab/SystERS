@@ -405,9 +405,6 @@ Cell_Solute <-
       list(
         #' @field linkedCell The water cell to which the solute cell is linked
         linkedCell = NULL,
-        #' @field linkedReactionCells solute cells that are linked to the reaction
-        #'   cell
-        # linkedReactionCells = NULL,
 
 
         #' @param ... Parameters inherit from Class \code{\link{Cell}}

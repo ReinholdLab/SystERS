@@ -54,10 +54,6 @@ systERSModel <-
         #'   solute cells and their attributes in the groundwater processing
         #'   domain
         cellsTable_solute_groundwater = NULL,
-        #' @field cellsTable_soil_reaction Table with the names of the solute
-        #'   solute cells and their attributes in the reaction processing
-        #'   domian
-        cellsTable_soil_reaction = NULL,
         #' @field cellsTableList List storing all of the cell tables
         cellsTableList = NULL,
         #' @field boundsTableList List storing all of the cell tables
@@ -121,7 +117,6 @@ systERSModel <-
               cellsTable_solute_soil = NULL,
               cellsTable_water_groundwater = NULL,
               cellsTable_solute_groundwater = NULL,
-              cellsTable_soil_reaction = NULL,
               unitsTable = NULL,
               timeInterval
            ) {
@@ -144,7 +139,6 @@ systERSModel <-
 
             self$cellsTable_water_soil <- cellsTable_water_soil
             self$cellsTable_solute_soil <- cellsTable_solute_soil
-            self$cellsTable_soil_reaction <- cellsTable_soil_reaction
 
             self$cellsTable_water_groundwater <- cellsTable_water_groundwater
             self$cellsTable_solute_groundwater <- cellsTable_solute_groundwater
@@ -156,7 +150,6 @@ systERSModel <-
                 cells_solute_stream = self$cellsTable_solute_stream,
                 cells_water_soil = self$cellsTable_water_soil,
                 cells_solute_soil = self$cellsTable_solute_soil,
-                cells_soil_reaction = self$cellsTable_soil_reaction,
                 cells_water_groundwater = self$cellsTable_water_groundwater,
                 cells_solute_groundwater = self$cellsTable_solute_groundwater
               )
