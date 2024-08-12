@@ -445,7 +445,7 @@ systERSModel <-
                 cellWidth = tbl$cellWidth[rowNum],
                 cellDepth = tbl$cellDepth[rowNum],
                 cellSoilType = tbl$cellSoilType[rowNum],
-                initWaterVolume = tbl$waterVolume[rowNum],
+                waterVolume = tbl$waterVolume[rowNum],
                 cellHydraulicConductivity = tbl$cellHydraulicConductivity[rowNum],
                 cellMaxTemp = tbl$cellMaxTemp[rowNum],
                 cellMinTemp = tbl$cellMinTemp[rowNum],

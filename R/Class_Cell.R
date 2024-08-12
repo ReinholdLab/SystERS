@@ -55,6 +55,8 @@ Cell_Water <-
 
     public =
       list(
+        #' @field waterVolume volume of water stored in cell
+        waterVolume = NULL,
         #' @field linkedSoluteCells solute cells that are linked to the water
         #'   cell
         linkedSoluteCells = NULL,
@@ -68,8 +70,10 @@ Cell_Water <-
         #' @return The object of class \code{Cell_Water}.
 
         initialize =
-          function(...){
+          function(..., waterVolume = NULL){
             super$initialize(...)
+
+            self$waterVolume <- waterVolume
 
           }
       )
@@ -99,9 +103,6 @@ Cell_Water_Stream <-
         channelArea = NULL,
         #' @field channelDepth Average depth of channel in stream cell
         channelDepth = NULL,
-        #' @field waterVolume The volume of water in the cell calculated from
-        #'   the \code{channelLength, channelArea, channelDepth} parameters
-        waterVolume = NULL,
         #' @field channelResidenceTime Mean residence time of water in the
         #'   channel compartment
         channelResidenceTime = NULL,
@@ -118,7 +119,6 @@ Cell_Water_Stream <-
         #' @param processDomain Character string indicating process domain of
         #'   cell (soil, groundwater, or stream)
         #' @param currency Character string with either water or name of solute
-        #' @param waterVolume the volume of water in the cell
         #' @param channelWidth the width of the stream channel surface (distance
         #'   from left bank to right bank)
         #' @param channelLength is the length of the stream channel surface for
@@ -135,7 +135,6 @@ Cell_Water_Stream <-
             channelDepth
           ){
             channelArea <- channelWidth * channelLength
-            waterVolume <- channelArea * channelDepth
 
             super$initialize(...)
 
@@ -143,7 +142,7 @@ Cell_Water_Stream <-
             self$channelLength <- channelLength
             self$channelDepth <- channelDepth
             self$channelArea <- channelArea
-            self$waterVolume <- waterVolume
+            self$waterVolume <- channelArea * channelDepth
 
           },
 
@@ -204,8 +203,6 @@ Cell_Water_Soil <- R6::R6Class(
     #' @field cellVolume The volume of the soil cell calculate from from
     #'   the \code{channelLength, channelWidth, channelHeight} parameters.
     cellVolume = NULL,
-    #' @field waterVolume The volume of water in the cell.
-    waterVolume = NULL,
     #' @field cellHeight The height of the soil cell.
     cellHeight = NULL,
     #' @field cellWidth The width of the soil cell.
@@ -254,7 +251,6 @@ Cell_Water_Soil <- R6::R6Class(
     #' @param currency Character string with either water or name of solute
     #' @param ... Inherited parameters
     #' @param cellVolume The volume of the soil cell.
-    #' @param waterVolume the volume of water in the cell
     #' @param cellHeight The height of the soil cell.
     #' @param cellWidth The width of the soil cell.
     #' @param cellLength The length of the soil cell.
@@ -279,7 +275,7 @@ Cell_Water_Soil <- R6::R6Class(
 
 
     initialize = function(..., cellLength, cellHeight, cellWidth, cellDepth,
-                          cellSoilType, cellHydraulicConductivity, initWaterVolume,
+                          cellSoilType, cellHydraulicConductivity,
                           cellMaxTemp, cellMinTemp, cellSolarRadiation, rootDepth) {
       super$initialize(...)
 
@@ -288,7 +284,6 @@ Cell_Water_Soil <- R6::R6Class(
       self$cellWidth <- cellWidth
       self$cellDepth <- cellDepth
       self$cellVolume <- cellLength * cellWidth * cellHeight
-      self$waterVolume <- initWaterVolume
       # self$cellMatricPotential <- cellMatricPotential
       # self$cellGravimetricPotential <- cellGravimetricPotential
       self$cellSoilType <- gsub("([A-Za-z])\\s+([A-Za-z])", "\\1\\2", cellSoilType)
