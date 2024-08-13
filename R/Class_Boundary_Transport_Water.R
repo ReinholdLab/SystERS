@@ -306,7 +306,7 @@ Boundary_Transport_Water_Soil <-
           if(self$discharge > 0) {
             if(self$usModBound) { #looking at downstream cell
               if ((self$discharge + self$downstreamCell$waterVolume) > self$downstreamCell$saturationVolume) {
-                self$spillOver <- (self$discharge + self$downstreamCell$waterVolume) - self$downstreamCell$saturationVolume
+                self$spillOver <- ((self$discharge + self$downstreamCell$waterVolume) - self$downstreamCell$saturationVolume) * self$timeInterval
                 self$downstreamCell$cellSpillOver <- self$spillOver
               } else {
                 self$spillOver <- 0
