@@ -466,7 +466,6 @@ systERSModel <-
 
                 concentration = tbl$concentration[rowNum],
                 linkedCell = self$cells[[ tbl$linkedCell[rowNum] ]],
-                # reactionConstant = tbl$reactionConstant[rowNum],
                 reactionVolume = tbl$reactionVolume[rowNum]
               )
             }

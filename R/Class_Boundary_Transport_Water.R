@@ -303,18 +303,20 @@ Boundary_Transport_Water_Soil <-
 
         spillOverCalc = function() {
 
-          if(self$usModBound) { #looking at downstream cell
-            if ((self$discharge + self$downstreamCell$waterVolume) > self$downstreamCell$saturationVolume) {
-              self$spillOver <- (self$discharge + self$downstreamCell$waterVolume) - self$downstreamCell$saturationVolume
-              self$downstreamCell$cellSpillOver <- self$spillOver
-            } else {
-              self$spillOver <- 0
-              self$downstreamCell$cellSpillOver <- self$spillOver
-              self$downstreamCell$cellInput <- self$discharge
+          if(self$discharge > 0) {
+            if(self$usModBound) { #looking at downstream cell
+              if ((self$discharge + self$downstreamCell$waterVolume) > self$downstreamCell$saturationVolume) {
+                self$spillOver <- (self$discharge + self$downstreamCell$waterVolume) - self$downstreamCell$saturationVolume
+                self$downstreamCell$cellSpillOver <- self$spillOver
+              } else {
+                self$spillOver <- 0
+                self$downstreamCell$cellSpillOver <- self$spillOver
+                self$downstreamCell$cellInput <- self$discharge
+              }
+            } else if (self$dsModBound){
+              self$spillOver <- self$upstreamCell$cellSpillOver
+              self$discharge <- self$upstreamCell$cellInput
             }
-          } else if (self$dsModBound){
-            self$spillOver <- self$upstreamCell$cellSpillOver
-            self$discharge <- self$upstreamCell$cellInput
           }
 
         },
@@ -377,6 +379,9 @@ Boundary_Transport_Water_Soil <-
             self$downstreamCell$cellInput <- self$discharge
             self$downstreamCell$waterVolume <- self$downstreamCell$waterVolume - self$transpiration
           }
+
+          #when incorporating E & T, don't want waterVolume to go below 0,
+          #if it does, should do a stop on the calculation or send a stop message
 
 
           return(list(discharge = self$discharge, spillOver = self$spillOver, evaporation = self$evaporation, transpiration = self$transpiration))

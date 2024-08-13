@@ -378,7 +378,12 @@ Cell_Water_Soil <- R6::R6Class(
     #' @return Updates cell values based on trades and stores.
     update = function(){
 
-      self$waterVolume <- self$waterVolume
+      if(self$waterVolume <= 0) {
+        self$waterVolume <- 0
+      } else {
+        self$waterVolume <- self$waterVolume
+      }
+
       self$populateDependencies()
 
       return()
@@ -505,8 +510,6 @@ Cell_Solute_Soil <-
         reactionVolume = NULL,
         #' @field initSoluteMass The mass of the solute in the reaction cell
         initSoluteMass = NULL,
-        #' @field reactionConstant First-order reaction constant in the rxn cell
-        reactionConstant = NULL,
         #' @field soluteMassReacted The final mass of the solute after rxn
         soluteMassReacted = NULL,
 
@@ -522,12 +525,11 @@ Cell_Solute_Soil <-
         #' @param fracMassSpillOver The fraction of solute mass leaving the soil cell
         #' @param reactionVolume The volume of water in the rxn cell
         #' @param initSoluteMass The mass of the solute in the reaction cell
-        #' @param reactionConstant The first-order reaction constant n the rxn cell
         #' @param soluteMassReacted The final mass of the solute after rxn
         #' @return The object of class \code{Cell_Solute_Soil}.
 
         initialize =
-          function(..., concentration, reactionConstant, reactionVolume){
+          function(..., concentration, reactionVolume){
 
             super$initialize(...)
 
