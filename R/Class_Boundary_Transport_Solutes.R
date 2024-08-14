@@ -218,14 +218,10 @@ Boundary_Transport_Solute_Soil <-
             #initial volume and mass
             totalVolume <- self$upstreamCell$linkedCell$waterVolume
             self$massSoluteInCell <- self$upstreamCell$concentration*totalVolume *0.90 #90% of solute concentration moving from what is in cell
-            self$upstreamCell$massSoluteInCell <- self$massSoluteInCell
 
             #mass and volume leaving cell
             volumeSpillOver <- self$upstreamCell$linkedCell$cellSpillOver
             self$fracMassSpillOver <- (volumeSpillOver/totalVolume) * self$massSoluteInCell
-            self$upstreamCell$fracMassSpillOver <- self$fracMassSpillOver
-            #fraction Mass remaining needs to be the initMassInCell for the solute rxn cell
-
 
             #mass balance check
             massDifference <- self$massSoluteInCell - self$fracMassSpillOver
@@ -233,8 +229,6 @@ Boundary_Transport_Solute_Soil <-
               stop(print ("You are removing more solute from the cell then what it held origianlly."))
             }
           }
-
-
 
           return(list(massSoluteInCell = self$massSoluteInCell, fracMassSpillOver = self$fracMassSpillOver))
         },
@@ -247,7 +241,10 @@ Boundary_Transport_Solute_Soil <-
         #' @return Updated store values.
         store = function(){
 
-          return()
+          self$upstreamCell$massSoluteInCell <- self$massSoluteInCell - self$fracMassSpillOver
+          self$downstreamCell$massSoluteInCell <- self$massSoluteInCell + self$fracMassSpillOver
+
+          return(c(self$upstreamCell$massSoluteInCell, self$downstreamCell$massSoluteInCell))
 
         }
 

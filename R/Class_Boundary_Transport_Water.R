@@ -303,7 +303,6 @@ Boundary_Transport_Water_Soil <-
 
         spillOverCalc = function() {
 
-          if(self$discharge > 0) {
             if(self$usModBound) { #looking at downstream cell
               if ((self$discharge + self$downstreamCell$waterVolume) > self$downstreamCell$saturationVolume) {
                 self$spillOver <- ((self$discharge + self$downstreamCell$waterVolume) - self$downstreamCell$saturationVolume) * self$timeInterval
@@ -317,14 +316,13 @@ Boundary_Transport_Water_Soil <-
               self$spillOver <- self$upstreamCell$cellSpillOver
               self$discharge <- self$upstreamCell$cellInput
             }
-          }
 
         },
 
-        #' @description Calculate spillover for boundaries at the
+        #' @description Calculate evaporation and transpiration for boundaries at the
         #'   edge of the topology (i.e., with either one upstream or one
-        #'   downstream cell).  Sets the \code{spillOver} based on the
-        #'   \code{discharge, waterVolume}.
+        #'   downstream cell).  Sets the \code{evaporation, transpiration} based on the
+        #'   \code{rootDepth, cellDepth}.
         #' @method Method
         #'   Boundary_Transport_Water_Stream$evapoTransCalc
         #' @return Boundary spillover.
@@ -368,16 +366,7 @@ Boundary_Transport_Water_Soil <-
 
           #set water volume
           if(!self$usModBound) { #looking at upstream cell
-            if(self$upstreamCell$cellSpillOver > 0) { #spillOver is occurring
-              # self$upstreamCell$cellInput <- self$cellInput
-              self$upstreamCell$waterVolume <- self$upstreamCell$saturationVolume - self$evaporation - self$transpiration
-            } else { #spillOver is not occurring
-              self$upstreamCell$waterVolume <- self$upstreamCell$waterVolume + self$discharge - self$evaporation - self$transpiration
-            }
-          } else { #downstream Cell
-            self$discharge <- self$discharge
-            self$downstreamCell$cellInput <- self$discharge
-            self$downstreamCell$waterVolume <- self$downstreamCell$waterVolume - self$transpiration
+            #do we need a stop check here?
           }
 
           #when incorporating E & T, don't want waterVolume to go below 0,
@@ -393,8 +382,15 @@ Boundary_Transport_Water_Soil <-
         #' @return Updated store values.
         store = function(){
 
+          if(self$spillOver > 0 ) {
+            self$upstreamCell$waterVolume <- self$upstreamCell$saturationVolume - self$evaporation - self$transpiration
+            self$downstreamCell$waterVolume <- self$downstreamCell$waterVolume + self$spillOver
+          } else {
+            self$upstreamCell$waterVolume <- self$upstreamCell$waterVolume + self$discharge - self$evaporation - self$transpiration
+            self$downstreamCell$waterVolume <- self$downstreamCell$waterVolume - self$transpiration
+          }
 
-          return()
+          return(c(self$upstreamCell$waterVolume, self$downstreamCell$waterVolume))
         }
 
       ) # close public

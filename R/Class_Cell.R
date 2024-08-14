@@ -548,8 +548,8 @@ Cell_Solute_Soil <-
           #' @return Updates cell values based on trades and stores.
           update = function(){
 
+            self$concentration <- self$massSoluteInCell / self$linkedCell$waterVolume
 
-            self$concentration <- (self$massSoluteInCell - self$fracMassSpillOver) / self$linkedCell$waterVolume
             return()
           }
       )
