@@ -439,8 +439,6 @@ Boundary_Reaction_Solute_Soil <-
         soluteMassToReact = NULL,
         #' @field reactionConstant The first order decay reaction constant set by user
         reactionConstant = NULL,
-        #' @field reactionCell The reaction cell attached to the solute cell.
-        reactionCell = NULL,
         #'
         #' @param ... Parameters inherit from Class
         #'   \code{\link{Boundary_Reaction_Solute}} and thus

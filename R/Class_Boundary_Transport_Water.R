@@ -293,6 +293,62 @@ Boundary_Transport_Water_Soil <-
 
         },
 
+        #' @description Calculate spillover for boundaries at the
+        #'   edge of the topology (i.e., with either one upstream or one
+        #'   downstream cell).  Sets the \code{spillOver} based on the
+        #'   \code{discharge, waterVolume}.
+        #' @method Method
+        #'   Boundary_Transport_Water_Stream$spillOverCalc
+        #' @return Boundary spillover.
+
+        spillOverCalc = function() {
+
+            if(self$usModBound) { #looking at downstream cell
+              if ((self$discharge + self$downstreamCell$waterVolume) > self$downstreamCell$saturationVolume) {
+                self$spillOver <- ((self$discharge + self$downstreamCell$waterVolume) - self$downstreamCell$saturationVolume) * self$timeInterval
+                self$downstreamCell$cellSpillOver <- self$spillOver
+              } else {
+                self$spillOver <- 0
+                self$downstreamCell$cellSpillOver <- self$spillOver
+                self$downstreamCell$cellInput <- self$discharge
+              }
+            } else if (self$dsModBound){
+              self$spillOver <- self$upstreamCell$cellSpillOver
+              self$discharge <- self$upstreamCell$cellInput
+            }
+
+        },
+
+        #' @description Calculate evaporation and transpiration for boundaries at the
+        #'   edge of the topology (i.e., with either one upstream or one
+        #'   downstream cell).  Sets the \code{evaporation, transpiration} based on the
+        #'   \code{rootDepth, cellDepth}.
+        #' @method Method
+        #'   Boundary_Transport_Water_Stream$evapoTransCalc
+        #' @return Boundary spillover.
+
+        evapoTransCalc = function() {
+
+          if(!self$usModBound) { #looking at upstream cell
+            #Hargreaves Equation
+            self$evaporation <- 0.0135 * (self$upstreamCell$cellMeanTemp + 17.87) * self$upstreamCell$cellSolarRadiation
+
+            # Set transpiration here based on if rooting depth exceeds or is equal to current cell depth.
+            if(self$upstreamCell$rootDepth >= self$upstreamCell$cellDepth) {
+              self$transpiration <- 10
+            } else {
+              self$transpiration <- 0
+            }
+          } else { #downstream Cell
+            self$evaporation <- 0
+            if(self$downstreamCell$rootDepth >= self$downstreamCell$cellDepth) {
+              self$transpiration <- 10
+            } else {
+              self$transpiration <- 0
+            }
+          }
+        },
+
 
         #' @description Calculates the trades between the stream water cells
         #'   using the values provided for \code{discharge}.
@@ -305,54 +361,16 @@ Boundary_Transport_Water_Soil <-
           # volume of water to trade
           #split transpiration and evaporation
 
-
-          browser()
-
-          #calculate spillover
-         if(self$usModBound) { #looking at downstream cell
-            if ((self$discharge + self$downstreamCell$waterVolume) > self$downstreamCell$saturationVolume) {
-              self$spillOver <- (self$discharge + self$downstreamCell$waterVolume) - self$downstreamCell$saturationVolume
-              self$downstreamCell$cellSpillOver <- self$spillOver
-            } else {
-              self$spillOver <- 0
-              self$downstreamCell$cellSpillOver <- self$spillOver
-              self$downstreamCell$cellInput <- self$discharge
-            }
-          } else if (self$dsModBound){
-            self$spillOver <- self$upstreamCell$cellSpillOver
-            self$discharge <- self$upstreamCell$cellInput
-          }
+          self$spillOverCalc()
+          self$evapoTransCalc()
 
           #set water volume
           if(!self$usModBound) { #looking at upstream cell
-            #Hargreaves Equation
-            self$evaporation <- 0.0135 * (self$upstreamCell$cellMeanTemp + 17.87) * self$upstreamCell$cellSolarRadiation
-
-            # Set transpiration here based on if rooting depth exceeds or is equal to current cell depth.
-            if(self$upstreamCell$rootDepth >= self$upstreamCell$cellDepth) {
-              self$transpiration <- 10
-            } else {
-              self$transpiration <- 0
-            }
-
-
-            if(self$upstreamCell$cellSpillOver > 0) { #spillOver is occurring
-              # self$upstreamCell$cellInput <- self$cellInput
-              self$upstreamCell$waterVolume <- self$upstreamCell$saturationVolume - self$evaporation - self$transpiration
-            } else { #spillOver is not occurring
-              self$upstreamCell$waterVolume <- self$upstreamCell$waterVolume + self$discharge - self$evaporation - self$transpiration
-            }
-          } else { #downstream Cell
-            self$evaporation <- 0
-            if(self$downstreamCell$rootDepth >= self$downstreamCell$cellDepth) {
-              self$transpiration <- 10
-            } else {
-              self$transpiration <- 0
-            }
-            self$discharge <- self$discharge
-            self$downstreamCell$cellInput <- self$discharge
-            self$downstreamCell$waterVolume <- self$downstreamCell$waterVolume - self$transpiration
+            #do we need a stop check here?
           }
+
+          #when incorporating E & T, don't want waterVolume to go below 0,
+          #if it does, should do a stop on the calculation or send a stop message
 
 
           return(list(discharge = self$discharge, spillOver = self$spillOver, evaporation = self$evaporation, transpiration = self$transpiration))
@@ -364,8 +382,15 @@ Boundary_Transport_Water_Soil <-
         #' @return Updated store values.
         store = function(){
 
+          if(self$spillOver > 0 ) {
+            self$upstreamCell$waterVolume <- self$upstreamCell$saturationVolume - self$evaporation - self$transpiration
+            self$downstreamCell$waterVolume <- self$downstreamCell$waterVolume + self$spillOver
+          } else {
+            self$upstreamCell$waterVolume <- self$upstreamCell$waterVolume + self$discharge - self$evaporation - self$transpiration
+            self$downstreamCell$waterVolume <- self$downstreamCell$waterVolume - self$transpiration
+          }
 
-          return()
+          return(c(self$upstreamCell$waterVolume, self$downstreamCell$waterVolume))
         }
 
       ) # close public
