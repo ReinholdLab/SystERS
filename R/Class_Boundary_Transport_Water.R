@@ -358,10 +358,15 @@ Boundary_Transport_Water_Soil <-
         #'   (\code{discharge, volume}).
 
         trade   = function(){
+          browser()
           # volume of water to trade
           #split transpiration and evaporation
-
+          if(self$upstreamCell$tradeType == "spillOver" || self$downstreamCell$tradeType == "spillOver") {
           self$spillOverCalc()
+          } else {
+            stop()
+            print("Not a valid trade type")
+          }
           self$evapoTransCalc()
 
           #set water volume

@@ -440,7 +440,8 @@ systERSModel <-
                 cellMaxTemp = tbl$cellMaxTemp[rowNum],
                 cellMinTemp = tbl$cellMinTemp[rowNum],
                 cellSolarRadiation = tbl$cellSolarRadiation[rowNum],
-                rootDepth = tbl$rootDepth[rowNum]
+                rootDepth = tbl$rootDepth[rowNum],
+                tradeType = tbl$tradeType[rowNum]
               )
             }
           ) # close llply
