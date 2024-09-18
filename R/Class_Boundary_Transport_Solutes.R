@@ -195,7 +195,7 @@ Boundary_Transport_Solute_Soil <-
         #'   cell (soil, groundwater, or stream)
         #' @param massSoluteInCell The original mass of solute in the soil cell
         #' @param fracMassSpillOver The fraction of solute mass leaving the soil cell
-        #' @return A transport boundary for solutes between cells
+        #' @return A transport boundary for solutes between soil cells
         initialize =
           function(...){
             super$initialize(...)
@@ -208,9 +208,9 @@ Boundary_Transport_Solute_Soil <-
         #' @method Method Boundary_Transport_Solute_Soil$trade
         #' @description Calculate the amount of solute to pass through the
         #'   boundary.
-        #' @return Updates the \code{load} and \code{amount} in the boundary.
-        #'   Returns a list of length 2 corresponding to both \code{load} and
-        #'   \code{amount}.
+        #' @return Updates the \code{massSoluteInCell} and \code{fracMassSpillOver} in the boundary.
+        #'   Returns a list of length 2 corresponding to both \code{massSoluteInCell} and
+        #'   \code{fracMassSpillOver}.
         trade = function(){
 
           if(!self$usModBound) {
@@ -236,7 +236,7 @@ Boundary_Transport_Solute_Soil <-
 
 
         #' @method Method Boundary_Transport_Solute_Soil$store
-        #' @description Runs the store method on solute cells in the model for
+        #' @description Runs the store method on soil solute cells in the model for
         #'   solute transport boundaries.
         #' @return Updated store values.
         store = function(){

@@ -218,6 +218,8 @@ Boundary_Transport_Water_Soil <-
         transpiration = NULL,
         #' @field populateDependencies Updates input and spillOver between upstream and downstream cells.
         populateDependencies = NULL,
+        #' @field tradeType Type of trade calculation used for soil cells. spillOver, etc.
+        tradeType = NULL,
 
 
         #' @description Instantiate a water transport boundary in the soil processing domain
@@ -231,15 +233,17 @@ Boundary_Transport_Water_Soil <-
         #' @param upstreamCell  Cell (if one exists) upstream of the boundary
         #' @param downstreamCell Cell (if one exists) downstream of the boundary
         #' @param timeInterval  Model time step
+        #' @param tradeType Type of trade function used for water movement.
         #' @return A model boundary that transports water in the stream processing domain
         initialize =
-          function(...){
+          function(..., tradeType){
             super$initialize(...)
             if(any(self$usModBound, self$dsModBound )) {
               self$populateDependencies <- self$populateDependenciesExternalBound
             } else{
               self$populateDependencies <- self$populateDependenciesInternalBound
             }
+            self$tradeType <- tradeType
 
           }, # close initialize
 
@@ -358,10 +362,9 @@ Boundary_Transport_Water_Soil <-
         #'   (\code{discharge, volume}).
 
         trade   = function(){
-          browser()
           # volume of water to trade
           #split transpiration and evaporation
-          if(self$upstreamCell$tradeType == "spillOver" || self$downstreamCell$tradeType == "spillOver") {
+          if(self$tradeType == "spillOver" || self$tradeType == "spillOver") {
           self$spillOverCalc()
           } else {
             stop()

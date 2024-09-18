@@ -241,8 +241,7 @@ Cell_Water_Soil <- R6::R6Class(
     cellSolarRadiation = NULL,
     #' @field rootDepth Root depth in soil profile for transpiration calc.
     rootDepth = NULL,
-    #' @field tradeType Type of trade calculation used for soil cells. Spill-n-fill, etc.
-    tradeType = NULL,
+
 
 
     #' @description Create a new water cell
@@ -264,22 +263,18 @@ Cell_Water_Soil <- R6::R6Class(
     #' @param cellInput The volume of water entering the soil cell.
     #' @param cellSpillOver The volume of water exiting the soil cell.
     #' @param cellTypePorosity List of soil types and matching porosity values.
-    #' @param cellTypeHydraulicConductivity List of average hydraulic conductivity
-    #' for soil types with units of m s-1.
-    #' @param cellHydraulicConductivity The average hydraulic conductivity
-    #' assigned based on soil type with units of m s-1.
+    #' @param cellHydraulicConductivity The hydraulic conductivity of the soil
     #' @param cellMaxTemp The max air temperature
     #' @param cellMinTemp The min air temperature
     #' @param cellMeanTemp The average air temperature
     #' @param cellSolarRadiation The solar radiation
     #' @param rootDepth Depth of roots in soil profile.
-    #' @param tradeType Type of trade function used for water movement.
     #' @return The object of class \code{Cell_Water_Soil}.
 
 
     initialize = function(..., cellLength, cellHeight, cellWidth, cellDepth,
                           cellSoilType, cellHydraulicConductivity,
-                          cellMaxTemp, cellMinTemp, cellSolarRadiation, rootDepth, tradeType) {
+                          cellMaxTemp, cellMinTemp, cellSolarRadiation, rootDepth) {
       super$initialize(...)
 
       self$cellLength <- cellLength
@@ -294,7 +289,7 @@ Cell_Water_Soil <- R6::R6Class(
       self$rootDepth <- if (!is.null(rootDepth)) {
         rootDepth
         } else {25}
-      self$tradeType <- tradeType
+
       #Currently from https://stormwater.pca.state.mn.us/index.php/Soil_water_storage_properties. Probably better resources?
       self$cellTypePorosity <- list(
         sand = 0.43,
@@ -308,20 +303,6 @@ Cell_Water_Soil <- R6::R6Class(
         sandyclay = 0.47,
         clay = 0.47)
 
-      #Average hydraulic conductivity
-      # Brady, N. C., & Weil, R. R. (2002). The Nature and Properties of Soils (13th ed.). Prentice Hall.
-      # Sumner, M. E. (2000). Handbook of Soil Science. CRC Press.
-      # self$cellTypeHydraulicConductivity <- list( #with units of m s-1
-      #   sand = 1e-2,
-      #   loamysand = 1e-3, #from first loamy row
-      #   sandyloam = 1e-4,
-      #   loam = 1e-5, #from second loamy row
-      #   siltloam = 1e-6,
-      #   sandyclayloam = 1e-7,
-      #   clayloam = 1e-8,
-      #   siltyclayloam = 1e-9,
-      #   sandyclay = 1e-10, #from ninth row (sandy clayey loam)
-      #   clay = 1e-11)
 
       #search a list based on soil type for value
       self$cellPorosity <-
@@ -331,12 +312,6 @@ Cell_Water_Soil <- R6::R6Class(
           return(print("Err: Soil type not in dictionary."))
         }
 
-      # self$cellHydraulicConductivity <-
-      #   if (self$cellSoilType %in% names(self$cellTypeHydraulicConductivity)) {
-      #     cellHydraulicConductivity <- self$cellTypeHydraulicConductivity[[self$cellSoilType]]
-      #   } else {
-      #     return(print("Err: Soil type not in dictionary."))
-      #   }
 
       self$cellHydraulicConductivity <- cellHydraulicConductivity
       self$cellSolarRadiation <- cellSolarRadiation
@@ -538,15 +513,14 @@ Cell_Solute_Soil <-
 
 
             self$concentration <- concentration  #need to separate this into micropore concentration (fraction
-            #of what is in the cell) and macropore concentration...I think
-            # self$reactionConstant <- reactionConstant This already exists in the reaction boundary class
+            #of what is in the cell) and macropore concentration, or do this in transport and reaction classes
 
             self$reactionVolume <- reactionVolume
 
           },
 
           #' @method Method Cell_Solute$update
-          #' @description Runs the update method on all cells of class
+          #' @description Runs the update method on all soil cells of class
           #'   \code{Cell_Solute}.
           #' @return Updates cell values based on trades and stores.
           update = function(){

@@ -440,8 +440,7 @@ systERSModel <-
                 cellMaxTemp = tbl$cellMaxTemp[rowNum],
                 cellMinTemp = tbl$cellMinTemp[rowNum],
                 cellSolarRadiation = tbl$cellSolarRadiation[rowNum],
-                rootDepth = tbl$rootDepth[rowNum],
-                tradeType = tbl$tradeType[rowNum]
+                rootDepth = tbl$rootDepth[rowNum]
               )
             }
           ) # close llply
@@ -596,7 +595,8 @@ systERSModel <-
                 upstreamCell = self$cells[[upstreamCell]],
                 downstreamCell = self$cells[[downstreamCell]],
                 discharge = tbl$discharge[rowNum],
-                timeInterval = self$timeInterval
+                timeInterval = self$timeInterval,
+                tradeType = tbl$tradeType[rowNum]
               )
           } else {
             b <-
@@ -644,7 +644,8 @@ systERSModel <-
               upstreamCell = self$cells[[  tbl$upstreamCellIdx[rowNum] ]],
               downstreamCell = self$cells[[ tbl$downstreamCellIdx[rowNum] ]],
               discharge = tbl$discharge[rowNum],
-              timeInterval = self$timeInterval
+              timeInterval = self$timeInterval,
+              tradeType = tbl$tradeType[rowNum]
             )
           } else {
             Boundary_Transport_Water$new(
@@ -690,8 +691,6 @@ systERSModel <-
                 boundaryIdx = tbl$boundaryIdx[rowNum],
                 currency = tbl$currency[rowNum],
                 linkedBound = self$bounds[[ tbl$linkedBound[rowNum] ]],
-                # concentration = tbl$concentration[rowNum],
-                # load = tbl$load[rowNum],
                 upstreamCell = self$cells[[  tbl$upstreamCellIdx[rowNum] ]],
                 downstreamCell = self$cells[[ tbl$downstreamCellIdx[rowNum] ]],
                 timeInterval = self$timeInterval,

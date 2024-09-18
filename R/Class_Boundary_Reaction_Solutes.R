@@ -450,9 +450,8 @@ Boundary_Reaction_Solute_Soil <-
         #' @param timeInterval  Model time step
         #' @param qStorage Volumetric rate of water entering the storage zone
         #' @param massOutofCell Solute mass at the end of the time step.
-        #' @param soluteMassToReact The inital mass of solute in the cell
-        #' @param reactionConstant The first order decay reaction constant set by user
-        #' @param reactionCell The reaction cell attached to the solute cell.
+        #' @param soluteMassToReact The initial mass of solute in the cell
+        #' @param reactionConstant The first order decay reaction constant set by user.
         #' @return A model boundary that calculates solute removal from Soil
         #'   cells in the Soil processing domain
         initialize =
@@ -469,12 +468,12 @@ Boundary_Reaction_Solute_Soil <-
 
         #' @method Method Boundary_Reaction_Solute_Soil$trade
         #' @description Calculates the trades for reaction boundaries attached
-        #'   to Soil cells
-        #' @return Trades for reaction boundaries attached to Soil cells
+        #'   to soil cells
+        #' @return Trades for reaction boundaries attached to soil cells
         trade = function(){
 
           if(!self$usModBound) {
-            self$soluteMassToReact <- self$upstreamCell$concentration * 0.10 #10% of concentration in cell
+            self$soluteMassToReact <- self$upstreamCell$concentration * 0.10 #10% of concentration in cell; currently a placeholder
 
             reactedMass <- self$soluteMassToReact * exp((-self$reactionConstant)*self$timeInterval)
             self$massOutofCell <- self$soluteMassToReact - reactedMass
