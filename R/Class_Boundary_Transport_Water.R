@@ -323,6 +323,10 @@ Boundary_Transport_Water_Soil <-
 
         },
 
+        SAScalc =  function() {
+          #SAS functions go here; need to add the header above this function
+          },
+
         #' @description Calculate evaporation and transpiration for boundaries at the
         #'   edge of the topology (i.e., with either one upstream or one
         #'   downstream cell).  Sets the \code{evaporation, transpiration} based on the
