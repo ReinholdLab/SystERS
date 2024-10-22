@@ -272,7 +272,7 @@ Boundary_Transport_Water_Soil <-
         #'   downstream cell).  Sets the \code{channelVelocity} based on the
         #'   \code{discharge} and the cross sectional area of the boundary.
         #' @method Method
-        #'   Boundary_Transport_Water_Stream$populateDependenciesExternalBound
+        #'   Boundary_Transport_Water_Soil$populateDependenciesExternalBound
         #' @return Populates boundary dependencies
         populateDependenciesExternalBound = function(){
 
@@ -302,7 +302,7 @@ Boundary_Transport_Water_Soil <-
         #'   downstream cell).  Sets the \code{spillOver} based on the
         #'   \code{discharge, waterVolume}.
         #' @method Method
-        #'   Boundary_Transport_Water_Stream$spillOverCalc
+        #'   Boundary_Transport_Water_Soil$spillOverCalc
         #' @return Boundary spillover.
 
         spillOverCalc = function() {
@@ -323,8 +323,20 @@ Boundary_Transport_Water_Soil <-
 
         },
 
+        #' @description
+                #' Caluculate the StorAge Selction functions to quantitate water
+                #' movement and storage via probability distribution functions.
+                #' Sets the \code{SAS} based on the
+                #' \code{waterVolume, cellHydraulicConductivity}
+        #' @method Method Boundary_Transport_Water_Soil$SAScalc
+        #' @return Boundary SAS calculation
         SAScalc =  function() {
           #SAS functions go here; need to add the header above this function
+
+          #Starting with TTD/RTD fxns from 2014 Harman paper. Thinking of only
+          #focusing on boundaries for now and treating the system as 1D/2D to start.
+          #Fluxes in and out for SAS fxns. J(t) input, Q(t) output. Use PDF form
+          #of SAS function from J(t) to determine Q(t). fTTD.
           },
 
         #' @description Calculate evaporation and transpiration for boundaries at the
