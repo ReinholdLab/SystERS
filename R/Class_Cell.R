@@ -242,6 +242,8 @@ Cell_Water_Soil <- R6::R6Class(
     #' @field rootDepth Root depth in soil profile for transpiration calc.
     rootDepth = NULL,
 
+    #' @field volumetricWaterContent Volumetric water content obtained from soil moisture sensor
+    volumetricWaterContent = NULL,
 
 
     #' @description Create a new water cell
@@ -269,6 +271,7 @@ Cell_Water_Soil <- R6::R6Class(
     #' @param cellMeanTemp The average air temperature
     #' @param cellSolarRadiation The solar radiation
     #' @param rootDepth Depth of roots in soil profile.
+    #' @param volumetricWaterContent Volumetric water content obtained from soil moisture sensor
     #' @return The object of class \code{Cell_Water_Soil}.
 
 

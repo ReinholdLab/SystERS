@@ -216,10 +216,21 @@ Boundary_Transport_Water_Soil <-
         evaporation = NULL,
         #' @field transpiration Amount of water leaving via plant transpiration
         transpiration = NULL,
-        #' @field populateDependencies Updates input and spillOver between upstream and downstream cells.
+        #' @field populateDependencies Updates input and spillOver between upstream and downstream cells
         populateDependencies = NULL,
         #' @field tradeType Type of trade calculation used for soil cells. spillOver, etc.
         tradeType = NULL,
+        #' @field transitTime Amount of time it takes for water to exit a cell
+        transitTime = NULL,
+        #' @field transitTimeDistribution Distribution of time it takes for water to exit a cell
+        transitTimeDistribution = NULL,
+        #' @field residenceTime Amount of time water resides in a cell
+        residenceTime = NULL,
+        #' @field storAgeSelection Distribution of water ages in a cell
+        storAgeSelection = NULL,
+        #' @field dispersoinCoefficient Coefficient for dispersion effect in soil cell
+        dispersionCoefficient = NULL,
+
 
 
         #' @description Instantiate a water transport boundary in the soil processing domain
@@ -234,6 +245,11 @@ Boundary_Transport_Water_Soil <-
         #' @param downstreamCell Cell (if one exists) downstream of the boundary
         #' @param timeInterval  Model time step
         #' @param tradeType Type of trade function used for water movement.
+        #' @param transitTime Amount of time it takes for water to exit a cell
+        #' @param residenceTime Amount of time water resides in a cell
+        #' @param storAgeSelection Distribution of water ages in a cell
+        #' @param dispersionCoefficient Coefficient for dispersion effect in soil cell; user provided
+        #' @param transitTimeDistribution Distribution of time it takes for water to exit a cell
         #' @return A model boundary that transports water in the stream processing domain
         initialize =
           function(..., tradeType){
@@ -294,6 +310,7 @@ Boundary_Transport_Water_Soil <-
 
           waterVolume <- connectedCell$waterVolume
           saturationVolume <- connectedCell$saturationVolume
+          volumetricWaterContent <- connectedCell$volumetricWaterContent
 
         },
 
@@ -323,11 +340,10 @@ Boundary_Transport_Water_Soil <-
 
         },
 
-        #' @description
-                #' Caluculate the StorAge Selction functions to quantitate water
-                #' movement and storage via probability distribution functions.
-                #' Sets the \code{SAS} based on the
-                #' \code{waterVolume, cellHydraulicConductivity}
+        #' @description Caluculate the StorAge Selction functions to quantitate water
+        #' movement and storage via probability distribution functions.
+        #' Sets the \code{SAS} based on the
+        #' \code{waterVolume, cellHydraulicConductivity}
         #' @method Method Boundary_Transport_Water_Soil$SAScalc
         #' @return Boundary SAS calculation
         SAScalc =  function() {
@@ -337,7 +353,16 @@ Boundary_Transport_Water_Soil <-
           #focusing on boundaries for now and treating the system as 1D/2D to start.
           #Fluxes in and out for SAS fxns. J(t) input, Q(t) output. Use PDF form
           #of SAS function from J(t) to determine Q(t). fTTD.
-          },
+
+          cellVolume <- self$upstreamCell$cellVolume
+          poreWaterVelocity <- self$discharge / ((self$upstreamCell$cellWidth * self$upstreamCell$cellHeight) * self$upstreamCell$volumetricWaterContent)
+
+          t <- seq(0, 2000, by = 10)
+
+          self$transitTime <- self$upstreamCell$cellLength * poreWaterVelocity #transit time calculated as cell length * pore water velocity
+          self$transitTimeDistribution <- self$upstreamCell$cellLength / sqrt(4*pi*self$dispersionCoefficient*t^3)*exp(-((self$upstreamCell$cellLength - (poreWaterVelocity*t)^2)/(4*self$dispersionCoefficient*t)))
+
+        }
 
         #' @description Calculate evaporation and transpiration for boundaries at the
         #'   edge of the topology (i.e., with either one upstream or one
