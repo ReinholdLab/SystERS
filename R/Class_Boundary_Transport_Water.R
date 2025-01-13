@@ -357,7 +357,7 @@ Boundary_Transport_Water_Soil <-
           cellVolume <- self$upstreamCell$cellVolume
           poreWaterVelocity <- self$discharge / ((self$upstreamCell$cellWidth * self$upstreamCell$cellHeight) * self$upstreamCell$volumetricWaterContent)
 
-          t <- seq(0, 2000, by = 10)
+          t <- seq(0, 2000, by = 10) #or use timeInterval? self$timeInterval
 
           self$transitTime <- self$upstreamCell$cellLength * poreWaterVelocity #transit time calculated as cell length * pore water velocity
           self$transitTimeDistribution <- self$upstreamCell$cellLength / sqrt(4*pi*self$dispersionCoefficient*t^3)*exp(-((self$upstreamCell$cellLength - (poreWaterVelocity*t)^2)/(4*self$dispersionCoefficient*t)))
