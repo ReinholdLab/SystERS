@@ -354,6 +354,8 @@ Boundary_Transport_Water_Soil <-
           #Fluxes in and out for SAS fxns. J(t) input, Q(t) output. Use PDF form
           #of SAS function from J(t) to determine Q(t). fTTD.
 
+          ##Fickian version of transit time PDF
+
           cellVolume <- self$upstreamCell$cellVolume
           poreWaterVelocity <- self$discharge / ((self$upstreamCell$cellWidth * self$upstreamCell$cellHeight) * self$upstreamCell$volumetricWaterContent)
 
