@@ -228,8 +228,6 @@ Boundary_Transport_Water_Soil <-
         residenceTime = NULL,
         #' @field storAgeSelection Distribution of water ages in a cell
         storAgeSelection = NULL,
-        #' @field dispersoinCoefficient Coefficient for dispersion effect in soil cell
-        dispersionCoefficient = NULL,
 
 
 
@@ -248,7 +246,6 @@ Boundary_Transport_Water_Soil <-
         #' @param transitTime Amount of time it takes for water to exit a cell
         #' @param residenceTime Amount of time water resides in a cell
         #' @param storAgeSelection Distribution of water ages in a cell
-        #' @param dispersionCoefficient Coefficient for dispersion effect in soil cell; user provided
         #' @param transitTimeDistribution Distribution of time it takes for water to exit a cell
         #' @return A model boundary that transports water in the stream processing domain
         initialize =
@@ -354,17 +351,28 @@ Boundary_Transport_Water_Soil <-
           #Fluxes in and out for SAS fxns. J(t) input, Q(t) output. Use PDF form
           #of SAS function from J(t) to determine Q(t). fTTD.
 
-          ##Fickian version of transit time PDF
+          #this is calculated as V = (K * hydraulic gradient)/porosity
+          #to calculate hydraulic gradient in this case, I use -Q/(K*A) of the cell,
+          #subsituting into the equation for V, V = Q
 
-          cellVolume <- self$upstreamCell$cellVolume
-          poreWaterVelocity <- self$discharge / ((self$upstreamCell$cellWidth * self$upstreamCell$cellHeight) * self$upstreamCell$volumetricWaterContent)
+          if(!self$usModBound) { #looking at upstream cell
 
-          t <- seq(0, 2000, by = 10) #or use timeInterval? self$timeInterval
+            poreWaterVelocity <- self$discharge / (self$upstreamCell$cellPorosity *
+                                                     self$upstreamCell$cellHeight *
+                                                     self$upstreamCell$cellWidth)
 
-          self$transitTime <- self$upstreamCell$cellLength * poreWaterVelocity #transit time calculated as cell length * pore water velocity
-          self$transitTimeDistribution <- self$upstreamCell$cellLength / sqrt(4*pi*self$dispersionCoefficient*t^3)*exp(-((self$upstreamCell$cellLength - (poreWaterVelocity*t)^2)/(4*self$dispersionCoefficient*t)))
+            dispersionTransit <- self$upstreamCell$longitudinalDispersivity * poreWaterVelocity
 
-        }
+            advectiveTransit <- self$upstreamCell$cellLength / poreWaterVelocity
+
+            self$transitTime <- advectiveTransit + (self$upstreamCell$cellLength^2 /
+                                                      (2*dispersionTransit)) #dispersion transit time
+            #units are in seconds
+          } else {
+            self$transitTime <- 0
+          }
+
+        },
 
         #' @description Calculate evaporation and transpiration for boundaries at the
         #'   edge of the topology (i.e., with either one upstream or one
@@ -414,6 +422,7 @@ Boundary_Transport_Water_Soil <-
             print("Not a valid trade type")
           }
           self$evapoTransCalc()
+          self$SAScalc()
 
           #set water volume
           if(!self$usModBound) { #looking at upstream cell
@@ -424,7 +433,9 @@ Boundary_Transport_Water_Soil <-
           #if it does, should do a stop on the calculation or send a stop message
 
 
-          return(list(discharge = self$discharge, spillOver = self$spillOver, evaporation = self$evaporation, transpiration = self$transpiration))
+          return(list(discharge = self$discharge, spillOver = self$spillOver,
+                      evaporation = self$evaporation, transpiration = self$transpiration,
+                      transitTime = self$transitTime))
         }, # close function def
 
 

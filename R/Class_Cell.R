@@ -242,8 +242,8 @@ Cell_Water_Soil <- R6::R6Class(
     #' @field rootDepth Root depth in soil profile for transpiration calc.
     rootDepth = NULL,
 
-    #' @field volumetricWaterContent Volumetric water content obtained from soil moisture sensor
-    volumetricWaterContent = NULL,
+    #' @field longitudinalDispersivity Dispersivity provided by user
+   longitudinalDispersivity = NULL,
 
 
     #' @description Create a new water cell
@@ -271,13 +271,14 @@ Cell_Water_Soil <- R6::R6Class(
     #' @param cellMeanTemp The average air temperature
     #' @param cellSolarRadiation The solar radiation
     #' @param rootDepth Depth of roots in soil profile.
-    #' @param volumetricWaterContent Volumetric water content obtained from soil moisture sensor
+    #' @param longitudinalDispersivity Dispersivity provided by user
     #' @return The object of class \code{Cell_Water_Soil}.
 
 
     initialize = function(..., cellLength, cellHeight, cellWidth, cellDepth,
                           cellSoilType, cellHydraulicConductivity,
-                          cellMaxTemp, cellMinTemp, cellSolarRadiation, rootDepth) {
+                          cellMaxTemp, cellMinTemp, cellSolarRadiation, rootDepth,
+                          longitudinalDispersivity) {
       super$initialize(...)
 
       self$cellLength <- cellLength
@@ -326,6 +327,7 @@ Cell_Water_Soil <- R6::R6Class(
 
       self$saturationVolume <- self$cellPorosity * self$cellVolume
       self$cellSpillOver <- 0
+      self$longitudinalDispersivity <- longitudinalDispersivity
 
     },
 
