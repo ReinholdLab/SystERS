@@ -222,8 +222,6 @@ Boundary_Transport_Water_Soil <-
         tradeType = NULL,
         #' @field transitTime Amount of time it takes for water to exit a cell
         transitTime = NULL,
-        #' @field transitTimeDistribution Distribution of time it takes for water to exit a cell
-        transitTimeDistribution = NULL,
         #' @field residenceTime Amount of time water resides in a cell
         residenceTime = NULL,
         #' @field storAgeSelection Distribution of water ages in a cell
@@ -246,7 +244,6 @@ Boundary_Transport_Water_Soil <-
         #' @param transitTime Amount of time it takes for water to exit a cell
         #' @param residenceTime Amount of time water resides in a cell
         #' @param storAgeSelection Distribution of water ages in a cell
-        #' @param transitTimeDistribution Distribution of time it takes for water to exit a cell
         #' @return A model boundary that transports water in the stream processing domain
         initialize =
           function(..., tradeType){
@@ -367,9 +364,17 @@ Boundary_Transport_Water_Soil <-
 
             self$transitTime <- advectiveTransit + (self$upstreamCell$cellLength^2 /
                                                       (2*dispersionTransit)) #dispersion transit time
+
+            self$residenceTime <- (self$upstreamCell$cellLength * self$upstreamCell$cellHeight *
+                                     self$upstreamCell$cellWidth) / poreWaterVelocity
+
+            self$storAgeSelection <- self$transitTime / self$residenceTime
+
             #units are in seconds
           } else {
             self$transitTime <- 0
+            self$residenceTime <- 0
+            self$storAgeSelection <- 0
           }
 
         },
@@ -435,7 +440,8 @@ Boundary_Transport_Water_Soil <-
 
           return(list(discharge = self$discharge, spillOver = self$spillOver,
                       evaporation = self$evaporation, transpiration = self$transpiration,
-                      transitTime = self$transitTime))
+                      transitTime = self$transitTime, residenceTime = self$residenceTime,
+                      storAgeSelection = self$storAgeSelection))
         }, # close function def
 
 
