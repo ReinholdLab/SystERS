@@ -216,10 +216,16 @@ Boundary_Transport_Water_Soil <-
         evaporation = NULL,
         #' @field transpiration Amount of water leaving via plant transpiration
         transpiration = NULL,
+        #' @field parcelID Water parcel ID. In the case of 2 parcels at same age, IDs each parcel. *Not sure if necessary yet.
+        parcelID = NULL,
+        #' @field age Age of water inside of storage
+        age = NULL,
+        #' @field lifeExpectancy Time a parcel is expected to remain within storage before exiting.
+        lifeExpectancy = NULL,
+        #' @field transitTime Transit time for a parcel of water.
+        transitTime = NULL,
         #' @field populateDependencies Updates input and spillOver between upstream and downstream cells.
         populateDependencies = NULL,
-        #' @field tradeType Type of trade calculation used for soil cells. spillOver, etc.
-        tradeType = NULL,
 
 
         #' @description Instantiate a water transport boundary in the soil processing domain
@@ -228,22 +234,23 @@ Boundary_Transport_Water_Soil <-
         #' @param spillOver Volume of water moving from one cell to another
         #' @param evaporation amount of water leaving the cell at the surface via evaporation
         #' @param transpiration amount of water leaving cells via plant root uptake (transpiration)
+
+        # enter SAS params here.
+
         #' @param boundaryIdx String indexing the boundary
         #' @param currency String naming the currency handled by the boundary as a character e.g., \code{water, NO3}
         #' @param upstreamCell  Cell (if one exists) upstream of the boundary
         #' @param downstreamCell Cell (if one exists) downstream of the boundary
         #' @param timeInterval  Model time step
-        #' @param tradeType Type of trade function used for water movement.
         #' @return A model boundary that transports water in the stream processing domain
         initialize =
-          function(..., tradeType){
+          function(...){
             super$initialize(...)
             if(any(self$usModBound, self$dsModBound )) {
               self$populateDependencies <- self$populateDependenciesExternalBound
             } else{
               self$populateDependencies <- self$populateDependenciesInternalBound
             }
-            self$tradeType <- tradeType
 
           }, # close initialize
 
@@ -323,10 +330,6 @@ Boundary_Transport_Water_Soil <-
 
         },
 
-        SAScalc =  function() {
-          #SAS functions go here; need to add the header above this function
-          },
-
         #' @description Calculate evaporation and transpiration for boundaries at the
         #'   edge of the topology (i.e., with either one upstream or one
         #'   downstream cell).  Sets the \code{evaporation, transpiration} based on the
@@ -357,6 +360,49 @@ Boundary_Transport_Water_Soil <-
           }
         },
 
+        #' @description Calculates the forward TTD...
+        #'
+
+        fTTDCalc = function() {
+
+          #Calculate transit time.
+
+          transitTime = (age + lifeExpectancy) # move out of fxn and into init?
+
+          varT = lifeExpectancy
+
+
+
+
+
+          #sum of
+
+
+        },
+
+        #' @description Calculates the backward TTD...
+        #'
+
+        bTTDCalc = function() {
+
+          transitTime = (age + lifeExpectancy)
+
+          varT = age
+
+        },
+
+        #' @description Calculates the RTD...
+        #'
+
+        RTDCalc = function() {},
+
+        #' @description Calculates SAS function.
+        SASCalc = function() {
+          if(!self$usModBound) {
+
+            }
+        },
+
 
         #' @description Calculates the trades between the stream water cells
         #'   using the values provided for \code{discharge}.
@@ -366,15 +412,22 @@ Boundary_Transport_Water_Soil <-
         #'   (\code{discharge, volume}).
 
         trade   = function(){
+          browser()
           # volume of water to trade
           #split transpiration and evaporation
-          if(self$tradeType == "spillOver" || self$tradeType == "spillOver") {
+          if(self$upstreamCell$tradeType == "spillOver" || self$downstreamCell$tradeType == "spillOver") {
           self$spillOverCalc()
+          } else {
+            if(self$upstreamCell$tradeType == "SAS" || self$downstreamCell$tradeType == "SAS"){
+              self$SASCalc()
           } else {
             stop()
             print("Not a valid trade type")
           }
           self$evapoTransCalc()
+
+
+          }
 
           #set water volume
           if(!self$usModBound) { #looking at upstream cell
@@ -409,5 +462,4 @@ Boundary_Transport_Water_Soil <-
 
 
   ) # close R6 class
-
 
