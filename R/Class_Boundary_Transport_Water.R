@@ -226,6 +226,17 @@ Boundary_Transport_Water_Soil <-
         transitTime = NULL,
         #' @field populateDependencies Updates input and spillOver between upstream and downstream cells.
         populateDependencies = NULL,
+        #' @field populateDependencies Updates input and spillOver between upstream and downstream cells
+        populateDependencies = NULL,
+        #' @field tradeType Type of trade calculation used for soil cells. spillOver, etc.
+        tradeType = NULL,
+        #' @field transitTime Amount of time it takes for water to exit a cell
+        transitTime = NULL,
+        #' @field residenceTime Amount of time water resides in a cell
+        residenceTime = NULL,
+        #' @field storAgeSelection Distribution of water ages in a cell
+        storAgeSelection = NULL,
+
 
 
         #' @description Instantiate a water transport boundary in the soil processing domain
@@ -242,6 +253,10 @@ Boundary_Transport_Water_Soil <-
         #' @param upstreamCell  Cell (if one exists) upstream of the boundary
         #' @param downstreamCell Cell (if one exists) downstream of the boundary
         #' @param timeInterval  Model time step
+        #' @param tradeType Type of trade function used for water movement.
+        #' @param transitTime Amount of time it takes for water to exit a cell
+        #' @param residenceTime Amount of time water resides in a cell
+        #' @param storAgeSelection Distribution of water ages in a cell
         #' @return A model boundary that transports water in the stream processing domain
         initialize =
           function(...){
@@ -279,7 +294,7 @@ Boundary_Transport_Water_Soil <-
         #'   downstream cell).  Sets the \code{channelVelocity} based on the
         #'   \code{discharge} and the cross sectional area of the boundary.
         #' @method Method
-        #'   Boundary_Transport_Water_Stream$populateDependenciesExternalBound
+        #'   Boundary_Transport_Water_Soil$populateDependenciesExternalBound
         #' @return Populates boundary dependencies
         populateDependenciesExternalBound = function(){
 
@@ -301,6 +316,7 @@ Boundary_Transport_Water_Soil <-
 
           waterVolume <- connectedCell$waterVolume
           saturationVolume <- connectedCell$saturationVolume
+          volumetricWaterContent <- connectedCell$volumetricWaterContent
 
         },
 
@@ -309,7 +325,7 @@ Boundary_Transport_Water_Soil <-
         #'   downstream cell).  Sets the \code{spillOver} based on the
         #'   \code{discharge, waterVolume}.
         #' @method Method
-        #'   Boundary_Transport_Water_Stream$spillOverCalc
+        #'   Boundary_Transport_Water_Soil$spillOverCalc
         #' @return Boundary spillover.
 
         spillOverCalc = function() {
@@ -327,6 +343,51 @@ Boundary_Transport_Water_Soil <-
               self$spillOver <- self$upstreamCell$cellSpillOver
               self$discharge <- self$upstreamCell$cellInput
             }
+
+        },
+
+        #' @description Caluculate the StorAge Selction functions to quantitate water
+        #' movement and storage via probability distribution functions.
+        #' Sets the \code{SAS} based on the
+        #' \code{waterVolume, cellHydraulicConductivity}
+        #' @method Method Boundary_Transport_Water_Soil$SAScalc
+        #' @return Boundary SAS calculation
+        SAScalc =  function() {
+          #SAS functions go here; need to add the header above this function
+
+          #Starting with TTD/RTD fxns from 2014 Harman paper. Thinking of only
+          #focusing on boundaries for now and treating the system as 1D/2D to start.
+          #Fluxes in and out for SAS fxns. J(t) input, Q(t) output. Use PDF form
+          #of SAS function from J(t) to determine Q(t). fTTD.
+
+          #this is calculated as V = (K * hydraulic gradient)/porosity
+          #to calculate hydraulic gradient in this case, I use -Q/(K*A) of the cell,
+          #subsituting into the equation for V, V = Q
+
+          if(!self$usModBound) { #looking at upstream cell
+
+            poreWaterVelocity <- self$discharge / (self$upstreamCell$cellPorosity *
+                                                     self$upstreamCell$cellHeight *
+                                                     self$upstreamCell$cellWidth)
+
+            dispersionTransit <- self$upstreamCell$longitudinalDispersivity * poreWaterVelocity
+
+            advectiveTransit <- self$upstreamCell$cellLength / poreWaterVelocity
+
+            self$transitTime <- advectiveTransit + (self$upstreamCell$cellLength^2 /
+                                                      (2*dispersionTransit)) #dispersion transit time
+
+            self$residenceTime <- (self$upstreamCell$cellLength * self$upstreamCell$cellHeight *
+                                     self$upstreamCell$cellWidth) / poreWaterVelocity
+
+            self$storAgeSelection <- self$transitTime / self$residenceTime
+
+            #units are in seconds
+          } else {
+            self$transitTime <- 0
+            self$residenceTime <- 0
+            self$storAgeSelection <- 0
+          }
 
         },
 
@@ -425,6 +486,7 @@ Boundary_Transport_Water_Soil <-
             print("Not a valid trade type")
           }
           self$evapoTransCalc()
+          self$SAScalc()
 
 
           }
@@ -438,7 +500,10 @@ Boundary_Transport_Water_Soil <-
           #if it does, should do a stop on the calculation or send a stop message
 
 
-          return(list(discharge = self$discharge, spillOver = self$spillOver, evaporation = self$evaporation, transpiration = self$transpiration))
+          return(list(discharge = self$discharge, spillOver = self$spillOver,
+                      evaporation = self$evaporation, transpiration = self$transpiration,
+                      transitTime = self$transitTime, residenceTime = self$residenceTime,
+                      storAgeSelection = self$storAgeSelection))
         }, # close function def
 
 
